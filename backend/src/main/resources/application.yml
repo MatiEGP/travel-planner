@@ -1,0 +1,23 @@
+spring:
+  application:
+    name: api
+
+  # CONFIGURACION DE LA BASE DE DATOS (POSTGRESQL)
+  datasource:
+    url: jdbc:postgresql://localhost:5432/travel_planner
+    username: postgres
+    password: postgres123
+    driver-class-name: org.postgresql.Driver
+
+  # CONFIGURACION DE JPA / HIBERNATE
+  jpa:
+    hibernate:
+      # UPDATE creara las tablas automticamente basandose en las entidades de Java
+      ddl-auto: update
+    # Muestra las consultas SQL nativas en la consola de IntelliJ
+    show-sql: true
+    properties:
+      hibernate:
+        format_sql: true
+    # Especifica el dialecto para optimizar las queries a Postgres 17
+    database-platform: org.hibernate.dialect.PostgreSQLDialect
