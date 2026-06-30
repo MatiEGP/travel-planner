@@ -6,6 +6,7 @@ import org.springframework.cglib.core.Local;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 
 @Entity
@@ -39,7 +40,7 @@ public class Planificacion {
 
     @OneToMany(mappedBy = "planificacion", cascade = CascadeType.ALL, orphanRemoval = true)
     @Builder.Default
-    private List<Destino> destinos;
+    private List<Destino> destinos = new ArrayList<>();
 
     @PrePersist
     protected void onCreate() {
