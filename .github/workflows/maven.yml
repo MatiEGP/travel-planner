@@ -19,6 +19,21 @@ jobs:
 
     runs-on: ubuntu-latest
 
+    services:
+      postgres:
+        image: postgres:15
+        env:
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: postgres123
+          POSTGRES_DB: travel_planner
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+        ports:
+          - 5433:5432
+
     steps:
     - uses: actions/checkout@v4
     - name: Set up JDK 17
@@ -30,6 +45,10 @@ jobs:
     - name: Build with Maven
       working-directory: ./backend
       run: mvn -B clean verify
+      env:
+        SPRING_DATASOURCE_URL: jdbc:postgresql://localhost:5433/travel_planner
+        SPRING_DATASOURCE_USERNAME: postgres
+        SPRING_DATASOURCE_PASSWORD: postgres123
 
     # Optional: Uploads the full dependency graph to GitHub to improve the quality of Dependabot alerts this repository can receive
     - name: Update dependency graph
