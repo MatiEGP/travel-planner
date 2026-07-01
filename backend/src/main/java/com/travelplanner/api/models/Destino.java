@@ -3,6 +3,9 @@ package com.travelplanner.api.models;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.util.ArrayList;
+import java.util.List;
+
 @Entity
 @Table(name = "destinos")
 @Data
@@ -30,4 +33,8 @@ public class Destino {
     @ToString.Exclude // Evitar bucles infinitos al llamar metodo ToString de Planificacion
     @EqualsAndHashCode.Exclude // Evitar comparaciones innecesarias en memoria
     private Planificacion planificacion;
+
+    @OneToMany(mappedBy = "destino", cascade = CascadeType.ALL, orphanRemoval = true)
+    @Builder.Default
+    private List<Actividad> actividades = new ArrayList<>();
 }
