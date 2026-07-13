@@ -9,6 +9,9 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+import java.util.stream.Collectors;
+
 @RestController
 @RequestMapping("/api/usuarios")
 @RequiredArgsConstructor
@@ -35,6 +38,15 @@ public class UsuarioController {
     public ResponseEntity<UsuarioResponseDTO> obtenerUsuarioPorId(@PathVariable Long id) {
         Usuario usuario = usuarioService.buscarPorId(id);
         return ResponseEntity.ok(mapearAResponse(usuario));
+    }
+
+    @GetMapping("")
+    public ResponseEntity<List<UsuarioResponseDTO>> listarUsuarios() {
+        List<Usuario> usuarios = usuarioService.listarUsuarios();
+        List<UsuarioResponseDTO> responses = usuarios.stream()
+                .map(this::mapearAResponse)
+                .collect(Collectors.toList());
+        return ResponseEntity.ok(responses);
     }
 
     // Helper para armar el response de Usuario
