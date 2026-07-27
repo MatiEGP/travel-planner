@@ -10,30 +10,38 @@ export const PlanificacionManager = () => {
   const [planificaciones, setPlanificaciones] = useState<PlanificacionResponseDTO[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [refreshKey, setRefreshKey] = useState(0);
 
-  const fetchPlanificaciones = useCallback(async () => {
-    if (!usuario) return;
-    try {
-      setLoading(true);
-      const data = await planificacionService.getByUsuario(usuario.id);
-      setPlanificaciones(data);
-      setError(null);
-    } catch (err) {
-      setError((err as Error).message);
-    } finally {
-      setLoading(false);
-    }
-  }, [usuario]);
+  const refresh = useCallback(() => setRefreshKey((k) => k + 1), []);
 
   useEffect(() => {
-    fetchPlanificaciones();
-  }, [fetchPlanificaciones]);
+    if (!usuario) return;
+    let cancelled = false;
+
+    const load = async () => {
+      try {
+        setLoading(true);
+        const data = await planificacionService.getByUsuario(usuario.id);
+        if (!cancelled) {
+          setPlanificaciones(data);
+          setError(null);
+        }
+      } catch (err) {
+        if (!cancelled) setError((err as Error).message);
+      } finally {
+        if (!cancelled) setLoading(false);
+      }
+    };
+
+    load();
+    return () => { cancelled = true; };
+  }, [usuario, refreshKey]);
 
   const handleDelete = async (id: number) => {
     if (!confirm('¿Estás seguro de eliminar esta planificación? Se eliminarán también sus destinos y actividades.')) return;
     try {
       await planificacionService.delete(id);
-      fetchPlanificaciones();
+      refresh();
     } catch (err) {
       alert((err as Error).message);
     }
@@ -47,7 +55,7 @@ export const PlanificacionManager = () => {
       </div>
 
       <div className="grid gap-8 lg:grid-cols-[380px_1fr]">
-        <PlanificacionForm onCreated={fetchPlanificaciones} />
+        <PlanificacionForm onCreated={refresh} />
 
         <div>
           <h3 className="text-lg font-semibold text-slate-700 mb-4">

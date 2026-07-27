@@ -17,33 +17,41 @@ export const ActividadManager = ({ destinoId }: ActividadManagerProps) => {
   const [actividades, setActividades] = useState<ActividadResponseDTO[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [refreshKey, setRefreshKey] = useState(0);
 
-  const fetchData = useCallback(async () => {
-    try {
-      setLoading(true);
-      const [destinoData, actividadesData] = await Promise.all([
-        destinoService.getById(destinoId),
-        actividadService.getByDestino(destinoId),
-      ]);
-      setDestino(destinoData);
-      setActividades(actividadesData);
-      setError(null);
-    } catch (err) {
-      setError((err as Error).message);
-    } finally {
-      setLoading(false);
-    }
-  }, [destinoId]);
+  const refresh = useCallback(() => setRefreshKey((k) => k + 1), []);
 
   useEffect(() => {
-    fetchData();
-  }, [fetchData]);
+    let cancelled = false;
+
+    const load = async () => {
+      try {
+        setLoading(true);
+        const [destinoData, actividadesData] = await Promise.all([
+          destinoService.getById(destinoId),
+          actividadService.getByDestino(destinoId),
+        ]);
+        if (!cancelled) {
+          setDestino(destinoData);
+          setActividades(actividadesData);
+          setError(null);
+        }
+      } catch (err) {
+        if (!cancelled) setError((err as Error).message);
+      } finally {
+        if (!cancelled) setLoading(false);
+      }
+    };
+
+    load();
+    return () => { cancelled = true; };
+  }, [destinoId, refreshKey]);
 
   const handleDelete = async (id: number) => {
     if (!confirm('¿Estás seguro de eliminar esta actividad?')) return;
     try {
       await actividadService.delete(id);
-      fetchData();
+      refresh();
     } catch (err) {
       alert((err as Error).message);
     }
@@ -70,7 +78,7 @@ export const ActividadManager = ({ destinoId }: ActividadManagerProps) => {
       </div>
 
       <div className="grid gap-8 lg:grid-cols-[380px_1fr]">
-        <ActividadForm destinoId={destinoId} onCreated={fetchData} />
+        <ActividadForm destinoId={destinoId} onCreated={refresh} />
 
         <div>
           <h3 className="text-lg font-semibold text-slate-700 mb-4">Itinerario ({actividades.length})</h3>

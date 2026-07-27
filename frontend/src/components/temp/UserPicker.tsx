@@ -5,7 +5,7 @@
 import { useState, useEffect } from 'react';
 import { usuarioService } from '../../services/usuarioService';
 import type { UsuarioResponseDTO } from '../../types/usuario';
-import { useAuth } from '../../context/AuthContext';
+import { useAuth } from '../../context/useAuth';
 
 export const UserPicker = () => {
   const { setUsuario } = useAuth();

@@ -17,33 +17,41 @@ export const DestinoManager = ({ planificacionId }: DestinoManagerProps) => {
   const [destinos, setDestinos] = useState<DestinoResponseDTO[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [refreshKey, setRefreshKey] = useState(0);
 
-  const fetchData = useCallback(async () => {
-    try {
-      setLoading(true);
-      const [planData, destinosData] = await Promise.all([
-        planificacionService.getById(planificacionId),
-        destinoService.getByPlanificacion(planificacionId),
-      ]);
-      setPlanificacion(planData);
-      setDestinos(destinosData);
-      setError(null);
-    } catch (err) {
-      setError((err as Error).message);
-    } finally {
-      setLoading(false);
-    }
-  }, [planificacionId]);
+  const refresh = useCallback(() => setRefreshKey((k) => k + 1), []);
 
   useEffect(() => {
-    fetchData();
-  }, [fetchData]);
+    let cancelled = false;
+
+    const load = async () => {
+      try {
+        setLoading(true);
+        const [planData, destinosData] = await Promise.all([
+          planificacionService.getById(planificacionId),
+          destinoService.getByPlanificacion(planificacionId),
+        ]);
+        if (!cancelled) {
+          setPlanificacion(planData);
+          setDestinos(destinosData);
+          setError(null);
+        }
+      } catch (err) {
+        if (!cancelled) setError((err as Error).message);
+      } finally {
+        if (!cancelled) setLoading(false);
+      }
+    };
+
+    load();
+    return () => { cancelled = true; };
+  }, [planificacionId, refreshKey]);
 
   const handleDelete = async (id: number) => {
     if (!confirm('¿Estás seguro de eliminar este destino? Se eliminarán también sus actividades.')) return;
     try {
       await destinoService.delete(id);
-      fetchData();
+      refresh();
     } catch (err) {
       alert((err as Error).message);
     }
@@ -68,7 +76,7 @@ export const DestinoManager = ({ planificacionId }: DestinoManagerProps) => {
       </div>
 
       <div className="grid gap-8 lg:grid-cols-[380px_1fr]">
-        <DestinoForm planificacionId={planificacionId} onCreated={fetchData} />
+        <DestinoForm planificacionId={planificacionId} onCreated={refresh} />
 
         <div>
           <h3 className="text-lg font-semibold text-slate-700 mb-4">Destinos agregados ({destinos.length})</h3>
