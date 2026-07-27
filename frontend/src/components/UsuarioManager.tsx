@@ -5,42 +5,41 @@ import { UsuarioForm } from './UsuarioForm';
 import { UsuarioList } from './UsuarioList';
 
 export const UsuarioManager = () => {
-    // Estados para almacenar datos y controlar la interfaz
-    const [usuarios, setUsuarios] = useState<UsuarioResponseDTO[]>([]);
-    const [loading, setLoading] = useState<boolean>(true);
-    const [error, setError] = useState<string | null>(null);
+  const [usuarios, setUsuarios] = useState<UsuarioResponseDTO[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
-    // Cargar los usuarios al montar el componente
-    const fetchUsuarios = async () => {
-        try {
-            setLoading(true);
-            const data = await usuarioService.getAll();
-            setUsuarios(data);
-            setError(null);
-        } catch (err) { // El error ya viene procesado por el interceptor de Axios
-            const errorMessage = (err as Error).message;
-            setError(errorMessage);
-            console.error(err);
-        } finally {
-            setLoading(false);
-        }
-    };
+  const fetchUsuarios = async () => {
+    try {
+      setLoading(true);
+      const data = await usuarioService.getAll();
+      setUsuarios(data);
+      setError(null);
+    } catch (err) {
+      setError((err as Error).message);
+    } finally {
+      setLoading(false);
+    }
+  };
 
-    useEffect(() => {
-        fetchUsuarios();
-    }, []);
+  useEffect(() => {
+    fetchUsuarios();
+  }, []);
 
-    return (
-        <div className="max-w-2xl mx-auto p-5 font-sans">
-            <h2 className="text-2xl font-bold mb-4">Gestión de Usuarios - MVP</h2>
+  return (
+    <div className="space-y-8">
+      <div>
+        <h2 className="text-2xl font-bold text-slate-800 mb-1">Gestión de Usuarios</h2>
+        <p className="text-slate-500">Registrá y gestioná los usuarios de la plataforma.</p>
+      </div>
 
-            {/* Formulario de Creación */}
-            <UsuarioForm onUserCreated={fetchUsuarios} />
-
-            <hr className="my-6" />
-
-            {/* Lista de Usuarios */}
-            <UsuarioList usuarios={usuarios} loading={loading} error={error} />
+      <div className="grid gap-8 lg:grid-cols-[380px_1fr]">
+        <UsuarioForm onUserCreated={fetchUsuarios} />
+        <div>
+          <h3 className="text-lg font-semibold text-slate-700 mb-4">Usuarios Registrados ({usuarios.length})</h3>
+          <UsuarioList usuarios={usuarios} loading={loading} error={error} />
         </div>
-    );
+      </div>
+    </div>
+  );
 };

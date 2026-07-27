@@ -1,13 +1,16 @@
-import { Outlet } from "react-router-dom";
-import { Header } from "../components/layout/Header";
+import { Outlet } from 'react-router-dom';
+import { Header } from '../components/layout/Header';
 
 export const MainLayout = () => {
   return (
-    <div className="min-h-screen bg-gray-50 text-gray-800">
+    <div className="min-h-screen bg-slate-100 text-slate-800 flex flex-col">
       <Header />
-      <main>
-        <Outlet /> {/* Las páginas hijas se renderizarán aquí */}
+      <main className="flex-1">
+        <Outlet />
       </main>
+      <footer className="bg-teal-800 text-teal-200 text-center py-4 text-sm">
+        <p>&copy; {new Date().getFullYear()} Travel Planner — MVP</p>
+      </footer>
     </div>
   );
 };
