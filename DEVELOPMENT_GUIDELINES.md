@@ -6,8 +6,6 @@ Este documento establece las políticas de desarrollo, gestión de configuració
 
 ## 1. Gestión de Configuración de Software (SCM)
 
-Esta sección se basa en el contenido del antiguo `SCM_GUIDELINES.md`.
-
 ### 1.1. Estrategia de Ramas (Branching Strategy)
 
 Se utiliza un flujo de trabajo basado en **Feature Branch Workflow** (una versión simplificada de Git-Flow), ideal para mantener la estabilidad del código.
@@ -16,10 +14,23 @@ Se utiliza un flujo de trabajo basado en **Feature Branch Workflow** (una versi�
 *   **`main`**: Contiene únicamente código 100% estable, probado y listo para producción.
 *   **`develop`**: Es la rama de integración donde se consolidan las nuevas funcionalidades. **Nunca se programa directamente sobre `develop` ni `main`.**
 
-#### Ramas Temporales (`feature/*`)
-Toda nueva funcionalidad se desarrolla en una rama derivada de `develop`.
-*   **Nomenclatura:** `feature/alcance-descripcion-corta` (ej. `feature/backend-auth`, `feature/frontend-login`).
-*   La integración a `develop` se realiza exclusivamente mediante un **Pull Request (PR)**.
+#### Ramas Temporales
+Toda nueva funcionalidad o corrección se desarrolla en una rama derivada de `develop`.
+
+| Tipo | Nomenclatura | Descripción |
+|------|-------------|-------------|
+| Nueva funcionalidad | `feature/alcance-descripcion-corta` | Ej: `feature/backend-auth`, `feature/frontend-login` |
+| Corrección de bug | `fix/alcance-descripcion-corta` | Ej: `fix/backend-token-expiry`, `fix/frontend-login-redirect` |
+| Preparación de release | `release/vX.Y.Z` | Ej: `release/v1.0.0` — solo ajustes finales, sin nuevas features |
+
+La integración a `develop` (o `main` en el caso de `release/*`) se realiza exclusivamente mediante un **Pull Request (PR)**.
+
+#### Flujo de Release
+Cuando `develop` está estable y lista para producción:
+1.  Crear una rama `release/vX.Y.Z` desde `develop`.
+2.  Realizar únicamente ajustes menores (versión, notas de release).
+3.  Abrir un PR hacia `main` y otro de vuelta hacia `develop` para sincronizar los ajustes.
+4.  Crear el **Git Tag** correspondiente en `main` (ej. `v1.0.0`).
 
 ### 1.2. Convención de Commits (Conventional Commits)
 
@@ -37,8 +48,14 @@ tipo(alcance): descripción corta en minúsculas y en tiempo presente
 *   `style:` Cambios puramente estéticos o de formato.
 *   `refactor:` Modificaciones al código que mejoran su estructura sin cambiar su comportamiento.
 *   `chore:` Tareas de mantenimiento, configuración de herramientas, actualización de dependencias, etc.
+*   `ci:` Cambios en los pipelines de integración continua (archivos de GitHub Actions, scripts de CI/CD).
 
-**EJEMPLO:** `feat(backend): implement jpa entities for travel destinations`
+**EJEMPLOS:**
+```
+feat(backend): implement jpa entities for travel destinations
+fix(frontend): resolve login redirect loop on expired session
+ci(github-actions): add frontend build and lint pipeline
+```
 
 ### 1.3. Flujo de trabajo diario
 
@@ -54,7 +71,7 @@ tipo(alcance): descripción corta en minúsculas y en tiempo presente
 
 ### 2.1. Framework de UI y Estilos
 
-Para la construcción de la interfaz de usuario y la gestión de estilos, se utilizará **Tailwind CSS**. Este enfoque basado en clases de utilidad nos permite construir diseños directamente en el JSX de forma rápida y consistente.
+Para la construcción de la interfaz de usuario y la gestión de estilos, se utilizará **Tailwind CSS**. Este enfoque basado en clases de utilidad permite construir diseños directamente en el JSX de forma rápida y consistente.
 
 *   **Priorizar clases de Tailwind:** Se debe evitar el uso de estilos en línea (`style={...}`).
 *   **Configuración centralizada:** Las personalizaciones del tema (colores, espaciados, fuentes) se deben realizar en el archivo `tailwind.config.js`.
@@ -64,17 +81,34 @@ Para la construcción de la interfaz de usuario y la gestión de estilos, se uti
 Para la gestión del estado de la aplicación, nos apoyaremos en los **hooks nativos de React**:
 *   **`useState`**: Para el estado local de los componentes.
 *   **`useEffect`**: Para manejar efectos secundarios (ej. llamadas a la API).
+*   **`useContext`**: Para estado compartido entre componentes, a través de los providers definidos en `src/context`.
 
-No se introducirán librerías de manejo de estado global para mantener la simplicidad del MVP.
+No se introducirán librerías de manejo de estado global (ej. Redux, Zustand) para mantener la simplicidad del MVP.
 
-### 2.3. Convenciones de Nomenclatura y Estructura
+### 2.3. Estructura de Carpetas (`src/`)
 
-*   **Componentes:** Se nombrarán usando `PascalCase` (ej: `UsuarioList.tsx`). Se organizarán en `src/components`.
-*   **Servicios:** Archivos con lógica de negocio o llamadas a API se nombrarán con `camelCase` (ej: `usuarioService.ts`). Residirán en `src/services`.
-*   **Tipos e Interfaces:** Las definiciones de TypeScript se nombrarán con `PascalCase`.
-    *   Para DTOs que mapean con el backend, se usará el sufijo `DTO` (ej: `UsuarioResponseDTO`).
-    *   Se ubicarán en `src/types`.
+```
+src/
+├── api/          # Instancia y configuración base de Axios (interceptores, base URL)
+├── assets/       # Imágenes, íconos y otros recursos estáticos
+├── components/   # Componentes reutilizables (PascalCase, ej: TripCard.tsx)
+├── context/      # Providers y Contexts de React (ej: AuthContext.tsx)
+├── layouts/      # Componentes de estructura de página (ej: MainLayout.tsx)
+├── pages/        # Componentes de página, mapeados 1:1 con rutas (ej: LoginPage.tsx)
+├── router/       # Definición de rutas con React Router
+├── services/     # Lógica de negocio y llamadas a la API (camelCase, ej: tripService.ts)
+├── types/        # Interfaces y tipos de TypeScript (PascalCase)
+│                 #   DTOs del backend: sufijo DTO (ej: TripResponseDTO.ts)
+├── index.css     # Estilos globales y directivas de Tailwind
+└── main.tsx      # Punto de entrada de la aplicación
+```
 
-### 2.4. Testing
+### 2.4. Validaciones Automáticas (CI)
 
-Para la fase actual del MVP, la prioridad es el desarrollo de funcionalidades. Por lo tanto, **no se implementarán pruebas automatizadas**. Esta decisión se re-evaluará en futuras fases del proyecto.
+El proyecto cuenta con un pipeline de CI para el frontend que se ejecuta automáticamente en cada Pull Request y push. Las validaciones son:
+
+*   **TypeScript (`tsc`):** Verifica que no haya errores de tipado en el código.
+*   **Vite Build (`vite build`):** Asegura que el proyecto compile correctamente a producción.
+*   **ESLint (`eslint .`):** Comprueba que el código siga las convenciones definidas en `eslint.config.js`.
+
+Un PR cuyas validaciones fallen **no deberá ser mergeado** hasta que los errores sean corregidos.
