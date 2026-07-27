@@ -25,9 +25,9 @@ jobs:
       postgres:
         image: postgres:17-alpine
         env:
-          POSTGRES_USER: postgres
-          POSTGRES_PASSWORD: postgres123
-          POSTGRES_DB: travel_planner
+          POSTGRES_USER: ci_tester
+          POSTGRES_PASSWORD: ci_test_password
+          POSTGRES_DB: travel_planner_test
         options: >-
           --health-cmd pg_isready
           --health-interval 10s
@@ -47,9 +47,10 @@ jobs:
     - name: Build with Maven
       working-directory: ./backend
       env:
-        SPRING_DATASOURCE_URL: jdbc:postgresql://localhost:5433/travel_planner
-        SPRING_DATASOURCE_USERNAME: postgres
-        SPRING_DATASOURCE_PASSWORD: postgres123
+        DB_URL: jdbc:postgresql://localhost:5433/travel_planner_test
+        DB_USER: ci_tester
+        DB_PASSWORD: ci_test_password
+        CORS_ALLOWED_ORIGINS: http://localhost:5173
       run: mvn -B clean verify
 
     # Optional: Uploads the full dependency graph to GitHub to improve the quality of Dependabot alerts this repository can receive
