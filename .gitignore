@@ -30,3 +30,6 @@ yarn-error.log*
 *.class
 *.jar
 *.war
+
+# Personal
+ANOTACIONES.md
