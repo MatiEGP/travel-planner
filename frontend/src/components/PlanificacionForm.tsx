@@ -1,7 +1,7 @@
 import { useState, type FormEvent } from 'react';
 import { planificacionService } from '../services/planificacionService';
 import type { PlanificacionRequestDTO } from '../types/planificacion';
-import { useAuth } from '../context/AuthContext';
+import { useAuth } from '../context/useAuth';
 
 interface PlanificacionFormProps {
   onCreated: () => void;

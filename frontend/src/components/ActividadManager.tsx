@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { actividadService } from '../services/actividadService';
 import { destinoService } from '../services/destinoService';
@@ -18,7 +18,7 @@ export const ActividadManager = ({ destinoId }: ActividadManagerProps) => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
-  const fetchData = async () => {
+  const fetchData = useCallback(async () => {
     try {
       setLoading(true);
       const [destinoData, actividadesData] = await Promise.all([
@@ -33,11 +33,11 @@ export const ActividadManager = ({ destinoId }: ActividadManagerProps) => {
     } finally {
       setLoading(false);
     }
-  };
+  }, [destinoId]);
 
   useEffect(() => {
     fetchData();
-  }, [destinoId]);
+  }, [fetchData]);
 
   const handleDelete = async (id: number) => {
     if (!confirm('¿Estás seguro de eliminar esta actividad?')) return;

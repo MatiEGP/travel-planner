@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { usuarioService } from '../services/usuarioService';
 import type { UsuarioResponseDTO } from '../types/usuario';
 import { UsuarioForm } from './UsuarioForm';
@@ -9,7 +9,7 @@ export const UsuarioManager = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
-  const fetchUsuarios = async () => {
+  const fetchUsuarios = useCallback(async () => {
     try {
       setLoading(true);
       const data = await usuarioService.getAll();
@@ -20,11 +20,11 @@ export const UsuarioManager = () => {
     } finally {
       setLoading(false);
     }
-  };
+  }, []);
 
   useEffect(() => {
     fetchUsuarios();
-  }, []);
+  }, [fetchUsuarios]);
 
   return (
     <div className="space-y-8">

@@ -1,4 +1,4 @@
-import { useAuth } from '../context/AuthContext';
+import { useAuth } from '../context/useAuth';
 import { PlanificacionManager } from '../components/PlanificacionManager';
 // TODO: AUTH - Eliminar este import al implementar login
 import { UserPicker } from '../components/temp/UserPicker';

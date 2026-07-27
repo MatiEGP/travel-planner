@@ -1,9 +1,9 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { planificacionService } from '../services/planificacionService';
 import type { PlanificacionResponseDTO } from '../types/planificacion';
 import { PlanificacionForm } from './PlanificacionForm';
 import { PlanificacionCard } from './PlanificacionCard';
-import { useAuth } from '../context/AuthContext';
+import { useAuth } from '../context/useAuth';
 
 export const PlanificacionManager = () => {
   const { usuario } = useAuth();
@@ -11,7 +11,7 @@ export const PlanificacionManager = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
-  const fetchPlanificaciones = async () => {
+  const fetchPlanificaciones = useCallback(async () => {
     if (!usuario) return;
     try {
       setLoading(true);
@@ -23,11 +23,11 @@ export const PlanificacionManager = () => {
     } finally {
       setLoading(false);
     }
-  };
+  }, [usuario]);
 
   useEffect(() => {
     fetchPlanificaciones();
-  }, [usuario]);
+  }, [fetchPlanificaciones]);
 
   const handleDelete = async (id: number) => {
     if (!confirm('¿Estás seguro de eliminar esta planificación? Se eliminarán también sus destinos y actividades.')) return;
