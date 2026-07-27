@@ -33,3 +33,6 @@ yarn-error.log*
 
 # Personal
 ANOTACIONES.md
+
+### Entornos (Variables de entorno) ###
+.env
