@@ -11,8 +11,14 @@ name: Java CI with Maven
 on:
   push:
     branches: [ "main", "develop", "feature/*", "fix/*" ]
+    paths:
+      - "backend/**"
+      - ".github/workflows/maven.yml"
   pull_request:
     branches: [ "main", "develop" ]
+    paths:
+      - "backend/**"
+      - ".github/workflows/maven.yml"
 
 jobs:
   build:
