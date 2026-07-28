@@ -1,0 +1,14 @@
+# frontend/.gitignore
+# Solo reglas específicas del frontend. Las reglas globales (IDEs, OS,
+# variables de entorno) están gestionadas por el .gitignore raíz del proyecto.
+
+# Dependencias
+node_modules/
+
+# Build outputs
+dist/
+dist-ssr/
+
+# Logs
+logs/
+*.log
