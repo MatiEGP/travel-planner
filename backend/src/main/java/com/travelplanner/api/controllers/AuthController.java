@@ -12,6 +12,9 @@ import com.travelplanner.api.services.UsuarioService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.authentication.AnonymousAuthenticationToken;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -32,10 +35,16 @@ public class AuthController {
     /**
      * POST /api/auth/registro
      * Registra un nuevo usuario asignándole automáticamente el rol CLIENT.
+     * Rechaza la petición con 403 si el solicitante ya tiene sesión activa (JWT válido).
      */
     @PostMapping("/registro")
     public ResponseEntity<UsuarioResponseDTO> registro(@RequestBody RegistroRequestDTO request) {
-        // Obtener el rol CLIENT (debe existir previamente en la tabla roles)
+        // Bloquear registro si el usuario ya está autenticado.
+        // Evita que un usuario logueado cree nuevas cuentas manipulando la URL o la API.
+        if (estaAutenticado()) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
+        }
+
         Rol rolClient = rolRepository.findByNombre("CLIENT")
                 .orElseThrow(() -> new IllegalStateException("Rol CLIENT no encontrado. Verificar datos iniciales."));
 
@@ -58,6 +67,11 @@ public class AuthController {
      */
     @PostMapping("/login")
     public ResponseEntity<LoginResponseDTO> login(@RequestBody LoginRequestDTO request) {
+        // Bloquear login si el usuario ya está autenticado con un token válido.
+        if (estaAutenticado()) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
+        }
+
         Usuario usuario = usuarioService.autenticar(request.getEmail(), request.getPassword());
 
         String token = jwtService.generarToken(usuario);
@@ -84,5 +98,17 @@ public class AuthController {
         response.setEmail(usuario.getEmail());
         response.setFechaRegistro(usuario.getFechaRegistro());
         return response;
+    }
+
+    /**
+     * Verifica si la petición actual proviene de un usuario ya autenticado con JWT.
+     * Spring Security asigna un AnonymousAuthenticationToken cuando no hay token —
+     * por eso hay que excluir ese caso explícitamente.
+     */
+    private boolean estaAutenticado() {
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        return auth != null
+                && auth.isAuthenticated()
+                && !(auth instanceof AnonymousAuthenticationToken);
     }
 }

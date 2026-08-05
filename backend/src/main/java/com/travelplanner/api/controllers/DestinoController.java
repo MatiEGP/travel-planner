@@ -7,6 +7,7 @@ import com.travelplanner.api.services.DestinoService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -20,6 +21,7 @@ public class DestinoController {
     private final DestinoService destinoService;
 
     @PostMapping
+    @PreAuthorize("hasRole('CLIENT')")
     public ResponseEntity<DestinoResponseDTO> crearDestino(@RequestBody DestinoRequestDTO request) {
         // Mapeo de DTO a Entity
         Destino destinoNuevo = new Destino();
@@ -34,12 +36,14 @@ public class DestinoController {
     }
 
     @GetMapping("/{id}")
+    @PreAuthorize("hasRole('CLIENT')")
     public ResponseEntity<DestinoResponseDTO> obtenerDestino(@PathVariable Long id) {
         Destino destino = destinoService.buscarDestinoPorId(id);
         return ResponseEntity.ok(mapearAResponse(destino));
     }
 
     @GetMapping("/planificacion/{planificacionId}")
+    @PreAuthorize("hasRole('CLIENT')")
     public ResponseEntity<List<DestinoResponseDTO>> listarPorPlanificacion(@PathVariable Long planificacionId) {
         List<Destino> destinos = destinoService.obtenerDestinosPorPlanificacion(planificacionId);
 
@@ -51,6 +55,7 @@ public class DestinoController {
     }
 
     @DeleteMapping("/{id}")
+    @PreAuthorize("hasRole('CLIENT')")
     public ResponseEntity<Void> eliminarDestino(@PathVariable Long id) {
         destinoService.eliminarDestino(id);
         return ResponseEntity.noContent().build();
