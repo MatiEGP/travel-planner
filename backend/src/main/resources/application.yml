@@ -25,3 +25,10 @@ app:
     # Orígenes permitidos inyectados por variable de entorno.
     # En local suele ser http://localhost:5173, en producción la URL de Vercel/Frontend.
     allowed-origins: ${CORS_ALLOWED_ORIGINS}
+  jwt:
+    # Clave simétrica en Base64 (mínimo 256 bits = 32 bytes). Generar con:
+    #   openssl rand -base64 32
+    secret: ${JWT_SECRET}
+    # Tiempo de vida del token en milisegundos.
+    # Desarrollo: 86400000 (24h) | Producción: 3600000 (1h)
+    expiration-ms: ${JWT_EXPIRATION_MS:86400000}
