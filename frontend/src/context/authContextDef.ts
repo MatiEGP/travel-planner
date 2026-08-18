@@ -1,12 +1,15 @@
 import { createContext } from 'react';
-import type { UsuarioResponseDTO } from '../types/usuario';
+import type { LoginRequestDTO, RegistroRequestDTO, UsuarioResponseDTO } from '../types/usuario';
 
-// TODO: AUTH - Este es el contrato que se mantiene al implementar login real.
-// Solo cambiará la implementación interna del Provider.
 export interface AuthContextType {
+  user: UsuarioResponseDTO | null;
   usuario: UsuarioResponseDTO | null;
-  setUsuario: (usuario: UsuarioResponseDTO | null) => void;
   isAuthenticated: boolean;
+  isLoading: boolean;
+  login: (credentials: LoginRequestDTO) => Promise<void>;
+  register: (data: RegistroRequestDTO) => Promise<void>;
+  logout: () => Promise<void>;
+  hasRole: (role: string) => boolean;
 }
 
 export const AuthContext = createContext<AuthContextType | undefined>(undefined);
