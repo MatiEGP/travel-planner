@@ -110,7 +110,7 @@ travel-planner/
 │       ├── router/                # Configuración de React Router
 │       ├── services/              # Capa de consumo API
 │       └── types/                 # Interfaces de TypeScript
-├── docker-compose.yml             # Orquestación de producción (build desde Dockerfiles)
+├── docker-compose.prod.yml        # Orquestación de producción (build desde Dockerfiles)
 ├── docker-compose.dev.yml         # Orquestación de desarrollo (hot-reload, sin compilar)
 ├── .env.example                   # Plantilla de variables de entorno (copiar a .env)
 └── DEVELOPMENT_GUIDELINES.md      # Guías de SCM, branching strategy y Conventional Commits
@@ -195,10 +195,10 @@ docker compose -f docker-compose.dev.yml up
 
 #### 🚢 Modo Producción
 
-Utiliza `docker-compose.yml`. Construye las imágenes optimizadas desde los `Dockerfile`s (multi-stage build).
+Utiliza `docker-compose.prod.yml`. Construye las imágenes optimizadas desde los `Dockerfile`s (multi-stage build).
 
 ```bash
-docker compose up --build
+docker compose -f docker-compose.prod.yml up --build
 ```
 
 | Servicio | URL |
@@ -207,7 +207,7 @@ docker compose up --build
 | Backend (JAR embebido) | `http://localhost:8080` |
 | PostgreSQL | `localhost:5433` |
 
-> Para detener y eliminar los contenedores: `docker compose down`. Para eliminar también los volúmenes (base de datos): `docker compose down -v`.
+> Para detener los contenedores: `docker compose -f docker-compose.prod.yml down` (o `-f docker-compose.dev.yml down`). Para eliminar también los volúmenes de base de datos: agregar `-v`.
 
 ---
 
