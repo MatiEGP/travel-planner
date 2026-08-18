@@ -35,8 +35,15 @@ export const UsuarioList = ({ usuarios, loading, error }: UsuarioListProps) => {
             <div className="w-10 h-10 bg-teal-100 rounded-full flex items-center justify-center flex-shrink-0">
               <span className="text-teal-700 font-bold text-sm">{user.nombre.charAt(0).toUpperCase()}</span>
             </div>
-            <div className="min-w-0">
-              <h4 className="font-semibold text-slate-800 truncate">{user.nombre}</h4>
+            <div className="min-w-0 flex-1">
+              <div className="flex items-center justify-between gap-2">
+                <h4 className="font-semibold text-slate-800 truncate">{user.nombre}</h4>
+                {user.roles && user.roles.length > 0 && (
+                  <span className="text-[10px] uppercase font-bold tracking-wider px-2 py-0.5 rounded-full bg-teal-50 text-teal-700 border border-teal-200">
+                    {user.roles.join(', ')}
+                  </span>
+                )}
+              </div>
               <p className="text-sm text-slate-500 truncate">{user.email}</p>
               <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-sky-100 text-sky-800 mt-2">
                 Registrado: {new Date(user.fechaRegistro).toLocaleDateString()}
