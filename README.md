@@ -42,13 +42,13 @@ Este proyecto nace de la **readaptación y evolución de un trabajo práctico un
 
 ## ✨ Características Principales
 
-- 👥 **Gestión de Usuarios**: Registro y administración de usuarios en la plataforma.
+- 🔐 **Autenticación & Seguridad JWT**: Sistema integral de autenticación con Spring Security y tokens JWT (`Bearer`), control de acceso basado en roles (`ADMIN` / `CLIENT`) y persistencia segura de contraseñas con BCrypt.
+- 👥 **Gestión de Usuarios**: Registro, inicio de sesión y administración de usuarios en la plataforma.
 - 🧳 **Planificación de Viajes**: Creación de itinerarios con título, descripción y rango de fechas (inicio / fin).
 - 📍 **Gestión de Destinos**: Asociación jerárquica de múltiples destinos (país, ciudad, notas) a cada planificación.
 - ⏰ **Itinerario de Actividades**: Programación detallada de actividades con fecha, hora exacta y anotaciones específicas por destino.
 - 🎨 **UI/UX Moderna & Responsive**: Diseñada con una paleta de colores de viaje (turquesa, azul y verde), cards dinámicas, estados de carga y manejo centralizado de errores.
-- 🔄 **AuthContext Temporal**: Sistema desacoplado de gestión de sesión mock listo para migrar a autenticación JWT sin modificar los componentes consumidores.
-- 📄 **OpenAPI / Swagger UI**: Documentación interactiva de la API disponible automáticamente en desarrollo vía SpringDoc.
+- 📄 **OpenAPI / Swagger UI**: Documentación interactiva de la API disponible automáticamente en desarrollo vía SpringDoc con soporte para autorización Bearer JWT.
 
 ---
 
@@ -56,11 +56,12 @@ Este proyecto nace de la **readaptación y evolución de un trabajo práctico un
 
 ### **Backend**
 - **Lenguaje**: Java 17
-- **Framework**: Spring Boot 4.1 (Spring Web MVC, Spring Data JPA)
+- **Framework**: Spring Boot 4.1 (Spring Web MVC, Spring Data JPA, Spring Security)
+- **Seguridad**: JWT (JSON Web Tokens via JJWT), BCrypt Password Encoder
 - **Persistencia**: Hibernate / **PostgreSQL 17** (vía Docker en desarrollo y producción)
 - **Documentación API**: SpringDoc OpenAPI 3 (`springdoc-openapi-starter-webmvc-ui`)
 - **Herramientas**: Lombok, Maven Wrapper (`mvnw`)
-- **Arquitectura**: Controlador - Servicio - Repositorio con mapeo estricto de DTOs (`RequestDTO` / `ResponseDTO`)
+- **Arquitectura**: Controlador - Servicio - Repositorio con mapeo estricto de DTOs (`RequestDTO` / `ResponseDTO`) y filtros de seguridad por token
 
 ### **Frontend**
 - **Biblioteca UI**: React 19 + TypeScript
@@ -88,9 +89,12 @@ travel-planner/
 ├── backend/                       # Proyecto Spring Boot
 │   ├── Dockerfile                 # Multi-stage build: JDK (build) → JRE (run)
 │   ├── pom.xml
+│   ├── API_DOCUMENTATION.md       # Especificación técnica detallada de endpoints REST
 │   └── src/main/java/com/travelplanner/api/
-│       ├── controllers/           # Endpoints REST (Usuario, Planificacion, Destino, Actividad)
+│       ├── config/                # Seguridad (SecurityConfig, JwtAuthFilter, CorsConfig)
+│       ├── controllers/           # Endpoints REST (Auth, Usuario, Planificacion, Destino, Actividad)
 │       ├── dtos/                  # Data Transfer Objects (Request / Response)
+│       ├── exceptions/            # Manejo centralizado de excepciones
 │       ├── models/                # Entidades JPA
 │       ├── repositories/          # Interfaces JpaRepository
 │       └── services/              # Lógica de negocio
@@ -100,7 +104,7 @@ travel-planner/
 │   └── src/
 │       ├── api/                   # Cliente Axios & interceptores
 │       ├── components/            # Componentes modulares (Forms, Cards, Managers)
-│       ├── context/               # AuthContext (Estado de sesión)
+│       ├── context/               # AuthContext (Estado de sesión y JWT)
 │       ├── layouts/               # MainLayout con Header & Footer
 │       ├── pages/                 # Home, Admin, Planificaciones, Destinos, Actividades
 │       ├── router/                # Configuración de React Router
@@ -109,7 +113,6 @@ travel-planner/
 ├── docker-compose.yml             # Orquestación de producción (build desde Dockerfiles)
 ├── docker-compose.dev.yml         # Orquestación de desarrollo (hot-reload, sin compilar)
 ├── .env.example                   # Plantilla de variables de entorno (copiar a .env)
-├── API_DOCUMENTATION.md           # Especificación técnica de endpoints REST
 └── DEVELOPMENT_GUIDELINES.md      # Guías de SCM, branching strategy y Conventional Commits
 ```
 
@@ -117,24 +120,25 @@ travel-planner/
 
 ## 🔗 Documentación de la API
 
-La aplicación expone una API RESTful completamente documentada. Puedes consultar la especificación detallada con ejemplos de payload y respuestas en [API_DOCUMENTATION.md](./API_DOCUMENTATION.md).
+La aplicación expone una API RESTful completamente documentada. Puedes consultar la especificación detallada con ejemplos de payload y respuestas en [backend/API_DOCUMENTATION.md](./backend/API_DOCUMENTATION.md).
 
 Adicionalmente, en entornos de desarrollo, **SpringDoc OpenAPI** genera automáticamente una interfaz interactiva **Swagger UI** accesible en:
 
-> `http://localhost:8080/swagger-ui/index.html`
+> `http://localhost:8080/swagger-ui/index.html` *(incluye botón **Authorize** para autenticación Bearer)*
 
 ### Resumen de Endpoints Principales
 
-| Recurso | Método | Ruta | Descripción |
-| :--- | :--- | :--- | :--- |
-| **Usuarios** | `POST` | `/api/usuarios` | Registrar nuevo usuario |
-| **Usuarios** | `GET` | `/api/usuarios` | Listar todos los usuarios |
-| **Planificaciones** | `POST` | `/api/planificaciones` | Crear nuevo viaje para un usuario |
-| **Planificaciones** | `GET` | `/api/planificaciones/usuario/{id}` | Listar viajes por usuario |
-| **Destinos** | `POST` | `/api/destinos` | Agregar destino a un viaje |
-| **Destinos** | `GET` | `/api/destinos/planificacion/{id}` | Listar destinos por viaje |
-| **Actividades** | `POST` | `/api/actividades` | Programar actividad en un destino |
-| **Actividades** | `GET` | `/api/actividades/destino/{id}` | Listar actividades cronológicas |
+| Recurso | Método | Ruta | Acceso / Rol | Descripción |
+| :--- | :--- | :--- | :--- | :--- |
+| **Autenticación** | `POST` | `/api/auth/registro` | Público | Registrar nuevo usuario (`CLIENT`) |
+| **Autenticación** | `POST` | `/api/auth/login` | Público | Iniciar sesión y obtener token JWT |
+| **Usuarios** | `GET` | `/api/usuarios` | `ADMIN` | Listar todos los usuarios del sistema |
+| **Planificaciones**| `POST` | `/api/planificaciones` | `CLIENT` / `ADMIN` | Crear nuevo viaje para un usuario |
+| **Planificaciones**| `GET` | `/api/planificaciones/usuario/{id}` | `CLIENT` / `ADMIN` | Listar viajes por usuario |
+| **Destinos** | `POST` | `/api/destinos` | `CLIENT` / `ADMIN` | Agregar destino a un viaje |
+| **Destinos** | `GET` | `/api/destinos/planificacion/{id}` | `CLIENT` / `ADMIN` | Listar destinos por viaje |
+| **Actividades** | `POST` | `/api/actividades` | `CLIENT` / `ADMIN` | Programar actividad en un destino |
+| **Actividades** | `GET` | `/api/actividades/destino/{id}` | `CLIENT` / `ADMIN` | Listar actividades cronológicas |
 
 ---
 
@@ -238,13 +242,17 @@ El proyecto utiliza un archivo `.env` en la raíz del monorepo que Docker Compos
 cp .env.example .env
 ```
 
-| Variable | Descripción | Ejemplo |
+| Variable | Descripción | Ejemplo / Default |
 | :--- | :--- | :--- |
 | `POSTGRES_DB` | Nombre de la base de datos | `travel_planner_db` |
 | `POSTGRES_USER` | Usuario de PostgreSQL | `tp_user` |
 | `POSTGRES_PASSWORD` | Contraseña de PostgreSQL | `una_contrasena_segura` |
 | `CORS_ALLOWED_ORIGINS` | Orígenes permitidos para CORS en el backend | `http://localhost:5173` |
 | `VITE_BACKEND_API_URL` | URL base de la API consumida por el frontend | `http://localhost:8080` |
+| `JWT_SECRET` | Clave simétrica HMAC-SHA256 (mín. 256 bits en Base64) | `base64_encoded_secret_key` |
+| `JWT_EXPIRATION_MS` | Tiempo de vida del token en ms (opcional) | `86400000` (24h) |
+| `JWT_COOKIE_SECURE` | Flag `Secure` para cookies HTTPS (opcional) | `false` (dev) / `true` (prod) |
+| `SWAGGER_ENABLED` | Habilita o deshabilita Swagger UI / OpenAPI docs (opcional) | `true` (dev) / `false` (prod) |
 
 > ⚠️ **Nunca subas el archivo `.env` al repositorio.** Está incluido en el `.gitignore`. El archivo `.env.example` es la plantilla pública sin valores sensibles.
 
