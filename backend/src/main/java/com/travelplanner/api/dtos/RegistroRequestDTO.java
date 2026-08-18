@@ -1,0 +1,10 @@
+package com.travelplanner.api.dtos;
+
+import lombok.Data;
+
+@Data
+public class RegistroRequestDTO {
+    private String nombre;
+    private String email;
+    private String password;
+}

@@ -1,0 +1,88 @@
+schema: spec-driven
+store_mode: hybrid
+
+context: |
+  Project: travel-planner (monorepo)
+  Backend: Java 17, Spring Boot 4.1, Maven, JPA/Hibernate, PostgreSQL, Spring Security 6 + JWT (jjwt 0.12.6, HttpOnly Cookie transport), Lombok, springdoc-openapi 3.0.3
+  Frontend: React 19 + TypeScript 6, Vite 8, Tailwind CSS 4, React Router 7, Axios (withCredentials: true)
+  Node (CI): Node.js 22 (LTS)
+  Architecture: Layered MVC
+    Backend package structure: config / controllers / dtos / exceptions / models / repositories / services
+    Backend domain entities: Actividad, Destino, Planificacion, Rol, Usuario
+    Backend controllers: ActividadController, AuthController, DestinoController, PlanificacionController, UsuarioController
+    Backend services: ActividadService, DestinoService, JwtService, PlanificacionService, UsuarioService
+    Frontend src structure: api / assets / components / context / layouts / pages / router / services / types
+    Frontend pages: ActividadesPage, AdminPage, DestinosPage, HomePage, LoginPage, PlanificacionesPage, RegisterPage
+    Frontend auth context: AuthContext.tsx + authContextDef.ts + useAuth.ts (session hydration on mount via /api/auth/me)
+  Testing: Backend — JUnit 5 + Spring Boot Test + Mockito (JwtServiceTest, AuthControllerTest, ApiApplicationTests).
+           Frontend — ESLint + tsc typecheck build
+  CI: GitHub Actions — maven.yml (mvn -B clean verify + Postgres 17-alpine service container) / frontend-ci.yml (ESLint + tsc + Vite build, Node 22)
+  Style: Conventional Commits (feat/fix/docs/style/refactor/chore/ci), Feature Branch Workflow (feature/scope-desc, fix/scope-desc), PRs only to develop
+
+rules:
+  proposal:
+    - Include rollback plan for risky changes
+    - Scope changes to backend, frontend, or both — specify explicitly
+  specs:
+    - Use Given/When/Then for scenarios
+    - Use RFC 2119 keywords (MUST, SHALL, SHOULD, MAY)
+  design:
+    - Include sequence diagrams for complex flows
+    - Document architecture decisions with rationale
+    - Follow layered MVC conventions (controllers → services → repositories)
+  tasks:
+    - Group by phase, use hierarchical numbering
+    - Separate backend and frontend task groups
+    - Keep tasks completable in one session
+  apply:
+    guidelines:
+      - Follow existing code patterns (Lombok, DTOs, layered arch)
+      - Frontend: Tailwind utility classes, no inline styles, React hooks for state
+      - No external state management libraries (no Redux, Zustand) — use React Context
+      - New frontend types: use DTO suffix for backend mirrors (e.g. DestinoResponseDTO.ts)
+    tdd: true
+    test_command: "cd backend && mvnw -B clean verify"
+  verify:
+    test_command: "cd backend && mvnw -B clean verify"
+    build_command: "cd frontend && npm run build"
+    lint_command: "cd frontend && npm run lint"
+    coverage_threshold: 0
+  archive:
+    - Warn before merging destructive deltas
+
+testing:
+  strict_tdd: false
+  backend:
+    runner: "Maven Surefire / Failsafe"
+    command: "cd backend && mvnw -B clean verify"
+    framework: "JUnit 5 + Spring Boot Test"
+    layers:
+      unit: true       # JwtServiceTest, AuthControllerTest
+      integration: true  # ApiApplicationTests uses @SpringBootTest against real Postgres in CI
+      e2e: false
+    coverage:
+      available: false
+      command: null
+    quality:
+      linter: null
+      type_checker: null
+      formatter: null
+    notes: "Only ApiApplicationTests.java (context-load smoke). spring-boot-starter-data-jpa-test and spring-boot-starter-webmvc-test declared in pom.xml but no domain slice tests written yet."
+  frontend:
+    runner: null
+    command: null
+    framework: null
+    layers:
+      unit: false
+      integration: false
+      e2e: false
+    coverage:
+      available: false
+      command: null
+    quality:
+      linter: "ESLint 10 + typescript-eslint 8"
+      linter_command: "cd frontend && npm run lint"
+      type_checker: "tsc (TypeScript 6)"
+      type_checker_command: "cd frontend && npm run build"
+      formatter: null
+    notes: "No test runner installed. Quality gates are lint + type-check only, enforced via frontend-ci.yml."

@@ -4,14 +4,28 @@ Esta documentación detalla los endpoints expuestos por el backend de la aplicac
 
 ---
 
-## 1. Usuarios (`/api/usuarios`)
+## Autenticación y Seguridad (JWT)
 
-Endpoints para la gestión de usuarios. Actualmente permite crear usuarios libremente y listarlos, útil para propósitos del MVP y desarrollo del frontend.
+Todas las rutas de la API, a excepción de las de autenticación (`/api/auth/**`), están protegidas y requieren un token JWT válido.
+Se debe enviar en los headers de cada petición HTTP:
+`Authorization: Bearer <tu_token_jwt>`
+
+Existen dos roles en el sistema:
+- `ADMIN`: Acceso a operaciones internas (ej. listar todos los usuarios).
+- `CLIENT`: Acceso a las operaciones de la app (crear planificaciones, destinos, actividades).
+
+Para ver y probar la API de forma interactiva, el entorno de desarrollo expone **Swagger UI** en `http://localhost:8080/swagger-ui.html`. Posee un botón "Authorize" para inyectar el token JWT. En producción, Swagger puede desactivarse seteando la variable de entorno `SWAGGER_ENABLED=false`.
+
+---
+
+## 1. Autenticación (`/api/auth`)
+
+Endpoints públicos para registro e inicio de sesión. **No requieren token.**
 
 ### 1.1 Registrar Usuario
-- **Ruta:** `POST /api/usuarios`
-- **Descripción:** Crea un nuevo usuario en la base de datos.
-- **Request Body (`UsuarioRequestDTO`):**
+- **Ruta:** `POST /api/auth/registro`
+- **Descripción:** Crea un nuevo usuario y le asigna el rol `CLIENT`. Si el request se envía con un token activo (usuario ya logueado), devolverá un error `403 Forbidden`.
+- **Request Body (`RegistroRequestDTO`):**
   ```json
   {
     "nombre": "String",
@@ -25,26 +39,54 @@ Endpoints para la gestión de usuarios. Actualmente permite crear usuarios libre
     "id": 1,
     "nombre": "String",
     "email": "String",
-    "fechaRegistro": "2023-10-27T10:00:00" // Formato LocalDateTime
+    "fechaRegistro": "2023-10-27T10:00:00"
   }
   ```
 
-### 1.2 Obtener Usuario por ID
+### 1.2 Iniciar Sesión (Login)
+- **Ruta:** `POST /api/auth/login`
+- **Descripción:** Autentica a un usuario y devuelve el token JWT firmado.
+- **Request Body (`LoginRequestDTO`):**
+  ```json
+  {
+    "email": "String",
+    "password": "String"
+  }
+  ```
+- **Response `200 OK` (`LoginResponseDTO`):**
+  ```json
+  {
+    "token": "eyJhbG...",
+    "email": "String",
+    "nombre": "String",
+    "roles": [
+      "CLIENT"
+    ]
+  }
+  ```
+
+---
+
+## 2. Usuarios (`/api/usuarios`)
+
+Operaciones CRUD internas. **Requieren rol `ADMIN`.**
+
+### 2.1 Obtener Usuario por ID
 - **Ruta:** `GET /api/usuarios/{id}`
 - **Parámetros de Ruta:** `id` (Long) - ID del usuario.
 - **Descripción:** Retorna los datos de un usuario específico.
 - **Response `200 OK` (`UsuarioResponseDTO`):** (Ver estructura arriba).
 
-### 1.3 Listar Todos los Usuarios
+### 2.2 Listar Todos los Usuarios
 - **Ruta:** `GET /api/usuarios`
-- **Descripción:** Obtiene un listado de todos los usuarios registrados.
+- **Descripción:** Obtiene un listado de todos los usuarios registrados en el sistema.
 - **Response `200 OK`:** Arreglo de objetos `UsuarioResponseDTO`.
 
 ---
 
-## 2. Planificaciones (`/api/planificaciones`)
+## 3. Planificaciones (`/api/planificaciones`)
 
-Endpoints para gestionar los viajes/planificaciones de los usuarios.
+Endpoints para gestionar los viajes/planificaciones de los usuarios. **Requieren rol `CLIENT`.**
 
 ### 2.1 Crear Planificación
 - **Ruta:** `POST /api/planificaciones`
@@ -90,9 +132,9 @@ Endpoints para gestionar los viajes/planificaciones de los usuarios.
 
 ---
 
-## 3. Destinos (`/api/destinos`)
+## 4. Destinos (`/api/destinos`)
 
-Endpoints para gestionar los destinos correspondientes a una planificación de viaje.
+Endpoints para gestionar los destinos correspondientes a una planificación de viaje. **Requieren rol `CLIENT`.**
 
 ### 3.1 Crear Destino
 - **Ruta:** `POST /api/destinos`
@@ -138,9 +180,9 @@ Endpoints para gestionar los destinos correspondientes a una planificación de v
 
 ---
 
-## 4. Actividades (`/api/actividades`)
+## 5. Actividades (`/api/actividades`)
 
-Endpoints para organizar las actividades de un destino en particular.
+Endpoints para organizar las actividades de un destino en particular. **Requieren rol `CLIENT`.**
 
 ### 4.1 Crear Actividad
 - **Ruta:** `POST /api/actividades`

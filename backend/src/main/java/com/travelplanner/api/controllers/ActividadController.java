@@ -7,6 +7,7 @@ import com.travelplanner.api.services.ActividadService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -20,6 +21,7 @@ public class ActividadController {
     private final ActividadService actividadService;
 
     @PostMapping
+    @PreAuthorize("hasRole('CLIENT')")
     public ResponseEntity<ActividadResponseDTO> crearActividad(@RequestBody ActividadRequestDTO request) {
         // 1. Mapeo manual de DTO a Entidad
         Actividad nuevaActividad = new Actividad();
@@ -35,12 +37,14 @@ public class ActividadController {
     }
 
     @GetMapping("/{id}")
+    @PreAuthorize("hasRole('CLIENT')")
     public ResponseEntity<ActividadResponseDTO> obtenerActividad(@PathVariable Long id) {
         Actividad actividad = actividadService.buscarPorId(id);
         return ResponseEntity.ok(mapearAResponse(actividad));
     }
 
     @GetMapping("/destino/{destinoId}")
+    @PreAuthorize("hasRole('CLIENT')")
     public ResponseEntity<List<ActividadResponseDTO>> listarPorDestino(@PathVariable Long destinoId) {
         // El servicio ya devuelve la lista ordenada por fechaHora ascendente
         List<Actividad> actividades = actividadService.obtenerActividadesPorDestino(destinoId);
@@ -53,6 +57,7 @@ public class ActividadController {
     }
 
     @DeleteMapping("/{id}")
+    @PreAuthorize("hasRole('CLIENT')")
     public ResponseEntity<Void> eliminarActividad(@PathVariable Long id) {
         actividadService.eliminarActividad(id);
         return ResponseEntity.noContent().build();

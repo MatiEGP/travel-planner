@@ -1,6 +1,7 @@
 # =====================
 # IDEs y Editores
 # =====================
+.atl/
 .idea/
 .vscode/
 *.suo
