@@ -12,7 +12,7 @@ spring:
   jpa:
     hibernate:
       ddl-auto: "update"
-    show-sql: true
+    show-sql: ${SHOW_SQL:true}
     properties:
       hibernate:
         format_sql: true
@@ -39,4 +39,4 @@ app:
     # Desarrollo: 86400000 (24h) | Producción: 3600000 (1h)
     expiration-ms: ${JWT_EXPIRATION_MS:86400000}
     # Flag Secure para cookies HttpOnly (false en desarrollo local HTTP, true en producción HTTPS)
-    cookie-secure: ${JWT_COOKIE_SECURE:false}
+    cookie-secure: ${JWT_COOKIE_SECURE:false}
