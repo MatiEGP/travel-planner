@@ -1,6 +1,7 @@
 package com.travelplanner.api.controllers;
 
 import com.travelplanner.api.dtos.UsuarioResponseDTO;
+import com.travelplanner.api.models.Rol;
 import com.travelplanner.api.models.Usuario;
 import com.travelplanner.api.services.UsuarioService;
 import lombok.RequiredArgsConstructor;
@@ -41,11 +42,16 @@ public class UsuarioController {
 
     // Helper para armar el response de Usuario
     private UsuarioResponseDTO mapearAResponse(Usuario usuario) {
-        UsuarioResponseDTO response = new UsuarioResponseDTO();
-        response.setId(usuario.getId());
-        response.setNombre(usuario.getNombre());
-        response.setEmail(usuario.getEmail());
-        response.setFechaRegistro(usuario.getFechaRegistro());
-        return response;
+        List<String> roles = (usuario.getRoles() != null)
+                ? usuario.getRoles().stream().map(Rol::getNombre).toList()
+                : List.of();
+
+        return UsuarioResponseDTO.builder()
+                .id(usuario.getId())
+                .nombre(usuario.getNombre())
+                .email(usuario.getEmail())
+                .fechaRegistro(usuario.getFechaRegistro())
+                .roles(roles)
+                .build();
     }
 }

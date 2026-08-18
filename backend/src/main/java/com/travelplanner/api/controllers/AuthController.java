@@ -1,7 +1,6 @@
 package com.travelplanner.api.controllers;
 
 import com.travelplanner.api.dtos.LoginRequestDTO;
-import com.travelplanner.api.dtos.LoginResponseDTO;
 import com.travelplanner.api.dtos.RegistroRequestDTO;
 import com.travelplanner.api.dtos.UsuarioResponseDTO;
 import com.travelplanner.api.models.Rol;
@@ -10,7 +9,10 @@ import com.travelplanner.api.repositories.RolRepository;
 import com.travelplanner.api.services.JwtService;
 import com.travelplanner.api.services.UsuarioService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseCookie;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AnonymousAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -20,8 +22,8 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 /**
- * Endpoints públicos de autenticación.
- * No requieren token JWT — están en la lista blanca de SecurityConfig.
+ * Endpoints de autenticación (Login, Registro, Logout, Me).
+ * Utiliza transporte JWT seguro mediante cookies HttpOnly.
  */
 @RestController
 @RequestMapping("/api/auth")
@@ -32,15 +34,15 @@ public class AuthController {
     private final JwtService jwtService;
     private final RolRepository rolRepository;
 
+    @Value("${app.jwt.cookie-secure:false}")
+    private boolean cookieSecure;
+
     /**
      * POST /api/auth/registro
-     * Registra un nuevo usuario asignándole automáticamente el rol CLIENT.
-     * Rechaza la petición con 403 si el solicitante ya tiene sesión activa (JWT válido).
+     * Registra un nuevo usuario con rol CLIENT, genera JWT y setea cookie HttpOnly.
      */
     @PostMapping("/registro")
     public ResponseEntity<UsuarioResponseDTO> registro(@RequestBody RegistroRequestDTO request) {
-        // Bloquear registro si el usuario ya está autenticado.
-        // Evita que un usuario logueado cree nuevas cuentas manipulando la URL o la API.
         if (estaAutenticado()) {
             return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
         }
@@ -57,54 +59,96 @@ public class AuthController {
 
         Usuario usuarioGuardado = usuarioService.registrarUsuario(nuevoUsuario);
 
+        String token = jwtService.generarToken(usuarioGuardado);
+        ResponseCookie cookie = crearCookieJwt(token, 86400);
+
         UsuarioResponseDTO response = mapearAResponse(usuarioGuardado);
-        return ResponseEntity.status(HttpStatus.CREATED).body(response);
+        return ResponseEntity.status(HttpStatus.CREATED)
+                .header(HttpHeaders.SET_COOKIE, cookie.toString())
+                .body(response);
     }
 
     /**
      * POST /api/auth/login
-     * Autentica un usuario y devuelve un JWT firmado con clave simétrica (HS256).
+     * Autentica un usuario, genera JWT y setea cookie HttpOnly.
      */
     @PostMapping("/login")
-    public ResponseEntity<LoginResponseDTO> login(@RequestBody LoginRequestDTO request) {
-        // Bloquear login si el usuario ya está autenticado con un token válido.
+    public ResponseEntity<UsuarioResponseDTO> login(@RequestBody LoginRequestDTO request) {
         if (estaAutenticado()) {
             return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
         }
 
         Usuario usuario = usuarioService.autenticar(request.getEmail(), request.getPassword());
-
         String token = jwtService.generarToken(usuario);
+        ResponseCookie cookie = crearCookieJwt(token, 86400);
 
-        List<String> roles = usuario.getRoles().stream()
-                .map(Rol::getNombre)
-                .toList();
-
-        LoginResponseDTO response = LoginResponseDTO.builder()
-                .token(token)
-                .email(usuario.getEmail())
-                .nombre(usuario.getNombre())
-                .roles(roles)
-                .build();
-
-        return ResponseEntity.ok(response);
-    }
-
-    // Helper: construye el UsuarioResponseDTO desde la entidad
-    private UsuarioResponseDTO mapearAResponse(Usuario usuario) {
-        UsuarioResponseDTO response = new UsuarioResponseDTO();
-        response.setId(usuario.getId());
-        response.setNombre(usuario.getNombre());
-        response.setEmail(usuario.getEmail());
-        response.setFechaRegistro(usuario.getFechaRegistro());
-        return response;
+        UsuarioResponseDTO response = mapearAResponse(usuario);
+        return ResponseEntity.ok()
+                .header(HttpHeaders.SET_COOKIE, cookie.toString())
+                .body(response);
     }
 
     /**
-     * Verifica si la petición actual proviene de un usuario ya autenticado con JWT.
-     * Spring Security asigna un AnonymousAuthenticationToken cuando no hay token —
-     * por eso hay que excluir ese caso explícitamente.
+     * POST /api/auth/logout
+     * Limpia la cookie HttpOnly "token".
      */
+    @PostMapping("/logout")
+    public ResponseEntity<Void> logout() {
+        ResponseCookie cookie = ResponseCookie.from("token", "")
+                .httpOnly(true)
+                .secure(cookieSecure)
+                .path("/")
+                .maxAge(0)
+                .sameSite("Strict")
+                .build();
+
+        return ResponseEntity.ok()
+                .header(HttpHeaders.SET_COOKIE, cookie.toString())
+                .build();
+    }
+
+    /**
+     * GET /api/auth/me
+     * Retorna el perfil del usuario autenticado actual con sus roles.
+     */
+    @GetMapping("/me")
+    public ResponseEntity<UsuarioResponseDTO> getMe() {
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        if (auth == null || !auth.isAuthenticated() || auth instanceof AnonymousAuthenticationToken) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+        }
+
+        String email = auth.getName();
+        Usuario usuario = usuarioService.buscarPorEmail(email)
+                .orElseThrow(() -> new IllegalArgumentException("Usuario no encontrado"));
+
+        return ResponseEntity.ok(mapearAResponse(usuario));
+    }
+
+    private ResponseCookie crearCookieJwt(String token, long maxAgeSegundos) {
+        return ResponseCookie.from("token", token)
+                .httpOnly(true)
+                .secure(cookieSecure)
+                .path("/")
+                .maxAge(maxAgeSegundos)
+                .sameSite("Strict")
+                .build();
+    }
+
+    private UsuarioResponseDTO mapearAResponse(Usuario usuario) {
+        List<String> roles = (usuario.getRoles() != null)
+                ? usuario.getRoles().stream().map(Rol::getNombre).toList()
+                : List.of();
+
+        return UsuarioResponseDTO.builder()
+                .id(usuario.getId())
+                .nombre(usuario.getNombre())
+                .email(usuario.getEmail())
+                .fechaRegistro(usuario.getFechaRegistro())
+                .roles(roles)
+                .build();
+    }
+
     private boolean estaAutenticado() {
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
         return auth != null

@@ -3,6 +3,7 @@ package com.travelplanner.api.config;
 import com.travelplanner.api.services.JwtService;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
+import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
@@ -19,16 +20,9 @@ import java.util.List;
 
 /**
  * Filtro JWT que se ejecuta una vez por request.
- * Extrae el token del header Authorization, lo valida y, si es correcto,
+ * Extrae el token de la cookie "token", lo valida y, si es correcto,
  * establece la autenticación en el SecurityContextHolder para que
  * Spring Security reconozca al usuario en los endpoints protegidos.
- *
- * Flujo:
- *   1. Leer "Authorization: Bearer <token>"
- *   2. Validar token con JwtService (firma + expiración)
- *   3. Extraer email y roles del payload
- *   4. Convertir roles a GrantedAuthority con prefijo "ROLE_"
- *   5. Cargar el contexto de seguridad
  */
 @Component
 @RequiredArgsConstructor
@@ -44,18 +38,23 @@ public class JwtAuthFilter extends OncePerRequestFilter {
             @NonNull FilterChain filterChain
     ) throws ServletException, IOException {
 
-        String authHeader = request.getHeader("Authorization");
+        String token = null;
+        Cookie[] cookies = request.getCookies();
+        if (cookies != null) {
+            for (Cookie cookie : cookies) {
+                if ("token".equals(cookie.getName())) {
+                    token = cookie.getValue();
+                    break;
+                }
+            }
+        }
 
-        // Si no hay header o no empieza con "Bearer ", continuar sin autenticar
-        if (authHeader == null || !authHeader.startsWith("Bearer ")) {
+        if (token == null || token.isBlank()) {
             filterChain.doFilter(request, response);
             return;
         }
 
-        String token = authHeader.substring(7);
-
         if (!jwtService.validarToken(token)) {
-            // Token inválido o expirado — continuar sin autenticar (devolverá 401)
             filterChain.doFilter(request, response);
             return;
         }
@@ -63,17 +62,17 @@ public class JwtAuthFilter extends OncePerRequestFilter {
         String email = jwtService.extraerEmail(token);
         List<String> roles = jwtService.extraerRoles(token);
 
-        // Convertir nombres de roles a GrantedAuthority con prefijo "ROLE_"
-        // Ej: "ADMIN" → SimpleGrantedAuthority("ROLE_ADMIN")
-        List<SimpleGrantedAuthority> authorities = roles.stream()
-                .map(role -> new SimpleGrantedAuthority("ROLE_" + role))
-                .toList();
+        List<SimpleGrantedAuthority> authorities = (roles != null)
+                ? roles.stream()
+                        .map(role -> role.startsWith("ROLE_") ? new SimpleGrantedAuthority(role) : new SimpleGrantedAuthority("ROLE_" + role))
+                        .toList()
+                : List.of();
 
         UsernamePasswordAuthenticationToken authentication =
                 new UsernamePasswordAuthenticationToken(email, null, authorities);
 
         SecurityContextHolder.getContext().setAuthentication(authentication);
-        log.debug("Usuario autenticado via JWT: {} con roles: {}", email, roles);
+        log.debug("Usuario autenticado via JWT Cookie: {} con roles: {}", email, roles);
 
         filterChain.doFilter(request, response);
     }

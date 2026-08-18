@@ -3,6 +3,7 @@ package com.travelplanner.api.config;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
@@ -16,12 +17,9 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 /**
  * Configuración central de Spring Security.
  *
- * Política de sesión: STATELESS (sin HttpSession — toda la autenticación va en el JWT).
- * CSRF: deshabilitado (API REST stateless con token en sessionStorage del frontend).
- * CORS: delegado a CorsConfig (WebMvcConfigurer) via Customizer.withDefaults().
- *
- * @EnableMethodSecurity habilita @PreAuthorize en los controllers para el próximo paso
- * de autorización por roles.
+ * Política de sesión: STATELESS (sin HttpSession — autenticación via JWT en cookie HttpOnly).
+ * CSRF: deshabilitado para API REST stateless.
+ * CORS: habilitado con origen explícito y allowCredentials=true.
  */
 @Configuration
 @EnableWebSecurity
@@ -39,29 +37,32 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http
-                // CSRF deshabilitado: API REST stateless, token en sessionStorage (no en cookie)
                 .csrf(AbstractHttpConfigurer::disable)
-
-                // CORS delegado al WebMvcConfigurer definido en CorsConfig
-                .cors(cors -> cors.configure(http))
-
-                // Sin sesión HTTP — todo el estado de autenticación va en el JWT
+                .cors(Customizer.withDefaults())
                 .sessionManagement(session ->
                         session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
-
                 .authorizeHttpRequests(auth -> auth
-                        // Endpoints públicos: autenticación y documentación Swagger
-                        .requestMatchers("/api/auth/**").permitAll()
+                        // Endpoints públicos
                         .requestMatchers(
+                                "/api/auth/login",
+                                "/api/auth/registro",
+                                "/api/auth/logout",
                                 "/swagger-ui/**",
                                 "/swagger-ui.html",
-                                "/v3/api-docs/**"
+                                "/v3/api-docs/**",
+                                "/error"
                         ).permitAll()
-                        // Todo lo demás requiere un JWT válido
+                        // Endpoints de administración
+                        .requestMatchers("/api/usuarios/**").hasRole("ADMIN")
+                        // Endpoints autenticados
+                        .requestMatchers("/api/auth/me").authenticated()
+                        .requestMatchers(
+                                "/api/planificaciones/**",
+                                "/api/destinos/**",
+                                "/api/actividades/**"
+                        ).authenticated()
                         .anyRequest().authenticated()
                 )
-
-                // Registrar el filtro JWT antes del filtro estándar de usuario/contraseña
                 .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class);
 
         return http.build();
