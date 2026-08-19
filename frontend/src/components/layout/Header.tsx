@@ -1,10 +1,11 @@
 import { useState } from 'react';
-import { Link, NavLink, useNavigate } from 'react-router-dom';
+import { Link, NavLink, useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../../context/useAuth';
 
 export const Header = () => {
   const { user, isAuthenticated, logout, hasRole } = useAuth();
   const navigate = useNavigate();
+  const location = useLocation();
   const [showLogoutModal, setShowLogoutModal] = useState(false);
 
   const getNavLinkClass = ({ isActive }: { isActive: boolean }) =>
@@ -75,12 +76,14 @@ export const Header = () => {
                 <div className="flex items-center gap-3 border-l border-teal-600 pl-4">
                   <Link
                     to="/login"
+                    state={{ from: location }}
                     className="text-teal-100 hover:text-white text-sm font-medium transition-colors"
                   >
                     Iniciar sesión
                   </Link>
                   <Link
                     to="/register"
+                    state={{ from: location }}
                     className="bg-teal-600 hover:bg-teal-500 text-white text-sm font-medium py-1.5 px-3.5 rounded-lg transition-colors shadow-sm"
                   >
                     Registrarse

@@ -1,9 +1,10 @@
 import { useState, type FormEvent } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../context/useAuth';
 
 export const RegisterPage = () => {
   const navigate = useNavigate();
+  const location = useLocation();
   const { register } = useAuth();
 
   const [formData, setFormData] = useState({
@@ -14,6 +15,22 @@ export const RegisterPage = () => {
   });
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
+
+  // Destino de redirección post-registro: retorna a la ruta previa o a '/' por defecto
+  const getDestination = (): string => {
+    const rawFrom = (location.state as { from?: { pathname?: string; search?: string; hash?: string } | string })?.from;
+    if (!rawFrom) return '/';
+    if (typeof rawFrom === 'string') {
+      return ['/login', '/register', '/registro'].includes(rawFrom) ? '/' : rawFrom;
+    }
+    const path = `${rawFrom.pathname || ''}${rawFrom.search || ''}${rawFrom.hash || ''}`;
+    if (!path || ['/login', '/register', '/registro'].includes(rawFrom.pathname || '')) {
+      return '/';
+    }
+    return path;
+  };
+
+  const from = getDestination();
 
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
@@ -37,7 +54,7 @@ export const RegisterPage = () => {
         email: formData.email,
         password: formData.password,
       });
-      navigate('/planificaciones', { replace: true });
+      navigate(from, { replace: true });
     } catch (err) {
       setError((err as Error).message);
     } finally {
