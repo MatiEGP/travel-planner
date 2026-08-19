@@ -9,6 +9,7 @@ import { LoginPage } from '../pages/LoginPage';
 import { RegisterPage } from '../pages/RegisterPage';
 import { ProtectedRoute } from '../components/auth/ProtectedRoute';
 import { RoleRoute } from '../components/auth/RoleRoute';
+import { GuestRoute } from '../components/auth/GuestRoute';
 
 export const router = createBrowserRouter([
   {
@@ -19,17 +20,23 @@ export const router = createBrowserRouter([
         index: true,
         element: <HomePage />,
       },
+      // Rutas para usuarios no autenticados (invitados)
       {
-        path: 'login',
-        element: <LoginPage />,
-      },
-      {
-        path: 'register',
-        element: <RegisterPage />,
-      },
-      {
-        path: 'registro',
-        element: <RegisterPage />,
+        element: <GuestRoute />,
+        children: [
+          {
+            path: 'login',
+            element: <LoginPage />,
+          },
+          {
+            path: 'register',
+            element: <RegisterPage />,
+          },
+          {
+            path: 'registro',
+            element: <RegisterPage />,
+          },
+        ],
       },
       // Rutas protegidas para cualquier usuario autenticado
       {

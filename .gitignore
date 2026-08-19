@@ -4,6 +4,7 @@
 .atl/
 .idea/
 .vscode/
+.pi/
 *.suo
 *.ntvs*
 *.njsproj
