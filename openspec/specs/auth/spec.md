@@ -32,7 +32,7 @@ The backend **MUST** provide an endpoint `POST /api/auth/registro` (or `/api/aut
 ---
 
 ### Requirement: REQ-AUTH-002 — User Login
-The backend **MUST** provide an endpoint `POST /api/auth/login` accepting credentials. Upon verification, the server **MUST** generate a signed JWT containing user identity and granted authorities, returning it via an `HttpOnly` cookie.
+The backend **MUST** provide an endpoint `POST /api/auth/login` accepting credentials. Upon verification, the server **MUST** generate a signed JWT containing user identity and granted authorities, returning it via an `HttpOnly` cookie. If an already-authenticated user submits a valid login request, the system **MUST** overwrite the session cookie with the new credentials rather than rejecting with `403 Forbidden`.
 
 - **Scenario 1: Valid Credentials**
   - **GIVEN** an existing active user in the system
@@ -45,7 +45,14 @@ The backend **MUST** provide an endpoint `POST /api/auth/login` accepting creden
   - **GIVEN** incorrect email or password credentials
   - **WHEN** `POST /api/auth/login` is requested
   - **THEN** the server returns HTTP status `401 Unauthorized`
+  - **AND** the response body contains an `ErrorResponseDTO`
   - **AND** no authentication cookie is set.
+
+- **Scenario 3: Login While Already Authenticated (Session Overwrite)**
+  - **GIVEN** a client sending an existing valid `token` cookie
+  - **WHEN** `POST /api/auth/login` is requested with valid new credentials
+  - **THEN** the server returns HTTP status `200 OK`
+  - **AND** the response contains a new `Set-Cookie` header with the updated user's JWT.
 
 ---
 
@@ -79,7 +86,7 @@ The backend **MUST** provide an endpoint `POST /api/auth/logout` that invalidate
 ## 3. Security & Token Filter Specifications
 
 ### Requirement: REQ-SEC-001 — JWT Cookie Extraction & Filter Chain
-The Spring Boot backend **MUST** implement an `OncePerRequestFilter` that inspects incoming requests for the `token` cookie, validates the JWT signature and expiration, extracts user details and authorities, and populates the `SecurityContextHolder`.
+The Spring Boot backend **MUST** implement a `JwtAuthFilter` that inspects incoming requests for the `token` cookie, validates signature and expiration, and populates `SecurityContextHolder`. Unauthenticated requests to protected endpoints or `/api/auth/me` **MUST** trigger a custom `AuthenticationEntryPoint` that returns HTTP `401 Unauthorized` with a structured `ErrorResponseDTO` payload.
 
 - **Scenario 1: Request with Valid Token Cookie**
   - **GIVEN** a request directed to a protected endpoint containing a valid `token` cookie
@@ -88,9 +95,10 @@ The Spring Boot backend **MUST** implement an `OncePerRequestFilter` that inspec
   - **AND** the filter chain proceeds to the endpoint handler.
 
 - **Scenario 2: Request without Token Cookie on Protected Endpoint**
-  - **GIVEN** an unauthenticated request to a protected endpoint (e.g. `/api/planificaciones/**`)
+  - **GIVEN** an unauthenticated request to a protected endpoint (e.g. `/api/auth/me`, `/api/planificaciones/**`)
   - **WHEN** the filter chain processes the request
-  - **THEN** the request fails authentication and triggers the `AuthenticationEntryPoint` returning HTTP `401 Unauthorized`.
+  - **THEN** the request fails authentication and triggers `AuthenticationEntryPoint` returning HTTP `401 Unauthorized`
+  - **AND** the response body contains a JSON `ErrorResponseDTO` with status `401` and error message `"No autenticado"`.
 
 ---
 
@@ -162,3 +170,25 @@ The UI **MUST** provide a public Registration page accessible at `/register`, li
 
 ### Requirement: REQ-FE-006 — Removal of Legacy `UserPicker`
 The application **MUST** completely remove `UserPicker.tsx` and its invocations from the codebase.
+
+---
+
+### Requirement: REQ-FE-007 — Guest Route Protection for Login and Registration
+The frontend **MUST** provide a declarative `GuestRoute` wrapper around guest-only routes (`/login`, `/register`, `/registro`). If an authenticated user attempts to access these routes, the system **MUST** automatically redirect them to `/planificaciones` (or their intended destination) without flashing guest form content.
+
+- **Scenario 1: Authenticated User Navigates to Login**
+  - **GIVEN** an active authenticated session (`isAuthenticated = true`)
+  - **WHEN** the user navigates directly to `/login` or `/register`
+  - **THEN** `GuestRoute` redirects the user to `/planificaciones` with `replace: true`
+  - **AND** the login/register forms are not rendered.
+
+- **Scenario 2: Unauthenticated User Navigates to Login**
+  - **GIVEN** an unauthenticated visitor (`isAuthenticated = false`, `isLoading = false`)
+  - **WHEN** the user navigates to `/login`
+  - **THEN** `GuestRoute` renders the child login view normally.
+
+- **Scenario 3: Session Still Loading**
+  - **GIVEN** an initial application load where `isLoading = true`
+  - **WHEN** the user navigates to `/login`
+  - **THEN** `GuestRoute` renders the loading spinner until hydration completes.
+
