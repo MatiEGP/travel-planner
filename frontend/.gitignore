@@ -12,3 +12,7 @@ dist-ssr/
 # Logs
 logs/
 *.log
+
+# Testing
+coverage/
+
