@@ -22,8 +22,15 @@ export const GuestRoute = () => {
   }
 
   if (isAuthenticated) {
-    const from = (location.state as { from?: { pathname: string } })?.from?.pathname || '/planificaciones';
-    return <Navigate to={from} replace />;
+    const rawFrom = (location.state as { from?: { pathname?: string; search?: string; hash?: string } | string })?.from;
+    let dest = '/';
+    if (typeof rawFrom === 'string') {
+      dest = ['/login', '/register', '/registro'].includes(rawFrom) ? '/' : rawFrom;
+    } else if (rawFrom && typeof rawFrom === 'object') {
+      const path = `${rawFrom.pathname || ''}${rawFrom.search || ''}${rawFrom.hash || ''}`;
+      dest = (!path || ['/login', '/register', '/registro'].includes(rawFrom.pathname || '')) ? '/' : path;
+    }
+    return <Navigate to={dest} replace />;
   }
 
   return <Outlet />;
