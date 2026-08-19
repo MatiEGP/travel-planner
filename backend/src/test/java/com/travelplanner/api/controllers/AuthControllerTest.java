@@ -138,4 +138,35 @@ class AuthControllerTest {
         assertNotNull(response.getBody());
         assertEquals("Carlos", response.getBody().getNombre());
     }
+
+    @Test
+    void getMe_cuandoNoEstaAutenticado_debeRetornarUnauthorized() {
+        ResponseEntity<UsuarioResponseDTO> response = authController.getMe();
+
+        assertEquals(HttpStatus.UNAUTHORIZED, response.getStatusCode());
+        assertNull(response.getBody());
+    }
+
+    @Test
+    void login_cuandoYaExisteSesionActiva_debeSobreescribirTokenYRetornarOk() {
+        LoginRequestDTO request = new LoginRequestDTO();
+        request.setEmail("nuevo@example.com");
+        request.setPassword("password123");
+
+        Usuario usuario = Usuario.builder()
+                .id(2L)
+                .nombre("Nuevo Usuario")
+                .email("nuevo@example.com")
+                .roles(Set.of(Rol.builder().id(1L).nombre("CLIENT").build()))
+                .build();
+
+        when(usuarioService.autenticar("nuevo@example.com", "password123")).thenReturn(usuario);
+        when(jwtService.generarToken(usuario)).thenReturn("nuevo.jwt.token");
+
+        ResponseEntity<UsuarioResponseDTO> response = authController.login(request);
+
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+        assertNotNull(response.getHeaders().getFirst(HttpHeaders.SET_COOKIE));
+        assertTrue(response.getHeaders().getFirst(HttpHeaders.SET_COOKIE).contains("token=nuevo.jwt.token"));
+    }
 }

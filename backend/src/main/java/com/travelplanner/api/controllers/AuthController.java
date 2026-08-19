@@ -43,10 +43,6 @@ public class AuthController {
      */
     @PostMapping("/registro")
     public ResponseEntity<UsuarioResponseDTO> registro(@RequestBody RegistroRequestDTO request) {
-        if (estaAutenticado()) {
-            return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
-        }
-
         Rol rolClient = rolRepository.findByNombre("CLIENT")
                 .orElseThrow(() -> new IllegalStateException("Rol CLIENT no encontrado. Verificar datos iniciales."));
 
@@ -74,10 +70,6 @@ public class AuthController {
      */
     @PostMapping("/login")
     public ResponseEntity<UsuarioResponseDTO> login(@RequestBody LoginRequestDTO request) {
-        if (estaAutenticado()) {
-            return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
-        }
-
         Usuario usuario = usuarioService.autenticar(request.getEmail(), request.getPassword());
         String token = jwtService.generarToken(usuario);
         ResponseCookie cookie = crearCookieJwt(token, 86400);
@@ -147,12 +139,5 @@ public class AuthController {
                 .fechaRegistro(usuario.getFechaRegistro())
                 .roles(roles)
                 .build();
-    }
-
-    private boolean estaAutenticado() {
-        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-        return auth != null
-                && auth.isAuthenticated()
-                && !(auth instanceof AnonymousAuthenticationToken);
     }
 }
