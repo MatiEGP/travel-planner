@@ -1,10 +1,10 @@
-import { useState, useEffect, type FormEvent } from 'react';
+import { useState, type FormEvent } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/useAuth';
 
 export const RegisterPage = () => {
   const navigate = useNavigate();
-  const { register, isAuthenticated } = useAuth();
+  const { register } = useAuth();
 
   const [formData, setFormData] = useState({
     nombre: '',
@@ -14,12 +14,6 @@ export const RegisterPage = () => {
   });
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
-
-  useEffect(() => {
-    if (isAuthenticated) {
-      navigate('/planificaciones', { replace: true });
-    }
-  }, [isAuthenticated, navigate]);
 
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();

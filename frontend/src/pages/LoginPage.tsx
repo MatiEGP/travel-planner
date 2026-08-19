@@ -1,11 +1,11 @@
-import { useState, useEffect, type FormEvent } from 'react';
+import { useState, type FormEvent } from 'react';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../context/useAuth';
 
 export const LoginPage = () => {
   const navigate = useNavigate();
   const location = useLocation();
-  const { login, isAuthenticated } = useAuth();
+  const { login } = useAuth();
 
   const [formData, setFormData] = useState({
     email: '',
@@ -16,13 +16,6 @@ export const LoginPage = () => {
 
   // Destino de redirección post-login
   const from = (location.state as { from?: { pathname: string } })?.from?.pathname || '/planificaciones';
-
-  // Si ya está autenticado, redirigir
-  useEffect(() => {
-    if (isAuthenticated) {
-      navigate(from, { replace: true });
-    }
-  }, [isAuthenticated, navigate, from]);
 
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
