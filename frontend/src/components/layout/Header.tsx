@@ -15,6 +15,20 @@ export const Header = () => {
         : 'text-teal-100 hover:bg-teal-700 hover:text-white'
     }`;
 
+  const getAuthNavLinkClass = ({ isActive }: { isActive: boolean }) =>
+    `px-3 py-2 rounded-md text-sm font-medium transition-colors duration-200 ${
+      isActive
+        ? 'bg-teal-900 text-white'
+        : 'text-teal-100 hover:bg-teal-700 hover:text-white'
+    }`;
+
+  const getRegisterNavLinkClass = ({ isActive }: { isActive: boolean }) =>
+    `text-sm font-medium py-1.5 px-3.5 rounded-lg transition-colors duration-200 ${
+      isActive
+        ? 'bg-teal-900 text-white ring-1 ring-white/30'
+        : 'bg-teal-600 hover:bg-teal-500 text-white shadow-sm'
+    }`;
+
   const handleLogout = async () => {
     setShowLogoutModal(false);
     await logout();
@@ -74,20 +88,22 @@ export const Header = () => {
                 </div>
               ) : (
                 <div className="flex items-center gap-3 border-l border-teal-600 pl-4">
-                  <Link
+                  <NavLink
                     to="/login"
                     state={{ from: location }}
-                    className="text-teal-100 hover:text-white text-sm font-medium transition-colors"
+                    className={getAuthNavLinkClass}
+                    end
                   >
                     Iniciar sesión
-                  </Link>
-                  <Link
+                  </NavLink>
+                  <NavLink
                     to="/register"
                     state={{ from: location }}
-                    className="bg-teal-600 hover:bg-teal-500 text-white text-sm font-medium py-1.5 px-3.5 rounded-lg transition-colors shadow-sm"
+                    className={getRegisterNavLinkClass}
+                    end
                   >
                     Registrarse
-                  </Link>
+                  </NavLink>
                 </div>
               )}
             </div>
