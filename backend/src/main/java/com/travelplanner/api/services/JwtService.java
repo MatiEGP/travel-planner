@@ -27,7 +27,7 @@ public class JwtService {
 
     public JwtService(JwtConfig jwtConfig) {
         // Decodifica el secret de Base64URL y construye la SecretKey para HS256.
-        // Se usa BASE64URL (RFC 4648) que acepta tanto '+'/'/'' como '-'/'_',
+        // Se usa BASE64URL (RFC 4648) que no acepta '+' '/' pero si '-' '_',
         // cubriendo claves generadas con openssl, herramientas online, etc.
         this.secretKey = Keys.hmacShaKeyFor(Decoders.BASE64URL.decode(jwtConfig.getSecret()));
         this.expirationMs = jwtConfig.getExpirationMs();

@@ -249,7 +249,7 @@ cp .env.example .env
 | `POSTGRES_PASSWORD` | Contraseña de PostgreSQL | `una_contrasena_segura` |
 | `CORS_ALLOWED_ORIGINS` | Orígenes permitidos para CORS en el backend | `http://localhost:5173` |
 | `VITE_BACKEND_API_URL` | URL base de la API consumida por el frontend | `http://localhost:8080` |
-| `JWT_SECRET` | Clave simétrica HMAC-SHA256 (mín. 256 bits en Base64) | `base64_encoded_secret_key` |
+| `JWT_SECRET` | Clave simétrica HMAC-SHA256 (mín. 256 bits en Base64URL) | `base64url_encoded_secret_key` |
 | `JWT_EXPIRATION_MS` | Tiempo de vida del token en ms (opcional) | `86400000` (24h) |
 | `JWT_COOKIE_SECURE` | Flag `Secure` para cookies HTTPS (opcional) | `false` (dev) / `true` (prod) |
 | `SWAGGER_ENABLED` | Habilita o deshabilita Swagger UI / OpenAPI docs (opcional) | `true` (dev) / `false` (prod) |
