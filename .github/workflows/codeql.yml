@@ -1,0 +1,69 @@
+name: "CodeQL Security Audit"
+
+on:
+  push:
+    branches: [ "main", "develop" ]
+  schedule:
+    - cron: '0 0 * * 0'
+
+jobs:
+  analyze:
+    name: Analyze
+    runs-on: ubuntu-latest
+    permissions:
+      actions: read
+      contents: read
+      security-events: write
+
+    strategy:
+      fail-fast: false
+      matrix:
+        language: [ 'java', 'javascript' ]
+
+    services:
+      postgres:
+        image: postgres:17-alpine
+        env:
+          POSTGRES_USER: ci_tester
+          POSTGRES_PASSWORD: ci_test_password
+          POSTGRES_DB: travel_planner_test
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+        ports:
+          - 5433:5432
+
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v4
+
+    - name: Initialize CodeQL
+      uses: github/codeql-action/init@v3
+      with:
+        languages: ${{ matrix.language }}
+        
+    - name: Set up JDK 17 (Java only)
+      if: matrix.language == 'java'
+      uses: actions/setup-java@v4
+      with:
+        java-version: '17'
+        distribution: 'temurin'
+        cache: maven
+
+    - name: Build Java
+      if: matrix.language == 'java'
+      working-directory: ./backend
+      env:
+        DB_URL: jdbc:postgresql://localhost:5433/travel_planner_test
+        DB_USER: ci_tester
+        DB_PASSWORD: ci_test_password
+        CORS_ALLOWED_ORIGINS: http://localhost:5173
+        JWT_SECRET: c2VjcmV0LWtleS1kZS1wcnVlYmEtcGFyYS10ZXN0aW5nLWRlbC1iYWNrZW5kLXRyYXZlbC1wbGFubmVy
+      run: mvn -B clean package -DskipTests
+
+    - name: Perform CodeQL Analysis
+      uses: github/codeql-action/analyze@v3
+      with:
+        category: "/language:${{matrix.language}}"
