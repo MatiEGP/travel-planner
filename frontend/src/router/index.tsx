@@ -1,15 +1,15 @@
 import { createBrowserRouter } from 'react-router-dom';
 import { MainLayout } from '../layouts/MainLayout';
-import { HomePage } from '../pages/HomePage';
-import { AdminPage } from '../pages/AdminPage';
-import { PlanificacionesPage } from '../pages/PlanificacionesPage';
-import { DestinosPage } from '../pages/DestinosPage';
-import { ActividadesPage } from '../pages/ActividadesPage';
-import { LoginPage } from '../pages/LoginPage';
-import { RegisterPage } from '../pages/RegisterPage';
-import { ProtectedRoute } from '../components/auth/ProtectedRoute';
-import { RoleRoute } from '../components/auth/RoleRoute';
-import { GuestRoute } from '../components/auth/GuestRoute';
+import { HomePage } from '../features/planificaciones/pages/HomePage';
+import { AdminPage } from '../features/usuarios/pages/AdminPage';
+import { PlanificacionesPage } from '../features/planificaciones/pages/PlanificacionesPage';
+import { DestinosPage } from '../features/destinos/pages/DestinosPage';
+import { ActividadesPage } from '../features/actividades/pages/ActividadesPage';
+import { LoginPage } from '../features/auth/pages/LoginPage';
+import { RegisterPage } from '../features/auth/pages/RegisterPage';
+import { ProtectedRoute } from '../features/auth/containers/ProtectedRoute';
+import { RoleRoute } from '../features/auth/containers/RoleRoute';
+import { GuestRoute } from '../features/auth/containers/GuestRoute';
 
 export const router = createBrowserRouter([
   {
