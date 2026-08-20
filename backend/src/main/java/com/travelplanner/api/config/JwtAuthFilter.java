@@ -1,6 +1,6 @@
 package com.travelplanner.api.config;
 
-import com.travelplanner.api.services.JwtService;
+import com.travelplanner.api.auth.JwtService;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.Cookie;
