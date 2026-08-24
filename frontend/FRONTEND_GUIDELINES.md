@@ -61,3 +61,7 @@ Se utiliza para destacar paneles importantes (como los formularios de Login/Regi
 - Estilo limpio y moderno con Tailwind sans-serif por defecto.
 - Títulos: Suelen usar `font-extrabold` y `tracking-tight`.
 - Cajas y Contenedores: Generosos márgenes (`space-y-4`, `space-y-5`) y padding (`p-8 sm:p-12`) para dar un aspecto "aireado" y premium.
+
+## 5. Reglas de Testing Frontend
+- **Anti-Patron Prohibido (Implementation Details)**: Nunca testear clases CSS especificas (como bg-teal-600), aserciones de color, o estructuras de DOM exactas. Esto genera tests fragiles.
+- **Enfoque de Accesibilidad**: Los tests deben basarse en comportamiento y accesibilidad (W3C Roles). Utilizar funciones como getByRole en lugar de getByText sueltos para mayor robustez.
