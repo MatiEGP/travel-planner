@@ -1,3 +1,19 @@
+```yaml
+schema: gentle-ai.verify-result/v1
+verdict: pass
+evidence_revision: "3a79d2e9ab1cb4692eacd766e750b1221e8342ff"
+blockers: []
+critical_findings: []
+requirements: []
+scenarios: []
+test_command: "mvn test && npm test"
+test_exit_code: 0
+test_output_hash: ""
+build_command: "mvn package"
+build_exit_code: 0
+build_output_hash: ""
+```
+
 # Verification Report
 
 ## Completeness

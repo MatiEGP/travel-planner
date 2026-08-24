@@ -52,4 +52,5 @@ pnpm-debug.log*
 # =====================
 # Personal
 # =====================
+.agents
 ANOTACIONES.md

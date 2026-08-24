@@ -14,31 +14,12 @@ import { GuestRoute } from '../components/auth/GuestRoute';
 export const router = createBrowserRouter([
   {
     path: '/',
-    element: <MainLayout />,
     children: [
       {
         index: true,
         element: <HomePage />,
       },
-      // Rutas para usuarios no autenticados (invitados)
-      {
-        element: <GuestRoute />,
-        children: [
-          {
-            path: 'login',
-            element: <LoginPage />,
-          },
-          {
-            path: 'register',
-            element: <RegisterPage />,
-          },
-          {
-            path: 'registro',
-            element: <RegisterPage />,
-          },
-        ],
-      },
-      // Rutas protegidas para cualquier usuario autenticado
+      // Standalone protected pages
       {
         element: <ProtectedRoute />,
         children: [
@@ -46,21 +27,51 @@ export const router = createBrowserRouter([
             path: 'planificaciones',
             element: <PlanificacionesPage />,
           },
+        ],
+      },
+      // Legacy routes wrapped in MainLayout
+      {
+        element: <MainLayout />,
+        children: [
+          // Rutas para usuarios no autenticados (invitados)
           {
-            path: 'planificaciones/:planificacionId/destinos',
-            element: <DestinosPage />,
-          },
-          {
-            path: 'destinos/:destinoId/actividades',
-            element: <ActividadesPage />,
-          },
-          // Rutas exclusivas para administradores
-          {
-            element: <RoleRoute requiredRole="ADMIN" />,
+            element: <GuestRoute />,
             children: [
               {
-                path: 'admin',
-                element: <AdminPage />,
+                path: 'login',
+                element: <LoginPage />,
+              },
+              {
+                path: 'register',
+                element: <RegisterPage />,
+              },
+              {
+                path: 'registro',
+                element: <RegisterPage />,
+              },
+            ],
+          },
+          // Rutas protegidas para cualquier usuario autenticado
+          {
+            element: <ProtectedRoute />,
+            children: [
+              {
+                path: 'planificaciones/:planificacionId/destinos',
+                element: <DestinosPage />,
+              },
+              {
+                path: 'destinos/:destinoId/actividades',
+                element: <ActividadesPage />,
+              },
+              // Rutas exclusivas para administradores
+              {
+                element: <RoleRoute requiredRole="ADMIN" />,
+                children: [
+                  {
+                    path: 'admin',
+                    element: <AdminPage />,
+                  },
+                ],
               },
             ],
           },
