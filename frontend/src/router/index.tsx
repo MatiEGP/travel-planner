@@ -29,28 +29,28 @@ export const router = createBrowserRouter([
           },
         ],
       },
+      // Rutas para usuarios no autenticados (invitados)
+      {
+        element: <GuestRoute />,
+        children: [
+          {
+            path: 'login',
+            element: <LoginPage />,
+          },
+          {
+            path: 'register',
+            element: <RegisterPage />,
+          },
+          {
+            path: 'registro',
+            element: <RegisterPage />,
+          },
+        ],
+      },
       // Legacy routes wrapped in MainLayout
       {
         element: <MainLayout />,
         children: [
-          // Rutas para usuarios no autenticados (invitados)
-          {
-            element: <GuestRoute />,
-            children: [
-              {
-                path: 'login',
-                element: <LoginPage />,
-              },
-              {
-                path: 'register',
-                element: <RegisterPage />,
-              },
-              {
-                path: 'registro',
-                element: <RegisterPage />,
-              },
-            ],
-          },
           // Rutas protegidas para cualquier usuario autenticado
           {
             element: <ProtectedRoute />,
