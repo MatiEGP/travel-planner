@@ -38,16 +38,23 @@ export const AuthLayout = ({ children, imageSrc, quote, author }: AuthLayoutProp
       </div>
 
       {/* Contenedor Derecho - Formulario */}
-      <div className="w-full lg:w-1/2 flex flex-col items-center justify-center p-8 sm:p-12 relative">
+      <div className="w-full lg:w-1/2 flex flex-col items-center justify-center p-8 sm:p-12 relative bg-gradient-to-br from-[#0f2027] via-[#203a43] to-[#2c5364] overflow-hidden">
+        
+        {/* Textura sutil en el fondo */}
+        <div 
+          className="absolute inset-0 opacity-[0.15] mix-blend-overlay pointer-events-none"
+          style={{ backgroundImage: `url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E")` }}
+        />
+
         {/* Logo Mvil */}
-        <Link to="/" className="lg:hidden absolute top-8 left-8 text-xl font-extrabold text-slate-800 flex items-center gap-2">
-          <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6 text-teal-600" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
+        <Link to="/" className="lg:hidden absolute top-8 left-8 text-xl font-extrabold text-white flex items-center gap-2 z-10">
+          <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6 text-teal-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
             <path strokeLinecap="round" strokeLinejoin="round" d="M3.055 11H5a2 2 0 012 2v1a2 2 0 002 2 2 2 0 012 2v2.945M8 3.935V5.5A2.5 2.5 0 0010.5 8h.5a2 2 0 012 2 2 2 0 104 0 2 2 0 012-2h1.064M15 20.488V18a2 2 0 012-2h3.064M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
           </svg>
           Travel Planner
         </Link>
 
-        <div className="w-full max-w-md mx-auto mt-16 lg:mt-0">
+        <div className="w-full max-w-md mx-auto mt-16 lg:mt-0 relative z-10">
           {children}
         </div>
       </div>

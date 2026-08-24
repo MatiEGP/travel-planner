@@ -70,13 +70,13 @@ export const RegisterPage = () => {
       imageSrc="https://images.unsplash.com/photo-1476514525535-07fb3b4ae5f1?ixlib=rb-4.0.3&auto=format&fit=crop&w=1400&q=80"
     >
       <div className="text-center mb-10">
-        <h2 className="text-3xl font-extrabold text-slate-900 tracking-tight">Crear cuenta</h2>
-        <p className="mt-2 text-slate-500 font-medium text-lg">Empezá a planificar tu próxima aventura hoy.</p>
+        <h2 className="text-3xl font-extrabold text-white tracking-tight">Crear cuenta</h2>
+        <p className="mt-2 text-slate-300 font-medium text-lg">Empezá a planificar tu próxima aventura hoy.</p>
       </div>
 
       {error && (
-        <div className="mb-6 p-4 bg-red-50 border border-red-200 rounded-xl text-red-600 text-sm flex items-start gap-3">
-          <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 shrink-0 mt-0.5" viewBox="0 0 20 20" fill="currentColor">
+        <div className="mb-6 p-4 bg-red-500/10 border border-red-500/50 rounded-xl text-red-200 text-sm flex items-start gap-3 backdrop-blur-sm">
+          <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 shrink-0 mt-0.5 text-red-400" viewBox="0 0 20 20" fill="currentColor">
             <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clipRule="evenodd" />
           </svg>
           <span className="font-medium">{error}</span>
@@ -86,7 +86,7 @@ export const RegisterPage = () => {
       <form className="space-y-5" onSubmit={handleSubmit}>
         <div className="space-y-4">
           <div>
-            <label htmlFor="reg-nombre" className="block text-sm font-semibold text-slate-700 mb-1.5">
+            <label htmlFor="reg-nombre" className="block text-sm font-semibold text-slate-200 mb-1.5">
               Nombre completo
             </label>
             <input
@@ -97,12 +97,12 @@ export const RegisterPage = () => {
               placeholder="Juan Pérez"
               value={formData.nombre}
               onChange={(e) => setFormData({ ...formData, nombre: e.target.value })}
-              className="w-full px-4 py-3 border border-slate-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-teal-500 focus:border-transparent transition-all bg-white text-slate-800 placeholder-slate-400 font-medium"
+              className="w-full px-4 py-3 border border-slate-600 rounded-xl focus:outline-none focus:ring-2 focus:ring-teal-400 focus:border-transparent transition-all bg-slate-800/50 text-white placeholder-slate-400 font-medium backdrop-blur-sm"
             />
           </div>
 
           <div>
-            <label htmlFor="reg-email" className="block text-sm font-semibold text-slate-700 mb-1.5">
+            <label htmlFor="reg-email" className="block text-sm font-semibold text-slate-200 mb-1.5">
               Email
             </label>
             <input
@@ -113,12 +113,12 @@ export const RegisterPage = () => {
               placeholder="tu@email.com"
               value={formData.email}
               onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-              className="w-full px-4 py-3 border border-slate-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-teal-500 focus:border-transparent transition-all bg-white text-slate-800 placeholder-slate-400 font-medium"
+              className="w-full px-4 py-3 border border-slate-600 rounded-xl focus:outline-none focus:ring-2 focus:ring-teal-400 focus:border-transparent transition-all bg-slate-800/50 text-white placeholder-slate-400 font-medium backdrop-blur-sm"
             />
           </div>
 
           <div>
-            <label htmlFor="reg-password" className="block text-sm font-semibold text-slate-700 mb-1.5">
+            <label htmlFor="reg-password" className="block text-sm font-semibold text-slate-200 mb-1.5">
               Contraseña <span className="text-slate-400 font-normal">(mínimo 6 caracteres)</span>
             </label>
             <input
@@ -129,12 +129,12 @@ export const RegisterPage = () => {
               placeholder="••••••••"
               value={formData.password}
               onChange={(e) => setFormData({ ...formData, password: e.target.value })}
-              className="w-full px-4 py-3 border border-slate-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-teal-500 focus:border-transparent transition-all bg-white text-slate-800 placeholder-slate-400 font-medium"
+              className="w-full px-4 py-3 border border-slate-600 rounded-xl focus:outline-none focus:ring-2 focus:ring-teal-400 focus:border-transparent transition-all bg-slate-800/50 text-white placeholder-slate-400 font-medium backdrop-blur-sm"
             />
           </div>
 
           <div>
-            <label htmlFor="reg-confirm" className="block text-sm font-semibold text-slate-700 mb-1.5">
+            <label htmlFor="reg-confirm" className="block text-sm font-semibold text-slate-200 mb-1.5">
               Confirmar contraseña
             </label>
             <input
@@ -145,7 +145,7 @@ export const RegisterPage = () => {
               placeholder="••••••••"
               value={formData.confirmPassword}
               onChange={(e) => setFormData({ ...formData, confirmPassword: e.target.value })}
-              className="w-full px-4 py-3 border border-slate-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-teal-500 focus:border-transparent transition-all bg-white text-slate-800 placeholder-slate-400 font-medium"
+              className="w-full px-4 py-3 border border-slate-600 rounded-xl focus:outline-none focus:ring-2 focus:ring-teal-400 focus:border-transparent transition-all bg-slate-800/50 text-white placeholder-slate-400 font-medium backdrop-blur-sm"
             />
           </div>
         </div>
@@ -154,11 +154,11 @@ export const RegisterPage = () => {
           <button
             type="submit"
             disabled={submitting}
-            className="w-full flex justify-center items-center gap-2 py-3.5 px-4 border border-transparent rounded-xl shadow-sm text-sm font-bold text-white bg-slate-900 hover:bg-slate-800 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-slate-900 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+            className="w-full flex justify-center items-center gap-2 py-3.5 px-4 border border-transparent rounded-xl shadow-md text-sm font-bold text-slate-900 bg-teal-400 hover:bg-teal-300 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-[#203a43] focus:ring-teal-400 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
           >
             {submitting ? (
               <>
-                <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
+                <div className="w-5 h-5 border-2 border-slate-900 border-t-transparent rounded-full animate-spin"></div>
                 <span>Creando cuenta...</span>
               </>
             ) : (
@@ -169,9 +169,9 @@ export const RegisterPage = () => {
       </form>
 
       <div className="mt-8 text-center">
-        <p className="text-sm font-medium text-slate-600">
+        <p className="text-sm font-medium text-slate-300">
           ¿Ya tenés una cuenta?{' '}
-          <Link to="/login" className="text-teal-600 hover:text-teal-700 font-bold transition-colors">
+          <Link to="/login" className="text-teal-400 hover:text-teal-300 font-bold transition-colors">
             Iniciá sesión
           </Link>
         </p>
