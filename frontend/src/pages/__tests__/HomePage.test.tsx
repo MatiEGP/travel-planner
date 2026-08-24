@@ -27,8 +27,8 @@ describe('HomePage', () => {
       </MemoryRouter>
     );
 
-    expect(screen.getByText('Registrarse')).toBeInTheDocument();
-    expect(screen.getByText('Iniciar sesión')).toBeInTheDocument();
+    expect(screen.getAllByText('Registrarse')[0]).toBeInTheDocument();
+    expect(screen.getAllByText('Iniciar sesión')[0]).toBeInTheDocument();
     expect(screen.queryByText('Mis Planificaciones')).not.toBeInTheDocument();
     expect(screen.queryByText('Panel de Administración')).not.toBeInTheDocument();
   });

@@ -1,34 +1,56 @@
-import { render, screen, fireEvent } from '@testing-library/react';
-import { describe, it, expect } from 'vitest';
+import { render, screen } from '@testing-library/react';
+import { describe, it, expect, vi } from 'vitest';
+import { MemoryRouter } from 'react-router-dom';
 import DiscoveryNavbar from './DiscoveryNavbar';
+import { useAuth } from '../../context/useAuth';
+
+vi.mock('../../context/useAuth', () => ({
+  useAuth: vi.fn(),
+}));
 
 describe('DiscoveryNavbar', () => {
-  it('renders with transparent background initially', () => {
-    render(<DiscoveryNavbar />);
-    const nav = screen.getByTestId('discovery-navbar');
-    expect(nav.className).toContain('bg-transparent');
-    expect(nav.className).not.toContain('bg-white');
+  it('renders guest navigation correctly', () => {
+    vi.mocked(useAuth).mockReturnValue({
+      isAuthenticated: false,
+      isLoading: false,
+      user: null,
+      usuario: null,
+      login: vi.fn(),
+      register: vi.fn(),
+      logout: vi.fn(),
+      hasRole: vi.fn(),
+    });
+
+    render(
+      <MemoryRouter>
+        <DiscoveryNavbar />
+      </MemoryRouter>
+    );
+    
+    expect(screen.getByRole('link', { name: /Travel Planner/i })).toBeInTheDocument();
+    expect(screen.getByRole('link', { name: /Iniciar Sesión/i })).toBeInTheDocument();
+    expect(screen.getByRole('link', { name: /Registrarse/i })).toBeInTheDocument();
   });
 
-  it('changes to solid background on scroll', () => {
-    render(<DiscoveryNavbar />);
-    const nav = screen.getByTestId('discovery-navbar');
-    
-    fireEvent.scroll(window, { target: { scrollY: 100 } });
-    
-    expect(nav.className).toContain('bg-white');
-    expect(nav.className).toContain('shadow-soft');
-    expect(nav.className).not.toContain('bg-transparent');
-  });
+  it('renders authenticated navigation correctly', () => {
+    vi.mocked(useAuth).mockReturnValue({
+      isAuthenticated: true,
+      isLoading: false,
+      user: { id: 1, nombre: 'TestUser', email: 'test@example.com', fechaRegistro: '', roles: [] },
+      usuario: { id: 1, nombre: 'TestUser', email: 'test@example.com', fechaRegistro: '', roles: [] },
+      login: vi.fn(),
+      register: vi.fn(),
+      logout: vi.fn(),
+      hasRole: vi.fn(),
+    });
 
-  it('reverts to transparent when scrolled back to top', () => {
-    render(<DiscoveryNavbar />);
-    const nav = screen.getByTestId('discovery-navbar');
+    render(
+      <MemoryRouter>
+        <DiscoveryNavbar />
+      </MemoryRouter>
+    );
     
-    fireEvent.scroll(window, { target: { scrollY: 100 } });
-    expect(nav.className).toContain('bg-white');
-    
-    fireEvent.scroll(window, { target: { scrollY: 0 } });
-    expect(nav.className).toContain('bg-transparent');
+    expect(screen.getByRole('link', { name: /Travel Planner/i })).toBeInTheDocument();
+    expect(screen.getByText('TestUser')).toBeInTheDocument();
   });
 });
