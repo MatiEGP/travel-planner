@@ -1,5 +1,6 @@
 import { Outlet, useNavigation } from 'react-router-dom';
 import { useEffect, useState } from 'react';
+import { Header } from '../components/layout/Header';
 
 const GlobalLoadingBar = () => {
   const navigation = useNavigation();
@@ -11,11 +12,9 @@ const GlobalLoadingBar = () => {
     let interval: NodeJS.Timeout;
     
     if (isLoading) {
-      // Arranca rápido al 10%
       setProgress(10);
       interval = setInterval(() => {
         setProgress((prev) => {
-          // Se estanca en 85% hasta que termine de cargar
           if (prev >= 85) {
             clearInterval(interval);
             return 85;
@@ -24,7 +23,6 @@ const GlobalLoadingBar = () => {
         });
       }, 300);
     } else {
-      // Cuando termina, va al 100% y luego desaparece
       setProgress(100);
       const timeout = setTimeout(() => setProgress(0), 400);
       return () => clearTimeout(timeout);
@@ -50,9 +48,12 @@ const GlobalLoadingBar = () => {
 
 export const RootLayout = () => {
   return (
-    <>
+    <div className="min-h-screen flex flex-col bg-slate-900">
       <GlobalLoadingBar />
-      <Outlet />
-    </>
+      <Header />
+      <div className="flex-1 flex flex-col">
+        <Outlet />
+      </div>
+    </div>
   );
 };
