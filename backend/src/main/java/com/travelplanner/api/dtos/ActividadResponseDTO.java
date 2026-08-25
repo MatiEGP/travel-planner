@@ -6,6 +6,8 @@ import java.time.LocalDateTime;
 @Data
 public class ActividadResponseDTO {
     private Long id;
+    private Long planificacionId;
+    private Long destinoId;
     private String nombre;
     private LocalDateTime fechaHora;
     private String notas;

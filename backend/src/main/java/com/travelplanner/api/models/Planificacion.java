@@ -41,6 +41,18 @@ public class Planificacion {
     @Builder.Default
     private List<Destino> destinos = new ArrayList<>();
 
+    @OneToMany(mappedBy = "planificacion", cascade = CascadeType.ALL, orphanRemoval = true)
+    @Builder.Default
+    private List<Actividad> actividades = new ArrayList<>();
+
+    @OneToMany(mappedBy = "planificacion", cascade = CascadeType.ALL, orphanRemoval = true)
+    @Builder.Default
+    private List<Costo> costos = new ArrayList<>();
+
+    @OneToMany(mappedBy = "planificacion", cascade = CascadeType.ALL, orphanRemoval = true)
+    @Builder.Default
+    private List<DiaItinerario> diasItinerario = new ArrayList<>();
+
     @PrePersist
     protected void onCreate() {
         this.fechaCreacion = LocalDateTime.now();
