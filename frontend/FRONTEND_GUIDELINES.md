@@ -7,7 +7,7 @@ Esta guía documenta las decisiones de diseño, paleta de colores y patrones de 
 ### Marca y Acentos (Primary)
 - **Teal (Verde Agua)**: Es el color principal de la marca, elegido para dar una sensación natural y orientada a los viajes.
   - Elementos interactivos sobre fondos claros: `teal-600` (Hover: `teal-700`).
-  - Elementos interactivos sobre fondos oscuros: `teal-400` (Hover: `teal-300`).
+  - Elementos interactivos sobre fondos oscuros: `teal-400` / `teal-500` (Hover: `teal-300` / `teal-400`).
   - Anillos de foco (Focus rings): `focus:ring-teal-400` / `focus:ring-teal-500`.
 
 ### Neutrales y Textos
@@ -15,45 +15,45 @@ Esta guía documenta las decisiones de diseño, paleta de colores y patrones de 
 - **Textos Secundarios (Light Mode)**: `slate-500`.
 - **Textos en Dark Mode / Paneles Oscuros**: `white` para títulos, `slate-200` y `slate-300` para subtítulos y labels.
 
-### Temática Especial: "Marino Texturizado" (Auth)
-Se utiliza para destacar paneles importantes (como los formularios de Login/Registro):
+### Temática Especial: "Marino Texturizado" y Glassmorphism
+Se utiliza para destacar paneles importantes y las vistas principales de la aplicación:
 - **Gradiente Radial Marino**: `radial-gradient(ellipse at center, #204060 0%, #122842 50%, #071321 100%)`. Centro iluminado, bordes súper oscuros (viñeta).
 - **Textura de Olas**: Archivo `/waves.svg` aplicado por encima del gradiente con `bg-repeat`, `opacity-40` y `mix-blend-overlay`.
+- **Glassmorphism (Efecto Cristal)**: Uso de fondos semitransparentes combinados con desenfoque de fondo. Ej: `bg-slate-900/60 backdrop-blur-md border border-slate-700/50`.
 
-## 2. Layouts y Estructura
+## 2. Layouts y Estructura Arquitectónica
 
-- **AuthLayout (Split-screen)**: Inspirado en Wanderlog. 
-  - *Izquierda (Desktop)*: Imagen fotográfica de alta calidad (viajes) que cubre el 100% de la altura, con un gradiente oscuro superior para contrastar el logo y un gradiente inferior para contrastar las citas inspiracionales.
-  - *Derecha*: Panel con el tema "Marino Texturizado" centrado para los formularios.
-  - Este layout es *independiente* (no se anida dentro de `MainLayout`) para que la navegación a estas rutas se sienta como una transición limpia a pantalla completa.
+- **RootLayout (Core)**: 
+  - Actúa como la envoltura superior de la SPA. Contiene la `GlobalLoadingBar` y el **Header Global**, asegurando que la navegación superior y los indicadores de carga existan incondicionalmente en todas las pantallas.
+  
+- **Header Global**:
+  - Reemplazó por completo los sidebars y navbars duplicados (`DiscoveryNavbar`, `PlannerSidebar`).
+  - Usa Glassmorphism y se fija en el tope (`sticky top-0 z-40`).
+  - Gestiona dinámicamente la interfaz (Logo + Links + Perfil si hay sesión; Logo + Botones de login si no hay sesión).
 
-- **MainLayout**:
-  - Envuelve la aplicación principal (Landing Page, Dashboard, etc.).
-  - Utiliza el `DiscoveryNavbar` en la parte superior.
+- **AuthLayout (Split-screen)**: 
+  - *Izquierda (Desktop)*: Imagen fotográfica que cubre el 100% de la altura, con gradientes para contraste.
+  - *Derecha*: Panel con el tema "Marino Texturizado".
+
+- **PlannerLayout (Dashboard Principal)**:
+  - Vista envolvente para las planificaciones. Hereda el diseño oscuro ("Marino Texturizado") en toda la pantalla, con renderizado de contenido central y un panel lateral derecho flotante opcional para accesos rápidos.
 
 ## 3. UI Components (Patrones)
 
-### Navegación (DiscoveryNavbar)
-- **Glassmorphism**: El navbar utiliza `bg-white/90 backdrop-blur-md` para garantizar el contraste de los textos sobre cualquier fondo (ya que la app principal usa fondos blancos).
-- **Menú de Usuario**: Muestra el nombre, un avatar genérico y un menú desplegable/popover (relativo) para confirmar el cierre de sesión, manteniendo al usuario en contexto.
+### Modales
+- Los formularios complejos (como crear una Planificación) se elevan a Modales sobre el Layout actual.
+- Usa backdrop difuminado (`fixed inset-0 bg-slate-900/60 backdrop-blur-sm`).
+- El cuerpo del modal sigue la estética oscura: `bg-slate-800 border-slate-600 rounded-2xl shadow-2xl`.
 
-### Formularios (Inputs & Labels)
-- **Modo Oscuro (Glassmorphism)**: 
-  - Fondo: `bg-slate-800/50 backdrop-blur-sm`.
-  - Bordes: `border-slate-600` (Focus: `ring-2 ring-teal-400 border-transparent`).
-  - Textos: `text-white`, placeholders `placeholder-slate-400`.
-  - Labels: `font-semibold text-sm mb-1.5`.
-
-- **Modo Claro**:
-  - Fondo: `bg-white`.
-  - Bordes: `border-slate-300` (Focus: `ring-2 ring-teal-500 border-transparent`).
-  - Textos: `text-slate-800`.
+### Manejo de Estado y Datos Asíncronos
+- **Optimistic UI / Elevación de estado**: Los modales devuelven callbacks a las páginas para actualizar localmente arreglos como la lista de planificaciones y evitar refetching innecesario.
+- **Fetch Concurrente (Data Hydration)**: En casos donde un endpoint RESTful (ej. traer planificaciones) requiere hidratación de entidades secundarias (ej. traer destinos), se deben orquestar promesas concurrentes (`Promise.all()`) directamente en el hook `useEffect` responsable de cargar los datos de la vista.
 
 ### Botones (Primary)
-- **Formas**: Redondeados, modernos (`rounded-xl`). Padding amplio (`py-3.5 px-4`).
-- **Sobre fondos oscuros**: Botón brillante para máximo contraste (`bg-teal-400 text-slate-900 font-bold`).
+- **Formas**: Redondeados, modernos (`rounded-xl`). Padding amplio (`py-3.5 px-4` o `py-2.5 px-6`).
+- **Sobre fondos oscuros**: Botón brillante para máximo contraste (`bg-teal-500 text-slate-900 font-bold`).
 - **Efectos de estado**: 
-  - Hover: sutil cambio de brillo (ej: `hover:bg-teal-300`).
+  - Hover: sutil cambio de brillo y sombras.
   - Disabled: `opacity-50 cursor-not-allowed`.
   - Loading: Spinner integrado alineado horizontalmente con el texto.
 
@@ -63,5 +63,5 @@ Se utiliza para destacar paneles importantes (como los formularios de Login/Regi
 - Cajas y Contenedores: Generosos márgenes (`space-y-4`, `space-y-5`) y padding (`p-8 sm:p-12`) para dar un aspecto "aireado" y premium.
 
 ## 5. Reglas de Testing Frontend
-- **Anti-Patron Prohibido (Implementation Details)**: Nunca testear clases CSS especificas (como bg-teal-600), aserciones de color, o estructuras de DOM exactas. Esto genera tests fragiles.
+- **Anti-Patrón Prohibido (Implementation Details)**: Nunca testear clases CSS especificas (como bg-teal-600), aserciones de color, o estructuras de DOM exactas. Esto genera tests frágiles.
 - **Enfoque de Accesibilidad**: Los tests deben basarse en comportamiento y accesibilidad (W3C Roles). Utilizar funciones como getByRole en lugar de getByText sueltos para mayor robustez.
