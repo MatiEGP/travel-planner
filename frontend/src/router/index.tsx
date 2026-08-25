@@ -1,4 +1,5 @@
 import { createBrowserRouter } from 'react-router-dom';
+import { RootLayout } from '../layouts/RootLayout';
 import { MainLayout } from '../layouts/MainLayout';
 import { HomePage } from '../pages/HomePage';
 import { AdminPage } from '../pages/AdminPage';
@@ -14,6 +15,7 @@ import { GuestRoute } from '../components/auth/GuestRoute';
 export const router = createBrowserRouter([
   {
     path: '/',
+    element: <RootLayout />,
     children: [
       {
         index: true,
