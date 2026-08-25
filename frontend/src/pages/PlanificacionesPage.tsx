@@ -1,11 +1,12 @@
 import { useState, useEffect } from 'react';
 import { planificacionService } from '../services/planificacionService';
 import { destinoService } from '../services/destinoService';
-import type { PlanificacionResponseDTO } from '../types/planificacion';
+import type { PlanificacionResponseDTO, PlanificacionRequestDTO } from '../types/planificacion';
 import type { DestinoResponseDTO } from '../types/destino';
 import { useAuth } from '../context/useAuth';
 import PlannerLayout from '../layouts/PlannerLayout';
 import { PlanificacionCard } from '../components/itinerary/PlanificacionCard';
+import { PlanificacionFormModal } from '../components/itinerary/PlanificacionFormModal';
 
 export const PlanificacionesPage = () => {
   const { usuario } = useAuth();
@@ -13,6 +14,9 @@ export const PlanificacionesPage = () => {
   const [destinosByPlan, setDestinosByPlan] = useState<Record<number, DestinoResponseDTO[]>>({});
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  
+  // Modal State
+  const [isModalOpen, setIsModalOpen] = useState(false);
 
   useEffect(() => {
     if (!usuario) return;
@@ -72,8 +76,13 @@ export const PlanificacionesPage = () => {
     }
   };
 
+  const handleCreatePlan = async (data: PlanificacionRequestDTO) => {
+    const newPlan = await planificacionService.create(data);
+    setPlanificaciones(prev => [...prev, newPlan]);
+  };
+
   return (
-    <PlannerLayout>
+    <PlannerLayout onNewTrip={() => setIsModalOpen(true)}>
       <div className="mb-8">
         <h2 className="text-3xl font-extrabold text-white tracking-tight mb-2">Mis Planificaciones</h2>
         <p className="text-slate-300 font-medium text-lg">Creá y gestioná tus próximos viajes.</p>
@@ -104,7 +113,10 @@ export const PlanificacionesPage = () => {
           </div>
           <h3 className="text-xl font-bold text-white mb-2">Aún no tenés viajes</h3>
           <p className="text-slate-400 mb-6 max-w-md mx-auto">Parece que tu pasaporte está juntando polvo. ¡Empezá a planificar tu próxima aventura ahora mismo!</p>
-          <button className="inline-flex items-center gap-2 bg-teal-500 hover:bg-teal-400 text-slate-900 font-bold py-3 px-6 rounded-xl transition-all shadow-md hover:shadow-teal-500/25 cursor-pointer">
+          <button 
+            onClick={() => setIsModalOpen(true)}
+            className="inline-flex items-center gap-2 bg-teal-500 hover:bg-teal-400 text-slate-900 font-bold py-3 px-6 rounded-xl transition-all shadow-md hover:shadow-teal-500/25 cursor-pointer"
+          >
             <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
               <path fillRule="evenodd" d="M10 3a1 1 0 011 1v5h5a1 1 0 110 2h-5v5a1 1 0 11-2 0v-5H4a1 1 0 110-2h5V4a1 1 0 011-1z" clipRule="evenodd" />
             </svg>
@@ -125,6 +137,12 @@ export const PlanificacionesPage = () => {
           ))}
         </div>
       )}
+
+      <PlanificacionFormModal 
+        isOpen={isModalOpen} 
+        onClose={() => setIsModalOpen(false)} 
+        onSubmit={handleCreatePlan} 
+      />
     </PlannerLayout>
   );
 };
