@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { planificacionService } from '../services/planificacionService';
 import type { PlanificacionResponseDTO } from '../types/planificacion';
 import { useAuth } from '../context/useAuth';

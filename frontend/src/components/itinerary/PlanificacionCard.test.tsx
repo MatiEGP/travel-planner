@@ -1,7 +1,8 @@
-import React from 'react';
 import { render, screen } from '@testing-library/react';
 import { MemoryRouter } from 'react-router-dom';
-import { PlanificacionCard, DestinoWithActividades } from './PlanificacionCard';
+import { describe, it, expect } from 'vitest';
+import { PlanificacionCard } from './PlanificacionCard';
+import type { DestinoWithActividades } from './PlanificacionCard';
 import type { PlanificacionResponseDTO } from '../../types/planificacion';
 
 describe('PlanificacionCard', () => {
