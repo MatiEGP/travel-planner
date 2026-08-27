@@ -40,8 +40,8 @@ Chain strategy: feature-branch-chain
 
 ## Phase 3: Controller Layer Testing
 
-- [ ] 3.1 Create `CostoControllerTest.java` using `@WebMvcTest(CostoController.class)`
+- [x] 3.1 Create `CostoControllerTest.java` using `@WebMvcTest(CostoController.class)`
 
 ## Phase 4: Verification
 
-- [ ] 4.1 Run JaCoCo report to verify `planificaciones` package coverage is >= 50%
+- [x] 4.1 Run JaCoCo report to verify `planificaciones` package coverage is >= 50%
