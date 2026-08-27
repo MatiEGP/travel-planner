@@ -1,6 +1,6 @@
 import { useParams, Navigate } from 'react-router-dom';
-import PlannerLayout from '../../layouts/PlannerLayout';
-import { ItinerarioView } from '../planificaciones/components/ItinerarioView';
+import PlannerLayout from '../../../layouts/PlannerLayout';
+import { ItinerarioView } from '../../planificaciones/components/ItinerarioView';
 
 export const DestinosPage = () => {
   const { planificacionId } = useParams<{ planificacionId: string }>();

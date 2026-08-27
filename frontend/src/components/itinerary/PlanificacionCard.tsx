@@ -1,9 +1,9 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Heart, Calendar, Clock, Plane, CheckCircle2, Trash2, MapPin } from 'lucide-react';
-import type { PlanificacionResponseDTO } from '../../types/planificacion';
-import type { DestinoResponseDTO } from '../../types/destino';
-import type { ActividadResponseDTO } from '../../types/actividad';
+import type { PlanificacionResponseDTO } from '../../features/planificaciones/types/planificacion';
+import type { DestinoResponseDTO } from '../../features/destinos/types/destino';
+import type { ActividadResponseDTO } from '../../features/actividades/types/actividad';
 import { getTripStatus, formatDateRange, getTripCoverImage } from '../../utils/tripUtils';
 
 export type DestinoWithActividades = DestinoResponseDTO & {

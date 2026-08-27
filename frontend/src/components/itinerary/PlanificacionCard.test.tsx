@@ -3,7 +3,7 @@ import { MemoryRouter } from 'react-router-dom';
 import { describe, it, expect, vi } from 'vitest';
 import { PlanificacionCard } from './PlanificacionCard';
 import type { DestinoWithActividades } from './PlanificacionCard';
-import type { PlanificacionResponseDTO } from '../../types/planificacion';
+import type { PlanificacionResponseDTO } from '../../features/planificaciones/types/planificacion';
 
 const mockedNavigate = vi.fn();
 vi.mock('react-router-dom', async () => {

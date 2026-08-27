@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
-import type { PlanificacionRequestDTO } from '../../types/planificacion';
-import { useAuth } from '../../context/useAuth';
+import type { PlanificacionRequestDTO } from '../../planificaciones/types/planificacion';
+import { useAuth } from '../../auth/context/useAuth';
+
 
 interface Props {
   isOpen: boolean;

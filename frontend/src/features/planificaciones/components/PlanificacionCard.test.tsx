@@ -2,7 +2,7 @@ import { render, screen, fireEvent } from '@testing-library/react';
 import { MemoryRouter } from 'react-router-dom';
 import { describe, it, expect, vi } from 'vitest';
 import { PlanificacionCard } from './PlanificacionCard';
-import type { PlanificacionResponseDTO } from '../../types/planificacion';
+import type { PlanificacionResponseDTO } from '../../planificaciones/types/planificacion';
 
 describe('PlanificacionCard', () => {
   const mockPlanificacion: PlanificacionResponseDTO = {

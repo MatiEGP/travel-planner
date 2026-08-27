@@ -1,6 +1,6 @@
 import React from 'react';
-import type { DestinoResponseDTO } from '../../types/destino';
-import type { ActividadResponseDTO } from '../../types/actividad';
+import type { DestinoResponseDTO } from '../../destinos/types/destino';
+import type { ActividadResponseDTO } from '../../actividades/types/actividad';
 import { ActivityListItem } from './ActivityListItem';
 
 interface Props {

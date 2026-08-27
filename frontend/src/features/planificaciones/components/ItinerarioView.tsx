@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { DiaItinerarioDTO } from '../types/itinerario';
+import type { DiaItinerarioDTO } from '../types/itinerario';
 import { itinerarioService } from '../api/itinerarioService';
 import { DiaItinerarioCard } from './DiaItinerarioCard';
 

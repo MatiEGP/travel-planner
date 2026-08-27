@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { X, Sparkles } from 'lucide-react';
-import type { PlanificacionRequestDTO } from '../../types/planificacion';
+import type { PlanificacionRequestDTO } from '../../features/planificaciones/types/planificacion';
 import { useAuth } from '../../features/auth/context/useAuth';
 
 interface PlanificacionFormModalProps {

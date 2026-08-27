@@ -1,4 +1,4 @@
-import { DiaItinerarioDTO } from '../types/itinerario';
+import type { DiaItinerarioDTO } from '../types/itinerario';
 
 // Assuming we have some base API client. We'll use fetch as a placeholder if there isn't one.
 const BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:3000/api';

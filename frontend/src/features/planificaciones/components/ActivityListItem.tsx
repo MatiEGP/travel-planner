@@ -1,5 +1,5 @@
 import React from 'react';
-import type { ActividadResponseDTO } from '../../types/actividad';
+import type { ActividadResponseDTO } from '../../actividades/types/actividad';
 
 interface Props {
   actividad: ActividadResponseDTO;

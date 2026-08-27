@@ -1,5 +1,5 @@
 import React from 'react';
-import { DiaItinerarioDTO } from '../types/itinerario';
+import type { DiaItinerarioDTO } from '../types/itinerario';
 import { ItemItinerarioRow } from './ItemItinerarioRow';
 
 interface Props {

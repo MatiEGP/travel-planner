@@ -2,7 +2,7 @@ import { itinerarioService } from './itinerarioService';
 
 describe('itinerarioService', () => {
   const mockFetch = vi.fn();
-  global.fetch = mockFetch;
+  vi.stubGlobal('fetch', mockFetch);
 
   afterEach(() => {
     vi.clearAllMocks();
