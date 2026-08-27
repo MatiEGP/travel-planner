@@ -33,10 +33,10 @@ Chain strategy: feature-branch-chain
 
 ## Phase 2: Service & Repository Layer Testing
 
-- [ ] 2.1 Create `CostoServiceTest.java` with mocked `CostoRepository`
-- [ ] 2.2 Create `CostoRepositoryTest.java`
-- [ ] 2.3 Create `DiaItinerarioRepositoryTest.java`
-- [ ] 2.4 Create `ItemItinerarioRepositoryTest.java`
+- [x] 2.1 Create `CostoServiceTest.java` with mocked `CostoRepository`
+- [x] 2.2 Create `CostoRepositoryTest.java`
+- [x] 2.3 Create `DiaItinerarioRepositoryTest.java`
+- [x] 2.4 Create `ItemItinerarioRepositoryTest.java`
 
 ## Phase 3: Controller Layer Testing
 
