@@ -61,7 +61,7 @@ describe('ItinerarioView', () => {
       // React throws unhandled in tests if not wrapped in ErrorBoundary in the test itself.
       // But we just verify if it throws.
       expect(() => render(<ItinerarioView planificacionId="plan1" />)).toThrowError();
-    } catch (e) {
+    } catch {
       // It's expected to throw
     }
     

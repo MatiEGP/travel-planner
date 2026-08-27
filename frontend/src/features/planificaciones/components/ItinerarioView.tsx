@@ -23,7 +23,7 @@ export const ItinerarioView: React.FC<Props> = ({ planificacionId }) => {
           setDias(data);
           setError(null);
         }
-      } catch (err: any) {
+      } catch (err) {
         if (mounted) {
           setError(err instanceof Error ? err : new Error('Unknown error fetching itinerario'));
         }
