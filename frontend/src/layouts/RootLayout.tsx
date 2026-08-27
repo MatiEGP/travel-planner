@@ -1,34 +1,45 @@
-import { Outlet, useNavigation } from 'react-router-dom';
+import { Outlet, useLocation, useNavigation } from 'react-router-dom';
 import { useEffect, useState } from 'react';
 import { Header } from '../components/layout/Header';
 
 const GlobalLoadingBar = () => {
-  const navigation = useNavigation();
-  // Se activa cuando React Router está cargando datos (loaders) o chunks de código
-  const isLoading = navigation.state === 'loading';
+  let isLoading = false;
+  try {
+    const navigation = useNavigation();
+    isLoading = navigation?.state === 'loading';
+  } catch {
+    isLoading = false;
+  }
   const [progress, setProgress] = useState(0);
 
   useEffect(() => {
-    let interval: NodeJS.Timeout;
+    let interval: ReturnType<typeof setInterval>;
+    let timeout: ReturnType<typeof setTimeout>;
     
     if (isLoading) {
-      setProgress(10);
-      interval = setInterval(() => {
-        setProgress((prev) => {
-          if (prev >= 85) {
-            clearInterval(interval);
-            return 85;
-          }
-          return prev + 15;
-        });
-      }, 300);
+      timeout = setTimeout(() => {
+        setProgress(10);
+        interval = setInterval(() => {
+          setProgress((prev) => {
+            if (prev >= 85) {
+              clearInterval(interval);
+              return 85;
+            }
+            return prev + 15;
+          });
+        }, 300);
+      }, 0);
     } else {
-      setProgress(100);
-      const timeout = setTimeout(() => setProgress(0), 400);
-      return () => clearTimeout(timeout);
+      timeout = setTimeout(() => {
+        setProgress(100);
+        setTimeout(() => setProgress(0), 400);
+      }, 0);
     }
     
-    return () => clearInterval(interval);
+    return () => {
+      clearTimeout(timeout);
+      clearInterval(interval);
+    };
   }, [isLoading]);
 
   if (progress === 0) return null;
@@ -47,13 +58,20 @@ const GlobalLoadingBar = () => {
 };
 
 export const RootLayout = () => {
+  const location = useLocation();
+  const isAuthRoute = ['/login', '/register', '/registro'].includes(location.pathname);
+
   return (
-    <div className="min-h-screen flex flex-col bg-slate-900">
+    <div
+      data-testid="root-layout"
+      className={`min-h-screen flex flex-col ${isAuthRoute ? 'bg-[#F7F9FA]' : 'bg-slate-900'}`}
+    >
       <GlobalLoadingBar />
-      <Header />
+      {!isAuthRoute && <Header />}
       <div className="flex-1 flex flex-col">
         <Outlet />
       </div>
     </div>
   );
 };
+

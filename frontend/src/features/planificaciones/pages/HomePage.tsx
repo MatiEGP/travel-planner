@@ -1,5 +1,6 @@
 import { Link, useLocation } from 'react-router-dom';
 import { useAuth } from '../../auth/context/useAuth';
+import DiscoveryLayout from '../../../layouts/DiscoveryLayout';
 
 export const HomePage = () => {
   const { isAuthenticated, hasRole } = useAuth();
@@ -7,7 +8,8 @@ export const HomePage = () => {
   const isAdmin = hasRole('ADMIN');
 
   return (
-    <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-16 text-center">
+    <DiscoveryLayout>
+      <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-16 text-center">
       <div className="mb-8">
         <div className="w-20 h-20 bg-teal-100 rounded-full flex items-center justify-center mx-auto mb-6">
           <svg xmlns="http://www.w3.org/2000/svg" className="h-10 w-10 text-teal-600" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
@@ -64,5 +66,6 @@ export const HomePage = () => {
         )}
       </div>
     </div>
+    </DiscoveryLayout>
   );
 };

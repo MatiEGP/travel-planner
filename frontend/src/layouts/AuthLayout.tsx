@@ -1,48 +1,55 @@
 import type { ReactNode } from 'react';
+import { Link } from 'react-router-dom';
+import { Compass } from 'lucide-react';
 
-interface AuthLayoutProps {
+export interface AuthLayoutProps {
   children: ReactNode;
   imageSrc?: string;
   quote?: string;
   author?: string;
 }
 
-export const AuthLayout = ({ children, imageSrc, quote, author }: AuthLayoutProps) => {
+export const AuthLayout = ({
+  children,
+  imageSrc = 'https://images.unsplash.com/photo-1506744038136-46273834b3fb?q=80&w=2070&auto=format&fit=crop',
+}: AuthLayoutProps) => {
   return (
-    <div className="flex flex-1 w-full bg-white relative">
-      {/* Contenedor Izquierdo - Imagen (Oculto en móviles) */}
-      <div className="hidden lg:flex lg:w-1/2 relative bg-slate-900 overflow-hidden">
-        <img 
-          src={imageSrc || "https://images.unsplash.com/photo-1469854523086-cc02fe5d8800?ixlib=rb-4.0.3&auto=format&fit=crop&w=1400&q=80"} 
-          alt="Travel background" 
-          className="absolute inset-0 w-full h-full object-cover opacity-80"
-        />
-        {/* Gradiente inferior para contraste de la cita */}
-        <div className="absolute inset-0 bg-gradient-to-t from-slate-900/90 via-slate-900/20 to-transparent pointer-events-none" />
-
-        <div className="absolute bottom-12 left-12 right-12 text-white z-10">
-          <blockquote className="text-3xl font-bold leading-tight mb-4 text-white drop-shadow-md">
-            "{quote || 'Descubrí nuevos lugares y organizá tus viajes sin estrés.'}"
-          </blockquote>
-          {author && <p className="text-teal-300 font-semibold tracking-wide uppercase text-sm drop-shadow-sm">{author}</p>}
-        </div>
+    <div
+      data-testid="auth-layout"
+      className="relative min-h-screen w-full flex items-center justify-center p-4 sm:p-6 overflow-hidden overflow-x-hidden bg-slate-900"
+    >
+      {/* Top-Left Brand Link to Main Menu / Home */}
+      <div className="absolute top-6 left-6 sm:top-8 sm:left-10 z-20">
+        <Link
+          to="/"
+          aria-label="Ir al menú principal de Travel Planner"
+          className="inline-flex items-center gap-2.5 px-4 py-2 rounded-full bg-white/20 hover:bg-white/30 backdrop-blur-md border border-white/30 text-white font-bold text-base sm:text-lg tracking-tight transition-all duration-200 hover:scale-105 shadow-lg group"
+        >
+          <Compass className="w-5 h-5 sm:w-6 sm:h-6 text-[#FF5A5F] group-hover:rotate-45 transition-transform duration-300" />
+          <span>Travel Planner</span>
+        </Link>
       </div>
+      {/* Background Image: Alpine Lake Scenery */}
+      <div
+        data-testid="auth-bg-image"
+        className="fixed inset-0 z-0 bg-cover bg-center transition-transform duration-1000 scale-105"
+        style={{
+          backgroundImage: `url('${imageSrc}')`,
+        }}
+        aria-hidden="true"
+      />
 
-      {/* Contenedor Derecho - Formulario */}
-      <div 
-        className="w-full lg:w-1/2 flex flex-col items-center justify-center p-8 sm:p-12 relative overflow-hidden"
-        style={{ background: 'radial-gradient(ellipse at center, #204060 0%, #122842 50%, #071321 100%)' }}
-      >
-        {/* Textura de Olas */}
-        <div 
-          className="absolute inset-0 bg-repeat opacity-40 pointer-events-none mix-blend-overlay z-0"
-          style={{ backgroundImage: "url('/waves.svg')", backgroundSize: '100px 40px' }}
-        />
+      {/* Dark Blur Overlay ensuring maximum readability & contrast for white cards */}
+      <div
+        className="fixed inset-0 z-0 bg-slate-950/40 backdrop-blur-[2px]"
+        aria-hidden="true"
+      />
 
-        <div className="w-full max-w-md mx-auto relative z-10">
-          {children}
-        </div>
+      {/* Centered container for child elements */}
+      <div className="relative z-10 w-full max-w-5xl flex items-center justify-center">
+        {children}
       </div>
     </div>
   );
 };
+
