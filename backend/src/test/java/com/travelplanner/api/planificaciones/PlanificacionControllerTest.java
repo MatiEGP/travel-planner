@@ -1,5 +1,9 @@
 package com.travelplanner.api.planificaciones;
 
+import com.travelplanner.api.planificaciones.PlanificacionRequestDTO;
+import com.travelplanner.api.planificaciones.PlanificacionResponseDTO;
+import com.travelplanner.api.planificaciones.Planificacion;
+import com.travelplanner.api.planificaciones.PlanificacionService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
