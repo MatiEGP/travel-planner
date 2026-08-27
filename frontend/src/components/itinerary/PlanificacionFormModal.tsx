@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { X, Sparkles } from 'lucide-react';
 import type { PlanificacionRequestDTO } from '../../types/planificacion';
-import { useAuth } from '../../context/useAuth';
+import { useAuth } from '../../features/auth/context/useAuth';
 
 interface PlanificacionFormModalProps {
   isOpen: boolean;

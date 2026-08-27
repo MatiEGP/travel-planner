@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import { useAuth } from '../../context/useAuth';
+import { useAuth } from '../../../features/auth/context/useAuth';
 
 const DiscoveryNavbar: React.FC = () => {
   const [isScrolled, setIsScrolled] = useState(false);

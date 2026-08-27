@@ -1,9 +1,5 @@
 package com.travelplanner.api.actividades;
 
-import com.travelplanner.api.actividades.ActividadRequestDTO;
-import com.travelplanner.api.actividades.ActividadResponseDTO;
-import com.travelplanner.api.actividades.Actividad;
-import com.travelplanner.api.actividades.ActividadService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;

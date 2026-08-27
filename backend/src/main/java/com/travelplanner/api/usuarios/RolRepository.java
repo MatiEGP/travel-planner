@@ -1,6 +1,5 @@
 package com.travelplanner.api.usuarios;
 
-import com.travelplanner.api.usuarios.Rol;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 

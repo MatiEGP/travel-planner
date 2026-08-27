@@ -1,12 +1,5 @@
 package com.travelplanner.api.planificaciones;
 
-import com.travelplanner.api.planificaciones.DiaItinerarioRequestDTO;
-import com.travelplanner.api.planificaciones.DiaItinerarioResponseDTO;
-import com.travelplanner.api.planificaciones.ItemItinerarioRequestDTO;
-import com.travelplanner.api.planificaciones.ItemItinerarioResponseDTO;
-import com.travelplanner.api.planificaciones.DiaItinerario;
-import com.travelplanner.api.planificaciones.ItemItinerario;
-import com.travelplanner.api.planificaciones.ItinerarioService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;

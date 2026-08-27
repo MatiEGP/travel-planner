@@ -1,6 +1,5 @@
 package com.travelplanner.api.destinos;
 
-import com.travelplanner.api.destinos.Destino;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.List;

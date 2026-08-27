@@ -1,6 +1,6 @@
 import { Outlet, useLocation, useNavigation } from 'react-router-dom';
 import { useEffect, useState } from 'react';
-import { Header } from '../components/layout/Header';
+import { Header } from '../shared/components/layout/Header';
 
 const GlobalLoadingBar = () => {
   let isLoading = false;

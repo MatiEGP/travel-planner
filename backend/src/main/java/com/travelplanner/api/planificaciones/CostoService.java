@@ -1,9 +1,5 @@
 package com.travelplanner.api.planificaciones;
 
-import com.travelplanner.api.planificaciones.Costo;
-import com.travelplanner.api.planificaciones.Planificacion;
-import com.travelplanner.api.planificaciones.CostoRepository;
-import com.travelplanner.api.planificaciones.PlanificacionRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;

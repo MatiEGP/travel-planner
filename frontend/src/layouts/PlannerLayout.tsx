@@ -1,4 +1,5 @@
 import React from 'react';
+import { ErrorBoundary } from '../shared/components/ErrorBoundary';
 
 interface PlannerLayoutProps {
   children: React.ReactNode;
@@ -19,9 +20,11 @@ const PlannerLayout: React.FC<PlannerLayoutProps> = ({ children, onNewTrip }) =>
       
       {/* Main Content */}
       <main className="flex-1 p-4 sm:p-8 overflow-y-auto z-10 relative">
-        <div className="max-w-7xl mx-auto">
-          {children}
-        </div>
+        <ErrorBoundary>
+          <div className="max-w-7xl mx-auto">
+            {children}
+          </div>
+        </ErrorBoundary>
       </main>
       
       {/* Optional Right Aside (Quick Actions) */}

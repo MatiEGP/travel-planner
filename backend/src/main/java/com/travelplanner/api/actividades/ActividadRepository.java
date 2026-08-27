@@ -1,6 +1,5 @@
 package com.travelplanner.api.actividades;
 
-import com.travelplanner.api.actividades.Actividad;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.List;

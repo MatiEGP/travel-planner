@@ -2,9 +2,9 @@ import { render, screen } from '@testing-library/react';
 import { describe, it, expect, vi } from 'vitest';
 import { MemoryRouter } from 'react-router-dom';
 import DiscoveryNavbar from './DiscoveryNavbar';
-import { useAuth } from '../../context/useAuth';
+import { useAuth } from '../../../features/auth/context/useAuth';
 
-vi.mock('../../context/useAuth', () => ({
+vi.mock('../../../features/auth/context/useAuth', () => ({
   useAuth: vi.fn(),
 }));
 

@@ -1,8 +1,6 @@
 package com.travelplanner.api.usuarios;
 
 import com.travelplanner.api.exceptions.CredencialesInvalidasException;
-import com.travelplanner.api.usuarios.Usuario;
-import com.travelplanner.api.usuarios.UsuarioRepository;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.transaction.annotation.Transactional;
 import lombok.RequiredArgsConstructor;

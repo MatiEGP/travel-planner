@@ -1,7 +1,7 @@
 import { useState, type FormEvent, type FC } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { Mail, Lock, Eye, EyeOff, AlertCircle, Loader2 } from 'lucide-react';
-import { useAuth } from '../../context/useAuth';
+import { useAuth } from '../context/useAuth';
 
 export interface LoginFormCardProps {
   isActive: boolean;

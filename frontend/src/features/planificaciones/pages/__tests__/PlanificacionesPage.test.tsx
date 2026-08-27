@@ -2,15 +2,15 @@ import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import { MemoryRouter } from 'react-router-dom';
 import { PlanificacionesPage } from '../PlanificacionesPage';
-import { useAuth } from '../../context/useAuth';
-import { planificacionService } from '../../services/planificacionService';
-import { destinoService } from '../../services/destinoService';
+import { useAuth } from '../../../auth/context/useAuth';
+import { planificacionService } from '../../api/planificacionService';
+import { destinoService } from '../../../destinos/api/destinoService';
 
-vi.mock('../../context/useAuth', () => ({
+vi.mock('../../../auth/context/useAuth', () => ({
   useAuth: vi.fn(),
 }));
 
-vi.mock('../../services/planificacionService', () => ({
+vi.mock('../../api/planificacionService', () => ({
   planificacionService: {
     getByUsuario: vi.fn(),
     create: vi.fn(),
@@ -18,7 +18,7 @@ vi.mock('../../services/planificacionService', () => ({
   },
 }));
 
-vi.mock('../../services/destinoService', () => ({
+vi.mock('../../../destinos/api/destinoService', () => ({
   destinoService: {
     getByPlanificacion: vi.fn(),
   },

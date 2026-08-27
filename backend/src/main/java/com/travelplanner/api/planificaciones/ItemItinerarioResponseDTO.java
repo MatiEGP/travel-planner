@@ -1,6 +1,5 @@
 package com.travelplanner.api.planificaciones;
 
-import com.travelplanner.api.planificaciones.TipoItem;
 import lombok.Data;
 import java.time.LocalTime;
 

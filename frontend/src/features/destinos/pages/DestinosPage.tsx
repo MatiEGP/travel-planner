@@ -1,5 +1,6 @@
 import { useParams, Navigate } from 'react-router-dom';
-import { DestinoManager } from '../containers/DestinoManager';
+import PlannerLayout from '../../layouts/PlannerLayout';
+import { ItinerarioView } from '../planificaciones/components/ItinerarioView';
 
 export const DestinosPage = () => {
   const { planificacionId } = useParams<{ planificacionId: string }>();
@@ -9,8 +10,8 @@ export const DestinosPage = () => {
   }
 
   return (
-    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-      <DestinoManager planificacionId={Number(planificacionId)} />
-    </div>
+    <PlannerLayout>
+      <ItinerarioView planificacionId={planificacionId} />
+    </PlannerLayout>
   );
 };

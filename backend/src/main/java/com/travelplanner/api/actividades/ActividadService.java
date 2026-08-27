@@ -1,9 +1,7 @@
 package com.travelplanner.api.actividades;
 
-import com.travelplanner.api.actividades.Actividad;
 import com.travelplanner.api.destinos.Destino;
 import com.travelplanner.api.planificaciones.Planificacion;
-import com.travelplanner.api.actividades.ActividadRepository;
 import com.travelplanner.api.destinos.DestinoRepository;
 import com.travelplanner.api.planificaciones.PlanificacionRepository;
 import lombok.RequiredArgsConstructor;

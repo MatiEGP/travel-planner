@@ -1,8 +1,7 @@
-import { render, screen } from '@testing-library/react';
+import { render, screen, fireEvent } from '@testing-library/react';
 import { MemoryRouter } from 'react-router-dom';
-import { describe, it, expect } from 'vitest';
+import { describe, it, expect, vi } from 'vitest';
 import { PlanificacionCard } from './PlanificacionCard';
-import type { DestinoWithActividades } from './PlanificacionCard';
 import type { PlanificacionResponseDTO } from '../../types/planificacion';
 
 describe('PlanificacionCard', () => {
@@ -14,51 +13,27 @@ describe('PlanificacionCard', () => {
     fechaFin: '2023-10-15',
   };
 
-  const mockDestinos: DestinoWithActividades[] = [
-    {
-      id: 101,
-      nombre: 'Paris Trip',
-      ciudad: 'Paris',
-      pais: 'France',
-      notas: '',
-      actividades: [
-        { id: 1001, nombre: 'Eiffel Tower', fechaHora: '2023-10-02T10:00:00', notas: '' },
-        { id: 1002, nombre: 'Louvre', fechaHora: '2023-10-03T09:00:00', notas: '' },
-      ],
-    },
-    {
-      id: 102,
-      nombre: 'Rome Trip',
-      ciudad: 'Rome',
-      pais: 'Italy',
-      notas: '',
-      actividades: [
-        { id: 1003, nombre: 'Colosseum', fechaHora: '2023-10-05T14:00:00', notas: '' }
-      ],
-    },
-  ];
-
-  it('renders planificacion details and nested children correctly', () => {
+  it('renders planificacion details correctly', () => {
+    const onDeleteMock = vi.fn();
     render(
       <MemoryRouter>
-        <PlanificacionCard planificacion={mockPlanificacion} destinos={mockDestinos} />
+        <PlanificacionCard planificacion={mockPlanificacion} onDelete={onDeleteMock} />
       </MemoryRouter>
     );
 
-    // Check Planificacion details
     expect(screen.getByText('Trip to Europe')).toBeInTheDocument();
-    
-    // Check Destino details (renders ciudad, pais)
-    expect(screen.getByText(/Paris.*France/)).toBeInTheDocument();
-    expect(screen.getByText(/Rome.*Italy/)).toBeInTheDocument();
+    expect(screen.getByText('A fun trip across Europe')).toBeInTheDocument();
   });
 
-  it('renders correctly without destinations', () => {
+  it('calls onDelete when delete button is clicked', () => {
+    const onDeleteMock = vi.fn();
     render(
       <MemoryRouter>
-        <PlanificacionCard planificacion={mockPlanificacion} />
+        <PlanificacionCard planificacion={mockPlanificacion} onDelete={onDeleteMock} />
       </MemoryRouter>
     );
-    expect(screen.getByText('Aún no agregaste destinos a este viaje.')).toBeInTheDocument();
+    
+    fireEvent.click(screen.getByText('Eliminar'));
+    expect(onDeleteMock).toHaveBeenCalledWith(1);
   });
 });

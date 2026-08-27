@@ -1,7 +1,7 @@
 import { type FC } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
-import { AuthLayout } from '../layouts/AuthLayout';
-import { AnimatedAuthContainer } from '../components/auth/AnimatedAuthContainer';
+import { AuthLayout } from '../../../layouts/AuthLayout';
+import { AnimatedAuthContainer } from '../containers/AnimatedAuthContainer';
 
 export const AuthPage: FC = () => {
   const navigate = useNavigate();

@@ -139,6 +139,9 @@ Adicionalmente, en entornos de desarrollo, **SpringDoc OpenAPI** genera automát
 | **Destinos** | `GET` | `/api/destinos/planificacion/{id}` | `CLIENT` / `ADMIN` | Listar destinos por viaje |
 | **Actividades** | `POST` | `/api/actividades` | `CLIENT` / `ADMIN` | Programar actividad en un destino |
 | **Actividades** | `GET` | `/api/actividades/destino/{id}` | `CLIENT` / `ADMIN` | Listar actividades cronológicas |
+| **Costos** | `POST` | `/api/costos` | `CLIENT` / `ADMIN` | Registrar un costo/gasto |
+| **Costos** | `GET` | `/api/costos/planificacion/{id}` | `CLIENT` / `ADMIN` | Listar costos de un viaje |
+| **Itinerarios** | `GET` | `/api/itinerarios/planificacion/{id}/dias` | `CLIENT` / `ADMIN` | Listar cronograma por días e ítems |
 
 ---
 

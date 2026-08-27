@@ -5,7 +5,7 @@ import { MemoryRouter, Routes, Route } from 'react-router-dom';
 import { AuthPage } from '../AuthPage';
 import { LoginPage } from '../LoginPage';
 import { RegisterPage } from '../RegisterPage';
-import { RootLayout } from '../../layouts/RootLayout';
+import { RootLayout } from '../../../../layouts/RootLayout';
 import { useAuth } from '../../context/useAuth';
 
 const mockNavigate = vi.fn();

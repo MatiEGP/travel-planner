@@ -1,11 +1,5 @@
 package com.travelplanner.api.planificaciones;
 
-import com.travelplanner.api.planificaciones.DiaItinerario;
-import com.travelplanner.api.planificaciones.ItemItinerario;
-import com.travelplanner.api.planificaciones.Planificacion;
-import com.travelplanner.api.planificaciones.DiaItinerarioRepository;
-import com.travelplanner.api.planificaciones.ItemItinerarioRepository;
-import com.travelplanner.api.planificaciones.PlanificacionRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;

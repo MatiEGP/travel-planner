@@ -1,9 +1,5 @@
 package com.travelplanner.api.actividades;
 
-import com.travelplanner.api.actividades.ActividadRequestDTO;
-import com.travelplanner.api.actividades.ActividadResponseDTO;
-import com.travelplanner.api.actividades.Actividad;
-import com.travelplanner.api.actividades.ActividadService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;

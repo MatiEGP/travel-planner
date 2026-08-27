@@ -1,9 +1,9 @@
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { PlanificacionFormModal } from '../PlanificacionFormModal';
-import { useAuth } from '../../../context/useAuth';
+import { useAuth } from '../../../features/auth/context/useAuth';
 
-vi.mock('../../../context/useAuth', () => ({
+vi.mock('../../../features/auth/context/useAuth', () => ({
   useAuth: vi.fn(),
 }));
 
