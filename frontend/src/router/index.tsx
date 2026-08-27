@@ -1,4 +1,5 @@
 import { createBrowserRouter } from 'react-router-dom';
+import { RootLayout } from '../layouts/RootLayout';
 import { MainLayout } from '../layouts/MainLayout';
 import { HomePage } from '../features/planificaciones/pages/HomePage';
 import { AdminPage } from '../features/usuarios/pages/AdminPage';
@@ -14,11 +15,21 @@ import { GuestRoute } from '../features/auth/containers/GuestRoute';
 export const router = createBrowserRouter([
   {
     path: '/',
-    element: <MainLayout />,
+    element: <RootLayout />,
     children: [
       {
         index: true,
         element: <HomePage />,
+      },
+      // Standalone protected pages
+      {
+        element: <ProtectedRoute />,
+        children: [
+          {
+            path: 'planificaciones',
+            element: <PlanificacionesPage />,
+          },
+        ],
       },
       // Rutas para usuarios no autenticados (invitados)
       {
@@ -38,29 +49,31 @@ export const router = createBrowserRouter([
           },
         ],
       },
-      // Rutas protegidas para cualquier usuario autenticado
+      // Legacy routes wrapped in MainLayout
       {
-        element: <ProtectedRoute />,
+        element: <MainLayout />,
         children: [
+          // Rutas protegidas para cualquier usuario autenticado
           {
-            path: 'planificaciones',
-            element: <PlanificacionesPage />,
-          },
-          {
-            path: 'planificaciones/:planificacionId/destinos',
-            element: <DestinosPage />,
-          },
-          {
-            path: 'destinos/:destinoId/actividades',
-            element: <ActividadesPage />,
-          },
-          // Rutas exclusivas para administradores
-          {
-            element: <RoleRoute requiredRole="ADMIN" />,
+            element: <ProtectedRoute />,
             children: [
               {
-                path: 'admin',
-                element: <AdminPage />,
+                path: 'planificaciones/:planificacionId/destinos',
+                element: <DestinosPage />,
+              },
+              {
+                path: 'destinos/:destinoId/actividades',
+                element: <ActividadesPage />,
+              },
+              // Rutas exclusivas para administradores
+              {
+                element: <RoleRoute requiredRole="ADMIN" />,
+                children: [
+                  {
+                    path: 'admin',
+                    element: <AdminPage />,
+                  },
+                ],
               },
             ],
           },

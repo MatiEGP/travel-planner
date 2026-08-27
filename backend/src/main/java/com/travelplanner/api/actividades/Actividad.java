@@ -26,8 +26,14 @@ public class Actividad {
     private LocalDateTime fechaHora;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "destino_id", nullable = false)
+    @JoinColumn(name = "destino_id", nullable = true)
     @ToString.Exclude
     @EqualsAndHashCode.Exclude
     private Destino destino;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "planificacion_id", nullable = false)
+    @ToString.Exclude
+    @EqualsAndHashCode.Exclude
+    private Planificacion planificacion;
 }

@@ -44,12 +44,13 @@ class ActividadControllerTest {
     @Test
     void crearActividad_debeRetornarCreatedYActividadResponseDTO() {
         ActividadRequestDTO request = new ActividadRequestDTO();
+        request.setPlanificacionId(10L);
         request.setDestinoId(5L);
         request.setNombre("Tour Gastronómico");
         request.setFechaHora(LocalDateTime.of(2026, 8, 20, 19, 0));
         request.setNotas("Probar tapas locales");
 
-        when(actividadService.crearActividad(eq(5L), any(Actividad.class))).thenReturn(actividadPrueba);
+        when(actividadService.crearActividad(eq(10L), eq(5L), any(Actividad.class))).thenReturn(actividadPrueba);
 
         ResponseEntity<ActividadResponseDTO> response = actividadController.crearActividad(request);
 

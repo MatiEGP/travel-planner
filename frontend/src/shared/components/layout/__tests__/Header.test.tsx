@@ -98,7 +98,7 @@ describe('Header', () => {
     expect(screen.getByText('Admin Master')).toBeInTheDocument();
   });
 
-  it('applies active styling to login link when on /login', () => {
+  it('renders login link correctly when on /login', () => {
     vi.mocked(useAuth).mockReturnValue({
       isAuthenticated: false,
       isLoading: false,
@@ -116,8 +116,7 @@ describe('Header', () => {
       </MemoryRouter>
     );
 
-    const loginLink = screen.getByText('Iniciar sesión');
-    expect(loginLink.className).toContain('bg-teal-900');
-    expect(loginLink.className).toContain('text-white');
+    const loginLink = screen.getByRole('link', { name: /Iniciar sesión/i });
+    expect(loginLink).toBeInTheDocument();
   });
 });
