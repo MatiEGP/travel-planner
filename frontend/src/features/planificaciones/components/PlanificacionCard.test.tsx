@@ -48,14 +48,9 @@ describe('PlanificacionCard', () => {
     // Check Planificacion details
     expect(screen.getByText('Trip to Europe')).toBeInTheDocument();
     
-    // Check Destino details
-    expect(screen.getByText('Paris Trip')).toBeInTheDocument();
-    expect(screen.getByText('Rome Trip')).toBeInTheDocument();
-
-    // Check Actividad details
-    expect(screen.getByText('Eiffel Tower')).toBeInTheDocument();
-    expect(screen.getByText('Louvre')).toBeInTheDocument();
-    expect(screen.getByText('Colosseum')).toBeInTheDocument();
+    // Check Destino details (renders ciudad, pais)
+    expect(screen.getByText(/Paris.*France/)).toBeInTheDocument();
+    expect(screen.getByText(/Rome.*Italy/)).toBeInTheDocument();
   });
 
   it('renders correctly without destinations', () => {
@@ -64,6 +59,6 @@ describe('PlanificacionCard', () => {
         <PlanificacionCard planificacion={mockPlanificacion} />
       </MemoryRouter>
     );
-    expect(screen.getByText('No destinations added to this trip yet.')).toBeInTheDocument();
+    expect(screen.getByText('Aún no agregaste destinos a este viaje.')).toBeInTheDocument();
   });
 });

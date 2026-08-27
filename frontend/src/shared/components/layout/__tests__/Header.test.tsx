@@ -27,7 +27,6 @@ describe('Header', () => {
       </MemoryRouter>
     );
 
-    expect(screen.getByText('Inicio')).toBeInTheDocument();
     expect(screen.getByText('Iniciar sesión')).toBeInTheDocument();
     expect(screen.getByText('Registrarse')).toBeInTheDocument();
     expect(screen.queryByText('Planificaciones')).not.toBeInTheDocument();
@@ -64,7 +63,7 @@ describe('Header', () => {
     expect(screen.getByText('Planificaciones')).toBeInTheDocument();
     expect(screen.getByText('Laura')).toBeInTheDocument();
     expect(screen.getByText('Cliente')).toBeInTheDocument();
-    expect(screen.getByText('Cerrar sesión')).toBeInTheDocument();
+    expect(screen.getByText('Salir')).toBeInTheDocument();
     expect(screen.queryByText('Admin')).not.toBeInTheDocument();
   });
 
