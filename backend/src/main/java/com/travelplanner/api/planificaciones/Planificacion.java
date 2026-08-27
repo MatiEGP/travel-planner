@@ -1,4 +1,5 @@
 package com.travelplanner.api.planificaciones;
+import com.travelplanner.api.actividades.Actividad;
 import com.travelplanner.api.usuarios.Usuario;
 import com.travelplanner.api.destinos.Destino;
 

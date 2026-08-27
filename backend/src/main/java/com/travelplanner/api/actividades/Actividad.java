@@ -1,6 +1,7 @@
 package com.travelplanner.api.actividades;
 import com.travelplanner.api.destinos.Destino;
 
+import com.travelplanner.api.planificaciones.Planificacion;
 import jakarta.persistence.*;
 import lombok.*;
 
