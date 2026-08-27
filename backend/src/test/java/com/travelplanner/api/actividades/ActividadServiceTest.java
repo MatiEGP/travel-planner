@@ -1,9 +1,9 @@
 package com.travelplanner.api.actividades;
 
-import com.travelplanner.api.actividades.Actividad;
 import com.travelplanner.api.destinos.Destino;
-import com.travelplanner.api.actividades.ActividadRepository;
+import com.travelplanner.api.planificaciones.Planificacion;
 import com.travelplanner.api.destinos.DestinoRepository;
+import com.travelplanner.api.planificaciones.PlanificacionRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -28,17 +28,24 @@ class ActividadServiceTest {
     @Mock
     private DestinoRepository destinoRepository;
 
+    @Mock
+    private PlanificacionRepository planificacionRepository;
+
     @InjectMocks
     private ActividadService actividadService;
 
     private Destino destinoPrueba;
     private Actividad actividadPrueba;
+    private Planificacion planificacionPrueba;
 
     @BeforeEach
     void setUp() {
         destinoPrueba = new Destino();
         destinoPrueba.setId(5L);
         destinoPrueba.setNombre("Roma");
+
+        planificacionPrueba = new Planificacion();
+        planificacionPrueba.setId(10L);
 
         actividadPrueba = new Actividad();
         actividadPrueba.setId(1L);
@@ -49,23 +56,38 @@ class ActividadServiceTest {
 
     @Test
     void crearActividad_conDestinoExistente_debeGuardarYRetornarActividad() {
+        when(planificacionRepository.findById(10L)).thenReturn(Optional.of(planificacionPrueba));
         when(destinoRepository.findById(5L)).thenReturn(Optional.of(destinoPrueba));
         when(actividadRepository.save(any(Actividad.class))).thenAnswer(inv -> inv.getArgument(0));
 
-        Actividad resultado = actividadService.crearActividad(5L, actividadPrueba);
+        Actividad resultado = actividadService.crearActividad(10L, 5L, actividadPrueba);
 
         assertNotNull(resultado);
         assertEquals("Visita al Coliseo", resultado.getNombre());
         assertEquals(destinoPrueba, resultado.getDestino());
+        assertEquals(planificacionPrueba, resultado.getPlanificacion());
         verify(actividadRepository).save(actividadPrueba);
     }
 
     @Test
     void crearActividad_conDestinoInexistente_debeLanzarIllegalArgumentException() {
+        when(planificacionRepository.findById(10L)).thenReturn(Optional.of(planificacionPrueba));
         when(destinoRepository.findById(99L)).thenReturn(Optional.empty());
 
         IllegalArgumentException ex = assertThrows(IllegalArgumentException.class, () ->
-                actividadService.crearActividad(99L, actividadPrueba)
+                actividadService.crearActividad(10L, 99L, actividadPrueba)
+        );
+
+        assertTrue(ex.getMessage().contains("no existe"));
+        verify(actividadRepository, never()).save(any());
+    }
+
+    @Test
+    void crearActividad_conPlanificacionInexistente_debeLanzarIllegalArgumentException() {
+        when(planificacionRepository.findById(99L)).thenReturn(Optional.empty());
+
+        IllegalArgumentException ex = assertThrows(IllegalArgumentException.class, () ->
+                actividadService.crearActividad(99L, 5L, actividadPrueba)
         );
 
         assertTrue(ex.getMessage().contains("no existe"));

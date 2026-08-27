@@ -1,9 +1,5 @@
 package com.travelplanner.api.actividades;
 
-import com.travelplanner.api.actividades.ActividadRequestDTO;
-import com.travelplanner.api.actividades.ActividadResponseDTO;
-import com.travelplanner.api.actividades.Actividad;
-import com.travelplanner.api.actividades.ActividadService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -23,16 +19,17 @@ public class ActividadController {
     @PostMapping
     @PreAuthorize("hasRole('CLIENT')")
     public ResponseEntity<ActividadResponseDTO> crearActividad(@RequestBody ActividadRequestDTO request) {
-        // 1. Mapeo manual de DTO a Entidad
         Actividad nuevaActividad = new Actividad();
         nuevaActividad.setNombre(request.getNombre());
         nuevaActividad.setFechaHora(request.getFechaHora());
         nuevaActividad.setNotas(request.getNotas());
 
-        // 2. Ejecutar lógica de negocio
-        Actividad actividadGuardada = actividadService.crearActividad(request.getDestinoId(), nuevaActividad);
+        Actividad actividadGuardada = actividadService.crearActividad(
+                request.getPlanificacionId(), 
+                request.getDestinoId(), 
+                nuevaActividad
+        );
 
-        // 3. Devolver la respuesta mapeada
         return ResponseEntity.status(HttpStatus.CREATED).body(mapearAResponse(actividadGuardada));
     }
 
@@ -43,16 +40,23 @@ public class ActividadController {
         return ResponseEntity.ok(mapearAResponse(actividad));
     }
 
-    @GetMapping("/destino/{destinoId}")
+    @GetMapping("/planificacion/{planificacionId}")
     @PreAuthorize("hasRole('CLIENT')")
-    public ResponseEntity<List<ActividadResponseDTO>> listarPorDestino(@PathVariable Long destinoId) {
-        // El servicio ya devuelve la lista ordenada por fechaHora ascendente
-        List<Actividad> actividades = actividadService.obtenerActividadesPorDestino(destinoId);
-
+    public ResponseEntity<List<ActividadResponseDTO>> listarPorPlanificacion(@PathVariable Long planificacionId) {
+        List<Actividad> actividades = actividadService.obtenerActividadesPorPlanificacion(planificacionId);
         List<ActividadResponseDTO> responseList = actividades.stream()
                 .map(this::mapearAResponse)
                 .collect(Collectors.toList());
+        return ResponseEntity.ok(responseList);
+    }
 
+    @GetMapping("/destino/{destinoId}")
+    @PreAuthorize("hasRole('CLIENT')")
+    public ResponseEntity<List<ActividadResponseDTO>> listarPorDestino(@PathVariable Long destinoId) {
+        List<Actividad> actividades = actividadService.obtenerActividadesPorDestino(destinoId);
+        List<ActividadResponseDTO> responseList = actividades.stream()
+                .map(this::mapearAResponse)
+                .collect(Collectors.toList());
         return ResponseEntity.ok(responseList);
     }
 
@@ -63,10 +67,15 @@ public class ActividadController {
         return ResponseEntity.noContent().build();
     }
 
-    // Metodo helper para evitar duplicar código de mapeo
     private ActividadResponseDTO mapearAResponse(Actividad actividad) {
         ActividadResponseDTO response = new ActividadResponseDTO();
         response.setId(actividad.getId());
+        if (actividad.getPlanificacion() != null) {
+            response.setPlanificacionId(actividad.getPlanificacion().getId());
+        }
+        if (actividad.getDestino() != null) {
+            response.setDestinoId(actividad.getDestino().getId());
+        }
         response.setNombre(actividad.getNombre());
         response.setFechaHora(actividad.getFechaHora());
         response.setNotas(actividad.getNotas());

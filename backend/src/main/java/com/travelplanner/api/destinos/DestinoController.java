@@ -1,9 +1,5 @@
 package com.travelplanner.api.destinos;
 
-import com.travelplanner.api.destinos.DestinoRequestDTO;
-import com.travelplanner.api.destinos.DestinoResponseDTO;
-import com.travelplanner.api.destinos.Destino;
-import com.travelplanner.api.destinos.DestinoService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;

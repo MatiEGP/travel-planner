@@ -1,8 +1,6 @@
 package com.travelplanner.api.planificaciones;
 
-import com.travelplanner.api.planificaciones.Planificacion;
 import com.travelplanner.api.usuarios.Usuario;
-import com.travelplanner.api.planificaciones.PlanificacionRepository;
 import com.travelplanner.api.usuarios.UsuarioRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
