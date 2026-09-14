@@ -116,6 +116,16 @@ describe('API Services', () => {
       expect(apiClient.get).toHaveBeenCalledWith('/actividades/destino/5');
       expect(result).toEqual(mockActividades);
     });
+
+    it('calls GET /actividades/planificacion/:id', async () => {
+      const mockActividades = [{ id: 1, planificacionId: 10, nombre: 'Coliseo', fechaHora: '2026-09-02T10:00:00', notas: 'Guía' }];
+      vi.mocked(apiClient.get).mockResolvedValueOnce({ data: mockActividades });
+
+      const result = await actividadService.getByPlanificacion(10);
+
+      expect(apiClient.get).toHaveBeenCalledWith('/actividades/planificacion/10');
+      expect(result).toEqual(mockActividades);
+    });
   });
 
   describe('usuarioService', () => {

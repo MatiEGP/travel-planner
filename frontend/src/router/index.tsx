@@ -4,6 +4,7 @@ import { MainLayout } from '../layouts/MainLayout';
 import { HomePage } from '../features/planificaciones/pages/HomePage';
 import { AdminPage } from '../features/usuarios/pages/AdminPage';
 import { PlanificacionesPage } from '../features/planificaciones/pages/PlanificacionesPage';
+import { PlanificacionDetailPage } from '../features/planificaciones/pages/PlanificacionDetailPage';
 import { DestinosPage } from '../features/destinos/pages/DestinosPage';
 import { ActividadesPage } from '../features/actividades/pages/ActividadesPage';
 import { AuthPage } from '../features/auth/pages/AuthPage';
@@ -27,6 +28,10 @@ export const router = createBrowserRouter([
           {
             path: 'planificaciones',
             element: <PlanificacionesPage />,
+          },
+          {
+            path: 'planificaciones/:planificacionId',
+            element: <PlanificacionDetailPage />,
           },
         ],
       },

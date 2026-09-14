@@ -3,11 +3,12 @@ import { actividadService } from '../api/actividadService';
 import type { ActividadRequestDTO } from '../types/actividad';
 
 interface ActividadFormProps {
-  destinoId: number;
+  destinoId?: number;
+  planificacionId?: number;
   onCreated: () => void;
 }
 
-export const ActividadForm = ({ destinoId, onCreated }: ActividadFormProps) => {
+export const ActividadForm = ({ destinoId, planificacionId, onCreated }: ActividadFormProps) => {
   const [formData, setFormData] = useState({
     nombre: '',
     fechaHora: '',
@@ -19,7 +20,8 @@ export const ActividadForm = ({ destinoId, onCreated }: ActividadFormProps) => {
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
     const request: ActividadRequestDTO = {
-      destinoId,
+      ...(destinoId ? { destinoId } : {}),
+      ...(planificacionId ? { planificacionId } : {}),
       nombre: formData.nombre,
       fechaHora: formData.fechaHora + ':00', // Add seconds for LocalDateTime format
       notas: formData.notas,

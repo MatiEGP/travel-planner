@@ -14,6 +14,8 @@ export const DiaItinerarioCard: React.FC<Props> = ({ dia }) => {
     day: 'numeric'
   });
 
+  const items = dia.items || [];
+
   return (
     <div className="bg-slate-900/60 backdrop-blur-sm rounded-xl p-5 mb-6 border border-slate-700/50 shadow-md">
       <div className="border-b border-slate-700 pb-3 mb-4 flex items-center gap-3">
@@ -25,11 +27,11 @@ export const DiaItinerarioCard: React.FC<Props> = ({ dia }) => {
         <h3 className="text-xl font-bold text-white capitalize">{formattedDate}</h3>
       </div>
       
-      {dia.items.length === 0 ? (
+      {items.length === 0 ? (
         <p className="text-slate-400 italic py-4 text-center">No items planned for this day yet.</p>
       ) : (
         <div className="flex flex-col gap-1">
-          {dia.items.map(item => (
+          {items.map(item => (
             <ItemItinerarioRow key={item.id} item={item} />
           ))}
         </div>

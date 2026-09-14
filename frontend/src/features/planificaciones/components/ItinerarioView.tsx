@@ -20,7 +20,7 @@ export const ItinerarioView: React.FC<Props> = ({ planificacionId }) => {
         setLoading(true);
         const data = await itinerarioService.getItinerario(planificacionId);
         if (mounted) {
-          setDias(data);
+          setDias(data as DiaItinerarioDTO[]);
           setError(null);
         }
       } catch (err) {
@@ -54,7 +54,7 @@ export const ItinerarioView: React.FC<Props> = ({ planificacionId }) => {
     throw error;
   }
 
-  const isEmpty = dias.length === 0 || dias.every(dia => dia.items.length === 0);
+  const isEmpty = dias.length === 0 || dias.every(dia => (dia.items || []).length === 0);
 
   if (isEmpty) {
     return (
@@ -75,8 +75,8 @@ export const ItinerarioView: React.FC<Props> = ({ planificacionId }) => {
 
   // Aggregate total costs across all days and items
   const totalGeneral = dias.reduce((accDia, dia) => {
-    return accDia + dia.items.reduce((accItem, item) => {
-      return accItem + item.costos.reduce((accCosto, costo) => accCosto + costo.monto, 0);
+    return accDia + (dia.items || []).reduce((accItem, item) => {
+      return accItem + (item.costos || []).reduce((accCosto, costo) => accCosto + costo.monto, 0);
     }, 0);
   }, 0);
 

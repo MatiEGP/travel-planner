@@ -1,4 +1,5 @@
 import { render, screen, waitFor } from '@testing-library/react';
+import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { ItinerarioView } from './ItinerarioView';
 import { itinerarioService } from '../api/itinerarioService';
 
@@ -29,24 +30,25 @@ describe('ItinerarioView', () => {
   it('renders days and items correctly', async () => {
     mockGetItinerario.mockResolvedValue([
       {
-        id: 'dia1',
+        id: 1,
+        planificacionId: 1,
         fecha: '2024-10-10',
         items: [
           {
-            id: 'item1',
+            id: 101,
+            diaItinerarioId: 1,
             tipo: 'vuelo',
-            titulo: 'Flight to Paris',
-            costos: [{ monto: 100, moneda: 'USD', categoria: 'travel', pagado: false }]
-          }
-        ]
-      }
+            notas: 'Flight to Paris',
+          },
+        ],
+      },
     ]);
 
     render(<ItinerarioView planificacionId="plan1" />);
 
     await waitFor(() => {
+      expect(screen.getAllByText('vuelo').length).toBeGreaterThan(0);
       expect(screen.getByText('Flight to Paris')).toBeInTheDocument();
-      expect(screen.getAllByText('$100.00').length).toBeGreaterThan(0); // total cost
     });
   });
 

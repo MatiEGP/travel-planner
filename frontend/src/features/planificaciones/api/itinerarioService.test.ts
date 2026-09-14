@@ -1,31 +1,60 @@
+import { describe, it, expect, vi, beforeEach } from 'vitest';
+import { apiClient } from '../../../shared/api/client';
 import { itinerarioService } from './itinerarioService';
 
-describe('itinerarioService', () => {
-  const mockFetch = vi.fn();
-  vi.stubGlobal('fetch', mockFetch);
+vi.mock('../../../shared/api/client', () => ({
+  apiClient: {
+    get: vi.fn(),
+    post: vi.fn(),
+    delete: vi.fn(),
+  },
+}));
 
-  afterEach(() => {
+describe('itinerarioService', () => {
+  beforeEach(() => {
     vi.clearAllMocks();
   });
 
-  it('fetches itinerario data successfully', async () => {
-    const mockData = [{ id: '1', fecha: '2023-01-01', items: [] }];
-    mockFetch.mockResolvedValueOnce({
-      ok: true,
-      json: async () => mockData
-    });
+  it('calls GET /itinerarios/planificacion/:planificacionId/dias', async () => {
+    const mockDias = [{ id: 1, planificacionId: 10, fecha: '2026-09-01', items: [] }];
+    vi.mocked(apiClient.get).mockResolvedValueOnce({ data: mockDias });
 
-    const result = await itinerarioService.getItinerario('plan1');
-    expect(result).toEqual(mockData);
-    expect(mockFetch).toHaveBeenCalledWith(expect.stringContaining('/planificaciones/plan1/itinerario'));
+    const result = await itinerarioService.getDiasByPlanificacion(10);
+    expect(apiClient.get).toHaveBeenCalledWith('/itinerarios/planificacion/10/dias');
+    expect(result).toEqual(mockDias);
   });
 
-  it('throws an error if fetch fails', async () => {
-    mockFetch.mockResolvedValueOnce({
-      ok: false,
-      statusText: 'Not Found'
-    });
+  it('calls POST /itinerarios/dias', async () => {
+    const request = { planificacionId: 10, fecha: '2026-09-02' };
+    const response = { id: 2, planificacionId: 10, fecha: '2026-09-02', items: [] };
+    vi.mocked(apiClient.post).mockResolvedValueOnce({ data: response });
 
-    await expect(itinerarioService.getItinerario('plan2')).rejects.toThrow('Failed to fetch itinerario: Not Found');
+    const result = await itinerarioService.createDia(request);
+    expect(apiClient.post).toHaveBeenCalledWith('/itinerarios/dias', request);
+    expect(result).toEqual(response);
+  });
+
+  it('calls DELETE /itinerarios/dias/:id', async () => {
+    vi.mocked(apiClient.delete).mockResolvedValueOnce({});
+
+    await itinerarioService.deleteDia(2);
+    expect(apiClient.delete).toHaveBeenCalledWith('/itinerarios/dias/2');
+  });
+
+  it('calls POST /itinerarios/items', async () => {
+    const itemReq = { diaItinerarioId: 2, tipo: 'VISITA', notas: 'Paseo', horaInicio: '10:00', horaFin: '12:00' };
+    const itemRes = { id: 100, ...itemReq };
+    vi.mocked(apiClient.post).mockResolvedValueOnce({ data: itemRes });
+
+    const result = await itinerarioService.createItem(itemReq);
+    expect(apiClient.post).toHaveBeenCalledWith('/itinerarios/items', itemReq);
+    expect(result).toEqual(itemRes);
+  });
+
+  it('calls DELETE /itinerarios/items/:id', async () => {
+    vi.mocked(apiClient.delete).mockResolvedValueOnce({});
+
+    await itinerarioService.deleteItem(100);
+    expect(apiClient.delete).toHaveBeenCalledWith('/itinerarios/items/100');
   });
 });

@@ -12,7 +12,8 @@ export const ItemItinerarioRow: React.FC<Props> = ({ item }) => {
     return timeStr.slice(0, 5); 
   };
 
-  const totalCost = item.costos.reduce((acc, costo) => acc + costo.monto, 0);
+  const costos = item.costos || [];
+  const totalCost = costos.reduce((acc, costo) => acc + costo.monto, 0);
 
   return (
     <div className="flex flex-col sm:flex-row bg-slate-800 rounded-lg p-4 mb-3 border border-slate-700 shadow-sm">
@@ -21,11 +22,11 @@ export const ItemItinerarioRow: React.FC<Props> = ({ item }) => {
           <span className="text-xs font-bold px-2 py-1 bg-teal-900 text-teal-300 rounded uppercase">
             {item.tipo}
           </span>
-          <h4 className="text-lg font-semibold text-white">{item.titulo}</h4>
+          <h4 className="text-lg font-semibold text-white">{item.titulo || item.tipo}</h4>
         </div>
         
-        {item.descripcion && (
-          <p className="text-slate-400 text-sm mb-2">{item.descripcion}</p>
+        {(item.descripcion || item.notas) && (
+          <p className="text-slate-400 text-sm mb-2">{item.descripcion || item.notas}</p>
         )}
         
         {(item.horaInicio || item.horaFin) && (
@@ -38,14 +39,14 @@ export const ItemItinerarioRow: React.FC<Props> = ({ item }) => {
         )}
       </div>
 
-      {item.costos.length > 0 && (
+      {costos.length > 0 && (
         <div className="mt-3 sm:mt-0 sm:ml-4 flex flex-col justify-center items-end border-t sm:border-t-0 sm:border-l border-slate-700 pt-3 sm:pt-0 sm:pl-4 min-w-[120px]">
           <span className="text-xs text-slate-400 mb-1">Costos</span>
           <span className="text-lg font-bold text-teal-400">
             ${totalCost.toFixed(2)}
           </span>
           <div className="flex gap-1 mt-1 flex-wrap justify-end">
-            {item.costos.map((c, idx) => (
+            {costos.map((c, idx) => (
               <span key={c.id || idx} className="text-[10px] bg-slate-700 text-slate-300 px-1.5 py-0.5 rounded" title={c.categoria}>
                 {c.moneda} {c.monto}
               </span>

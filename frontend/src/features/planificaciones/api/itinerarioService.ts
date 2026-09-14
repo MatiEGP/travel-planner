@@ -1,14 +1,40 @@
-import type { DiaItinerarioDTO } from '../types/itinerario';
-
-// Assuming we have some base API client. We'll use fetch as a placeholder if there isn't one.
-const BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:3000/api';
+import { apiClient } from '../../../shared/api/client';
+import type {
+  DiaItinerarioRequestDTO,
+  DiaItinerarioResponseDTO,
+  ItemItinerarioRequestDTO,
+  ItemItinerarioResponseDTO,
+} from '../types/itinerario';
 
 export const itinerarioService = {
-  async getItinerario(planificacionId: string): Promise<DiaItinerarioDTO[]> {
-    const response = await fetch(`${BASE_URL}/planificaciones/${planificacionId}/itinerario`);
-    if (!response.ok) {
-      throw new Error(`Failed to fetch itinerario: ${response.statusText}`);
-    }
-    return response.json();
-  }
+  getDiasByPlanificacion: async (planificacionId: number): Promise<DiaItinerarioResponseDTO[]> => {
+    const response = await apiClient.get<DiaItinerarioResponseDTO[]>(
+      `/itinerarios/planificacion/${planificacionId}/dias`
+    );
+    return response.data;
+  },
+
+  createDia: async (data: DiaItinerarioRequestDTO): Promise<DiaItinerarioResponseDTO> => {
+    const response = await apiClient.post<DiaItinerarioResponseDTO>('/itinerarios/dias', data);
+    return response.data;
+  },
+
+  deleteDia: async (id: number): Promise<void> => {
+    await apiClient.delete(`/itinerarios/dias/${id}`);
+  },
+
+  createItem: async (data: ItemItinerarioRequestDTO): Promise<ItemItinerarioResponseDTO> => {
+    const response = await apiClient.post<ItemItinerarioResponseDTO>('/itinerarios/items', data);
+    return response.data;
+  },
+
+  deleteItem: async (id: number): Promise<void> => {
+    await apiClient.delete(`/itinerarios/items/${id}`);
+  },
+
+  // Backwards compatibility helper
+  getItinerario: async (planificacionId: string | number): Promise<DiaItinerarioResponseDTO[]> => {
+    const id = typeof planificacionId === 'string' ? parseInt(planificacionId, 10) : planificacionId;
+    return itinerarioService.getDiasByPlanificacion(id);
+  },
 };

@@ -69,7 +69,7 @@ describe('PlanificacionCard', () => {
     expect(screen.getByText('Aún no agregaste destinos a este viaje.')).toBeInTheDocument();
   });
 
-  it('navigates to trip destinations on card click', () => {
+  it('navigates to trip detail on card click', () => {
     render(
       <MemoryRouter>
         <PlanificacionCard planificacion={mockPlanificacion} destinos={mockDestinos} />
@@ -79,7 +79,7 @@ describe('PlanificacionCard', () => {
     const card = screen.getByRole('article');
     fireEvent.click(card);
 
-    expect(mockedNavigate).toHaveBeenCalledWith('/planificaciones/1/destinos');
+    expect(mockedNavigate).toHaveBeenCalledWith('/planificaciones/1');
   });
 
   it('toggles favorite heart state on click without navigating', () => {

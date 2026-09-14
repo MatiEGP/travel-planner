@@ -23,6 +23,17 @@ public class ActividadService {
                 .orElseThrow(() -> new IllegalArgumentException("La Planificacion con ID " + planificacionId + " no existe."));
         actividad.setPlanificacion(planificacion);
 
+        if (actividad.getFechaHora() != null
+                && planificacion.getFechaInicio() != null
+                && planificacion.getFechaFin() != null) {
+            java.time.LocalDate fechaActividad = actividad.getFechaHora().toLocalDate();
+            if (fechaActividad.isBefore(planificacion.getFechaInicio())
+                    || fechaActividad.isAfter(planificacion.getFechaFin())) {
+                throw new IllegalArgumentException(
+                        "La fecha de la actividad debe estar dentro del rango de la planificación.");
+            }
+        }
+
         if (destinoId != null) {
             Destino destino = destinoRepository.findById(destinoId)
                     .orElseThrow(() -> new IllegalArgumentException("El Destino con ID " + destinoId + " no existe."));

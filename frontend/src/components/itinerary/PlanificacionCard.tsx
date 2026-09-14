@@ -29,7 +29,7 @@ export const PlanificacionCard: React.FC<PlanificacionCardProps> = ({
   const coverImage = getTripCoverImage(planificacion.titulo, planificacion.id);
 
   const handleCardClick = () => {
-    navigate(`/planificaciones/${planificacion.id}/destinos`);
+    navigate(`/planificaciones/${planificacion.id}`);
   };
 
   const handleHeartClick = (e: React.MouseEvent) => {
