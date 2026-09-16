@@ -57,6 +57,11 @@ const GlobalLoadingBar = () => {
   );
 };
 
+// ============================================================================
+// Root Layout
+// Unifies the background canvas to a clean light palette (#F7F9FA) across all
+// application routes and manages contextual header presentation.
+// ============================================================================
 export const RootLayout = () => {
   const location = useLocation();
   const isAuthRoute = ['/login', '/register', '/registro'].includes(location.pathname);
@@ -64,7 +69,7 @@ export const RootLayout = () => {
   return (
     <div
       data-testid="root-layout"
-      className={`min-h-screen flex flex-col ${isAuthRoute ? 'bg-[#F7F9FA]' : 'bg-slate-900'}`}
+      className="min-h-screen flex flex-col bg-[#F7F9FA] text-slate-800"
     >
       <GlobalLoadingBar />
       {!isAuthRoute && <Header />}

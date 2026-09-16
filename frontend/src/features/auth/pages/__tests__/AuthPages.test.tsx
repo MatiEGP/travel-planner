@@ -523,5 +523,57 @@ describe('Unified Mirrored Auth View (AuthPage, LoginPage, RegisterPage)', () =>
       expect(rootLayout).not.toHaveClass('bg-slate-900');
     });
   });
+
+  describe('Responsive 3D Clamping & Reduced Motion', () => {
+    it('clamps 3D transform offset to 40% on tablet viewport (768px - 1023px)', () => {
+      const originalInnerWidth = window.innerWidth;
+      window.innerWidth = 768;
+
+      render(
+        <MemoryRouter initialEntries={['/login']}>
+          <AuthPage />
+        </MemoryRouter>
+      );
+
+      const loginLayer = screen.getByTestId('auth-card-login');
+      const signupLayer = screen.getByTestId('auth-card-signup');
+
+      expect(loginLayer.style.transform).toBe('translateZ(0) scale(1) translateX(0)');
+      expect(signupLayer.style.transform).toBe('translateZ(-200px) scale(0.8) translateX(40%)');
+
+      window.innerWidth = originalInnerWidth;
+    });
+
+    it('adapts 3D card layout and applies motion-reduce styles when reduced motion is preferred', () => {
+      const originalMatchMedia = window.matchMedia;
+      window.matchMedia = vi.fn().mockImplementation((query: string) => ({
+        matches: query === '(prefers-reduced-motion: reduce)',
+        media: query,
+        onchange: null,
+        addListener: vi.fn(),
+        removeListener: vi.fn(),
+        addEventListener: vi.fn(),
+        removeEventListener: vi.fn(),
+        dispatchEvent: vi.fn(),
+      }));
+
+      render(
+        <MemoryRouter initialEntries={['/login']}>
+          <AuthPage />
+        </MemoryRouter>
+      );
+
+      const loginLayer = screen.getByTestId('auth-card-login');
+      const signupLayer = screen.getByTestId('auth-card-signup');
+
+      expect(loginLayer.style.transform).toBe('none');
+      expect(signupLayer.style.transform).toBe('none');
+      expect(loginLayer).toHaveClass('motion-reduce:transform-none');
+      expect(signupLayer).toHaveClass('motion-reduce:transform-none');
+
+      window.matchMedia = originalMatchMedia;
+    });
+  });
 });
+
 

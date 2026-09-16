@@ -87,7 +87,7 @@ describe('RootLayout Header Suppression & Background Canvas', () => {
     expect(screen.getByTestId('registro-content')).toBeInTheDocument();
   });
 
-  it('renders Header and applies bg-slate-900 when on non-auth routes (e.g. /)', () => {
+  it('renders Header and applies bg-[#F7F9FA] when on non-auth routes (e.g. /)', () => {
     render(
       <MemoryRouter initialEntries={['/']}>
         <Routes>
@@ -100,8 +100,8 @@ describe('RootLayout Header Suppression & Background Canvas', () => {
 
     const rootLayout = screen.getByTestId('root-layout');
     expect(rootLayout).toBeInTheDocument();
-    expect(rootLayout).toHaveClass('bg-slate-900');
-    expect(rootLayout).not.toHaveClass('bg-[#F7F9FA]');
+    expect(rootLayout).toHaveClass('bg-[#F7F9FA]');
+    expect(rootLayout).not.toHaveClass('bg-slate-900');
 
     // Header navigation should be rendered
     expect(screen.getByRole('banner')).toBeInTheDocument();
