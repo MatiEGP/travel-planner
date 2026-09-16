@@ -14,13 +14,13 @@ export const HomePage = () => {
 
   return (
     <DiscoveryLayout>
-      <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-16 sm:py-24 text-center">
+      <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-10 sm:py-16 text-center">
         {/* Hero Section */}
-        <div className="mb-10">
-          <div className="w-20 h-20 bg-teal-50 border border-teal-100 rounded-2xl flex items-center justify-center mx-auto mb-8 shadow-xs">
+        <div className="mb-8">
+          <div className="w-16 h-16 sm:w-20 sm:h-20 bg-teal-50 border border-teal-100 rounded-2xl flex items-center justify-center mx-auto mb-6 shadow-xs">
             <svg
               xmlns="http://www.w3.org/2000/svg"
-              className="h-10 w-10 text-teal-600"
+              className="h-8 w-8 sm:h-10 sm:w-10 text-teal-600"
               fill="none"
               viewBox="0 0 24 24"
               stroke="currentColor"
@@ -33,7 +33,7 @@ export const HomePage = () => {
               />
             </svg>
           </div>
-          <h1 className="text-4xl sm:text-5xl md:text-6xl font-extrabold text-slate-900 tracking-tight mb-6">
+          <h1 className="text-4xl sm:text-5xl md:text-6xl font-extrabold text-slate-900 tracking-tight mb-4">
             Planificá tus viajes con <span className="bg-gradient-to-r from-teal-600 to-emerald-600 bg-clip-text text-transparent">Travel Planner</span>
           </h1>
           <p className="text-lg sm:text-xl text-slate-600 max-w-2xl mx-auto leading-relaxed">
@@ -43,7 +43,7 @@ export const HomePage = () => {
         </div>
 
         {/* Action CTAs */}
-        <div className="flex flex-col sm:flex-row items-center justify-center gap-4 mb-16">
+        <div className="flex flex-col sm:flex-row items-center justify-center gap-4 mb-12">
           {isAuthenticated ? (
             <Link
               to="/planificaciones"

@@ -194,7 +194,7 @@ export const PlanificacionDetailPage: React.FC = () => {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-[#F7F9FA] flex flex-col items-center justify-center p-4">
+      <div className="flex-1 bg-[#F7F9FA] flex flex-col items-center justify-center p-4">
         <div className="animate-spin rounded-full h-12 w-12 border-4 border-slate-200 border-t-[#FF5A5F] mb-4" />
         <p className="text-slate-600 font-semibold text-sm">Cargando itinerario de viaje...</p>
       </div>
@@ -203,7 +203,7 @@ export const PlanificacionDetailPage: React.FC = () => {
 
   if (error || !planificacion) {
     return (
-      <div className="min-h-screen bg-[#F7F9FA] flex flex-col items-center justify-center p-6 text-center">
+      <div className="flex-1 bg-[#F7F9FA] flex flex-col items-center justify-center p-6 text-center">
         <div className="w-16 h-16 rounded-2xl bg-rose-50 text-rose-600 flex items-center justify-center mb-4">
           <AlertCircle className="w-8 h-8" />
         </div>
@@ -232,7 +232,7 @@ export const PlanificacionDetailPage: React.FC = () => {
   }
 
   return (
-    <div className="min-h-screen bg-[#F7F9FA] text-[#222222] pb-24 lg:pb-16 font-sans">
+    <div className="flex-1 bg-[#F7F9FA] text-[#222222] pb-24 lg:pb-16 font-sans">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-6">
         {/* Full-width Hero Header */}
         <TripDetailHeader

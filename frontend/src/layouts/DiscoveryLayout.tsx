@@ -10,8 +10,8 @@ interface DiscoveryLayoutProps {
 
 const DiscoveryLayout: React.FC<DiscoveryLayoutProps> = ({ children }) => {
   return (
-    <div className="flex-1 bg-[#F7F9FA]">
-      <main className="h-full">
+    <div className="flex-1 bg-[#F7F9FA] flex flex-col">
+      <main className="flex-1">
         {children}
       </main>
     </div>

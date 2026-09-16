@@ -51,7 +51,7 @@ describe('Unified Mirrored Auth View (AuthPage, LoginPage, RegisterPage)', () =>
 
       const layout = screen.getByTestId('auth-layout');
       expect(layout).toBeInTheDocument();
-      expect(layout).toHaveClass('min-h-screen');
+      expect(layout).toHaveClass('flex-1');
       expect(layout).toHaveClass('w-full');
       expect(layout).toHaveClass('flex');
       expect(layout).toHaveClass('items-center');
@@ -501,7 +501,7 @@ describe('Unified Mirrored Auth View (AuthPage, LoginPage, RegisterPage)', () =>
       expect(rootLayout).not.toHaveClass('bg-slate-900');
 
       const authLayout = screen.getByTestId('auth-layout');
-      expect(authLayout).toHaveClass('min-h-screen');
+      expect(authLayout).toHaveClass('flex-1');
       expect(authLayout).toHaveClass('overflow-x-hidden');
       expect(screen.getByTestId('auth-bg-image')).toBeInTheDocument();
     });
