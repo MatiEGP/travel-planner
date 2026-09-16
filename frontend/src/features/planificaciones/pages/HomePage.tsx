@@ -9,9 +9,8 @@ import { useAuth } from '../../auth/context/useAuth';
 import DiscoveryLayout from '../../../layouts/DiscoveryLayout';
 
 export const HomePage = () => {
-  const { isAuthenticated, hasRole } = useAuth();
+  const { isAuthenticated } = useAuth();
   const location = useLocation();
-  const isAdmin = hasRole('ADMIN');
 
   return (
     <DiscoveryLayout>
@@ -46,25 +45,15 @@ export const HomePage = () => {
         {/* Action CTAs */}
         <div className="flex flex-col sm:flex-row items-center justify-center gap-4 mb-16">
           {isAuthenticated ? (
-            <>
-              <Link
-                to="/planificaciones"
-                className="inline-flex items-center gap-2 bg-teal-600 hover:bg-teal-500 text-white font-semibold py-3.5 px-8 rounded-xl transition-all duration-200 shadow-md shadow-teal-600/20 hover:shadow-lg hover:shadow-teal-600/30 hover:-translate-y-0.5 cursor-pointer"
-              >
-                <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-                  <path strokeLinecap="round" strokeLinejoin="round" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
-                </svg>
-                Mis Planificaciones
-              </Link>
-              {isAdmin && (
-                <Link
-                  to="/admin"
-                  className="inline-flex items-center gap-2 bg-white hover:bg-slate-50 border border-slate-200 text-slate-700 hover:text-slate-900 font-semibold py-3.5 px-8 rounded-xl transition-all duration-200 shadow-xs hover:-translate-y-0.5 cursor-pointer"
-                >
-                  Panel de Administración
-                </Link>
-              )}
-            </>
+            <Link
+              to="/planificaciones"
+              className="inline-flex items-center gap-2 bg-teal-600 hover:bg-teal-500 text-white font-semibold py-3.5 px-8 rounded-xl transition-all duration-200 shadow-md shadow-teal-600/20 hover:shadow-lg hover:shadow-teal-600/30 hover:-translate-y-0.5 cursor-pointer"
+            >
+              <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                <path strokeLinecap="round" strokeLinejoin="round" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
+              </svg>
+              Mis Planificaciones
+            </Link>
           ) : (
             <>
               <Link
