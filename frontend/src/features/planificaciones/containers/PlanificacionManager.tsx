@@ -16,25 +16,27 @@ export const PlanificacionManager = () => {
 
   useEffect(() => {
     if (!usuario) return;
-    let cancelled = false;
+    const controller = new AbortController();
 
     const load = async () => {
       try {
         setLoading(true);
-        const data = await planificacionService.getByUsuario(usuario.id);
-        if (!cancelled) {
-          setPlanificaciones(data);
-          setError(null);
-        }
+        const data = await planificacionService.getByUsuario(usuario.id, { signal: controller.signal });
+        setPlanificaciones(data);
+        setError(null);
       } catch (err) {
-        if (!cancelled) setError((err as Error).message);
+        const error = err as Error;
+        if (error.name === 'AbortError' || error.name === 'CanceledError') return;
+        setError(error.message || 'Error loading data');
       } finally {
-        if (!cancelled) setLoading(false);
+        if (!controller.signal.aborted) {
+          setLoading(false);
+        }
       }
     };
 
     load();
-    return () => { cancelled = true; };
+    return () => { controller.abort(); };
   }, [usuario, refreshKey]);
 
   const handleDelete = async (id: number) => {

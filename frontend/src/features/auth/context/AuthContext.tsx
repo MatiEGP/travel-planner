@@ -9,20 +9,18 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
 
   // Hidratar la sesión del usuario al montar el componente vía /api/auth/me
   useEffect(() => {
-    let cancelled = false;
+    const controller = new AbortController();
 
     const hydrateAuth = async () => {
       try {
-        const currentUser = await authService.getMe();
-        if (!cancelled) {
-          setUser(currentUser);
-        }
-      } catch {
-        if (!cancelled) {
-          setUser(null);
-        }
+        const currentUser = await authService.getMe({ signal: controller.signal });
+        setUser(currentUser);
+      } catch (err) {
+        const error = err as Error;
+        if (error.name === 'AbortError' || error.name === 'CanceledError') return;
+        setUser(null);
       } finally {
-        if (!cancelled) {
+        if (!controller.signal.aborted) {
           setIsLoading(false);
         }
       }
@@ -31,7 +29,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     hydrateAuth();
 
     return () => {
-      cancelled = true;
+      controller.abort();
     };
   }, []);
 

@@ -13,25 +13,27 @@ export const UsuarioManager = () => {
   const refresh = useCallback(() => setRefreshKey((k) => k + 1), []);
 
   useEffect(() => {
-    let cancelled = false;
+    const controller = new AbortController();
 
     const load = async () => {
       try {
         setLoading(true);
-        const data = await usuarioService.getAll();
-        if (!cancelled) {
-          setUsuarios(data);
-          setError(null);
-        }
+        const data = await usuarioService.getAll({ signal: controller.signal });
+        setUsuarios(data);
+        setError(null);
       } catch (err) {
-        if (!cancelled) setError((err as Error).message);
+        const error = err as Error;
+        if (error.name === 'AbortError' || error.name === 'CanceledError') return;
+        setError(error.message || 'Error loading usuarios');
       } finally {
-        if (!cancelled) setLoading(false);
+        if (!controller.signal.aborted) {
+          setLoading(false);
+        }
       }
     };
 
     load();
-    return () => { cancelled = true; };
+    return () => { controller.abort(); };
   }, [refreshKey]);
 
   return (

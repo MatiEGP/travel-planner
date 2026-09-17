@@ -35,11 +35,9 @@ export const TripBottomNav: React.FC<TripBottomNavProps> = ({
       (entries) => {
         const visibleEntries = entries.filter((e) => e.isIntersecting);
         if (visibleEntries.length > 0) {
-          const topEntry = visibleEntries.reduce((prev, curr) =>
-            curr.boundingClientRect.top < prev.boundingClientRect.top && curr.boundingClientRect.top >= 0
-              ? curr
-              : prev
-          );
+          const topEntry = visibleEntries.reduce((prev, curr) => {
+            return Math.abs(curr.boundingClientRect.top) < Math.abs(prev.boundingClientRect.top) ? curr : prev;
+          });
           setActiveSection(topEntry.target.id);
         }
       },

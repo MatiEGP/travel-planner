@@ -22,7 +22,7 @@ describe('costoService', () => {
     vi.mocked(apiClient.get).mockResolvedValueOnce({ data: mockCostos });
 
     const result = await costoService.getByPlanificacion(5);
-    expect(apiClient.get).toHaveBeenCalledWith('/costos/planificacion/5');
+    expect(apiClient.get).toHaveBeenCalledWith('/costos/planificacion/5', undefined);
     expect(result).toEqual(mockCostos);
   });
 
@@ -31,7 +31,7 @@ describe('costoService', () => {
     vi.mocked(apiClient.get).mockResolvedValueOnce({ data: mockCosto });
 
     const result = await costoService.getById(1);
-    expect(apiClient.get).toHaveBeenCalledWith('/costos/1');
+    expect(apiClient.get).toHaveBeenCalledWith('/costos/1', undefined);
     expect(result).toEqual(mockCosto);
   });
 
@@ -41,7 +41,7 @@ describe('costoService', () => {
     vi.mocked(apiClient.post).mockResolvedValueOnce({ data: res });
 
     const result = await costoService.create(req);
-    expect(apiClient.post).toHaveBeenCalledWith('/costos', req);
+    expect(apiClient.post).toHaveBeenCalledWith('/costos', req, undefined);
     expect(result).toEqual(res);
   });
 
@@ -49,6 +49,6 @@ describe('costoService', () => {
     vi.mocked(apiClient.delete).mockResolvedValueOnce({});
 
     await costoService.delete(2);
-    expect(apiClient.delete).toHaveBeenCalledWith('/costos/2');
+    expect(apiClient.delete).toHaveBeenCalledWith('/costos/2', undefined);
   });
 });

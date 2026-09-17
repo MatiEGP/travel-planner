@@ -15,6 +15,7 @@ const GlobalLoadingBar = () => {
   useEffect(() => {
     let interval: ReturnType<typeof setInterval>;
     let timeout: ReturnType<typeof setTimeout>;
+    let innerTimeout: ReturnType<typeof setTimeout>;
     
     if (isLoading) {
       timeout = setTimeout(() => {
@@ -32,12 +33,13 @@ const GlobalLoadingBar = () => {
     } else {
       timeout = setTimeout(() => {
         setProgress(100);
-        setTimeout(() => setProgress(0), 400);
+        innerTimeout = setTimeout(() => setProgress(0), 400);
       }, 0);
     }
     
     return () => {
       clearTimeout(timeout);
+      clearTimeout(innerTimeout);
       clearInterval(interval);
     };
   }, [isLoading]);
