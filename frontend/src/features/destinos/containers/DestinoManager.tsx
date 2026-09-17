@@ -22,29 +22,31 @@ export const DestinoManager = ({ planificacionId }: DestinoManagerProps) => {
   const refresh = useCallback(() => setRefreshKey((k) => k + 1), []);
 
   useEffect(() => {
-    let cancelled = false;
+    const controller = new AbortController();
 
     const load = async () => {
       try {
         setLoading(true);
         const [planData, destinosData] = await Promise.all([
-          planificacionService.getById(planificacionId),
-          destinoService.getByPlanificacion(planificacionId),
+          planificacionService.getById(planificacionId, { signal: controller.signal }),
+          destinoService.getByPlanificacion(planificacionId, { signal: controller.signal }),
         ]);
-        if (!cancelled) {
-          setPlanificacion(planData);
-          setDestinos(destinosData);
-          setError(null);
-        }
+        setPlanificacion(planData);
+        setDestinos(destinosData);
+        setError(null);
       } catch (err) {
-        if (!cancelled) setError((err as Error).message);
+        const error = err as Error;
+        if (error.name === 'AbortError' || error.name === 'CanceledError') return;
+        setError(error.message || 'Error loading data');
       } finally {
-        if (!cancelled) setLoading(false);
+        if (!controller.signal.aborted) {
+          setLoading(false);
+        }
       }
     };
 
     load();
-    return () => { cancelled = true; };
+    return () => { controller.abort(); };
   }, [planificacionId, refreshKey]);
 
   const handleDelete = async (id: number) => {

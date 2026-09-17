@@ -81,11 +81,11 @@ describe('PlanificacionDetailPage Integration', () => {
       expect(screen.getByText('Llegada y check-in')).toBeInTheDocument();
     });
 
-    expect(planificacionService.getById).toHaveBeenCalledWith(5);
-    expect(destinoService.getByPlanificacion).toHaveBeenCalledWith(5);
-    expect(actividadService.getByPlanificacion).toHaveBeenCalledWith(5);
-    expect(costoService.getByPlanificacion).toHaveBeenCalledWith(5);
-    expect(itinerarioService.getDiasByPlanificacion).toHaveBeenCalledWith(5);
+    expect(planificacionService.getById).toHaveBeenCalledWith(5, expect.anything());
+    expect(destinoService.getByPlanificacion).toHaveBeenCalledWith(5, expect.anything());
+    expect(actividadService.getByPlanificacion).toHaveBeenCalledWith(5, expect.anything());
+    expect(costoService.getByPlanificacion).toHaveBeenCalledWith(5, expect.anything());
+    expect(itinerarioService.getDiasByPlanificacion).toHaveBeenCalledWith(5, expect.anything());
   });
 
   it('renders error state when data fetch fails and allows retry', async () => {

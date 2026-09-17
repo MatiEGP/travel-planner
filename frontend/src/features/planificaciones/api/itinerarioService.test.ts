@@ -20,7 +20,7 @@ describe('itinerarioService', () => {
     vi.mocked(apiClient.get).mockResolvedValueOnce({ data: mockDias });
 
     const result = await itinerarioService.getDiasByPlanificacion(10);
-    expect(apiClient.get).toHaveBeenCalledWith('/itinerarios/planificacion/10/dias');
+    expect(apiClient.get).toHaveBeenCalledWith('/itinerarios/planificacion/10/dias', undefined);
     expect(result).toEqual(mockDias);
   });
 
@@ -30,7 +30,7 @@ describe('itinerarioService', () => {
     vi.mocked(apiClient.post).mockResolvedValueOnce({ data: response });
 
     const result = await itinerarioService.createDia(request);
-    expect(apiClient.post).toHaveBeenCalledWith('/itinerarios/dias', request);
+    expect(apiClient.post).toHaveBeenCalledWith('/itinerarios/dias', request, undefined);
     expect(result).toEqual(response);
   });
 
@@ -38,7 +38,7 @@ describe('itinerarioService', () => {
     vi.mocked(apiClient.delete).mockResolvedValueOnce({});
 
     await itinerarioService.deleteDia(2);
-    expect(apiClient.delete).toHaveBeenCalledWith('/itinerarios/dias/2');
+    expect(apiClient.delete).toHaveBeenCalledWith('/itinerarios/dias/2', undefined);
   });
 
   it('calls POST /itinerarios/items', async () => {
@@ -47,7 +47,7 @@ describe('itinerarioService', () => {
     vi.mocked(apiClient.post).mockResolvedValueOnce({ data: itemRes });
 
     const result = await itinerarioService.createItem(itemReq);
-    expect(apiClient.post).toHaveBeenCalledWith('/itinerarios/items', itemReq);
+    expect(apiClient.post).toHaveBeenCalledWith('/itinerarios/items', itemReq, undefined);
     expect(result).toEqual(itemRes);
   });
 
@@ -55,6 +55,6 @@ describe('itinerarioService', () => {
     vi.mocked(apiClient.delete).mockResolvedValueOnce({});
 
     await itinerarioService.deleteItem(100);
-    expect(apiClient.delete).toHaveBeenCalledWith('/itinerarios/items/100');
+    expect(apiClient.delete).toHaveBeenCalledWith('/itinerarios/items/100', undefined);
   });
 });

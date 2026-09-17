@@ -25,45 +25,50 @@ export const PlanificacionesPage = () => {
 
   useEffect(() => {
     if (!usuario) return;
-    let cancelled = false;
+    const controller = new AbortController();
 
     const loadData = async () => {
       try {
         setLoading(true);
-        const data = await planificacionService.getByUsuario(usuario.id);
+        const data = await planificacionService.getByUsuario(usuario.id, { signal: controller.signal });
 
-        if (!cancelled) {
-          setPlanificaciones(data);
-          setError(null);
+        setPlanificaciones(data);
+        setError(null);
 
-          // Fetch destinations in parallel
-          const destPromises = data.map((plan) =>
-            destinoService
-              .getByPlanificacion(plan.id)
-              .then((destinos) => ({ planId: plan.id, destinos }))
-              .catch(() => ({ planId: plan.id, destinos: [] }))
-          );
+        // Fetch destinations in parallel
+        const destPromises = data.map((plan) =>
+          destinoService
+            .getByPlanificacion(plan.id, { signal: controller.signal })
+            .then((destinos) => ({ planId: plan.id, destinos }))
+            .catch((err) => {
+              if (err.name === 'AbortError' || err.name === 'CanceledError') {
+                throw err;
+              }
+              return { planId: plan.id, destinos: [] };
+            })
+        );
 
-          const destResults = await Promise.all(destPromises);
-          const destMap: Record<number, DestinoResponseDTO[]> = {};
-          destResults.forEach((res) => {
-            destMap[res.planId] = res.destinos;
-          });
+        const destResults = await Promise.all(destPromises);
+        const destMap: Record<number, DestinoResponseDTO[]> = {};
+        destResults.forEach((res) => {
+          destMap[res.planId] = res.destinos;
+        });
 
-          if (!cancelled) {
-            setDestinosByPlan(destMap);
-          }
-        }
+        setDestinosByPlan(destMap);
       } catch (err) {
-        if (!cancelled) setError((err as Error).message);
+        const error = err as Error;
+        if (error.name === 'AbortError' || error.name === 'CanceledError') return;
+        setError(error.message || 'Error loading data');
       } finally {
-        if (!cancelled) setLoading(false);
+        if (!controller.signal.aborted) {
+          setLoading(false);
+        }
       }
     };
 
     loadData();
     return () => {
-      cancelled = true;
+      controller.abort();
     };
   }, [usuario]);
 

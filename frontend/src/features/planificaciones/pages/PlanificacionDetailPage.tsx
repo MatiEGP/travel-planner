@@ -71,41 +71,39 @@ export const PlanificacionDetailPage: React.FC = () => {
   }, [id]);
 
   useEffect(() => {
-    let isCancelled = false;
-
     if (isNaN(id)) {
       return;
     }
 
+    const controller = new AbortController();
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     setLoading(true);
 
     Promise.all([
-      planificacionService.getById(id),
-      destinoService.getByPlanificacion(id),
-      actividadService.getByPlanificacion(id),
-      costoService.getByPlanificacion(id),
-      itinerarioService.getDiasByPlanificacion(id),
+      planificacionService.getById(id, { signal: controller.signal }),
+      destinoService.getByPlanificacion(id, { signal: controller.signal }),
+      actividadService.getByPlanificacion(id, { signal: controller.signal }),
+      costoService.getByPlanificacion(id, { signal: controller.signal }),
+      itinerarioService.getDiasByPlanificacion(id, { signal: controller.signal }),
     ])
       .then(([planRes, destRes, actRes, costRes, diasRes]) => {
-        if (!isCancelled) {
-          setPlanificacion(planRes);
-          setDestinos(destRes || []);
-          setActividades(actRes || []);
-          setCostos(costRes || []);
-          setDias(diasRes || []);
-          setError(null);
-          setLoading(false);
-        }
+        setPlanificacion(planRes);
+        setDestinos(destRes || []);
+        setActividades(actRes || []);
+        setCostos(costRes || []);
+        setDias(diasRes || []);
+        setError(null);
+        setLoading(false);
       })
       .catch((err) => {
-        if (!isCancelled) {
-          setError((err as Error).message || 'Error al cargar los detalles del viaje.');
-          setLoading(false);
-        }
+        const error = err as Error;
+        if (error.name === 'AbortError' || error.name === 'CanceledError') return;
+        setError(error.message || 'Error al cargar los detalles del viaje.');
+        setLoading(false);
       });
 
     return () => {
-      isCancelled = true;
+      controller.abort();
     };
   }, [id]);
 

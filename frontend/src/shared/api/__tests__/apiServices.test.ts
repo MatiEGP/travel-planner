@@ -30,7 +30,7 @@ describe('API Services', () => {
       expect(apiClient.post).toHaveBeenCalledWith('/auth/login', {
         email: 'test@example.com',
         password: 'password123',
-      });
+      }, undefined);
       expect(result).toEqual(mockUser);
     });
 
@@ -40,7 +40,7 @@ describe('API Services', () => {
 
       const result = await authService.getMe();
 
-      expect(apiClient.get).toHaveBeenCalledWith('/auth/me');
+      expect(apiClient.get).toHaveBeenCalledWith('/auth/me', undefined);
       expect(result).toEqual(mockUser);
     });
 
@@ -49,7 +49,7 @@ describe('API Services', () => {
 
       await authService.logout();
 
-      expect(apiClient.post).toHaveBeenCalledWith('/auth/logout');
+      expect(apiClient.post).toHaveBeenCalledWith('/auth/logout', undefined, undefined);
     });
   });
 
@@ -60,7 +60,7 @@ describe('API Services', () => {
 
       const result = await planificacionService.getByUsuario(1);
 
-      expect(apiClient.get).toHaveBeenCalledWith('/planificaciones/usuario/1');
+      expect(apiClient.get).toHaveBeenCalledWith('/planificaciones/usuario/1', undefined);
       expect(result).toEqual(mockList);
     });
 
@@ -71,7 +71,7 @@ describe('API Services', () => {
 
       const result = await planificacionService.create(newPlan);
 
-      expect(apiClient.post).toHaveBeenCalledWith('/planificaciones', newPlan);
+      expect(apiClient.post).toHaveBeenCalledWith('/planificaciones', newPlan, undefined);
       expect(result).toEqual(savedPlan);
     });
 
@@ -80,7 +80,7 @@ describe('API Services', () => {
 
       await planificacionService.delete(2);
 
-      expect(apiClient.delete).toHaveBeenCalledWith('/planificaciones/2');
+      expect(apiClient.delete).toHaveBeenCalledWith('/planificaciones/2', undefined);
     });
   });
 
@@ -91,7 +91,7 @@ describe('API Services', () => {
 
       const result = await destinoService.getByPlanificacion(10);
 
-      expect(apiClient.get).toHaveBeenCalledWith('/destinos/planificacion/10');
+      expect(apiClient.get).toHaveBeenCalledWith('/destinos/planificacion/10', undefined);
       expect(result).toEqual(mockDestinos);
     });
 
@@ -101,7 +101,7 @@ describe('API Services', () => {
 
       const result = await destinoService.create(newDestino);
 
-      expect(apiClient.post).toHaveBeenCalledWith('/destinos', newDestino);
+      expect(apiClient.post).toHaveBeenCalledWith('/destinos', newDestino, undefined);
       expect(result.id).toBe(2);
     });
   });
@@ -113,7 +113,7 @@ describe('API Services', () => {
 
       const result = await actividadService.getByDestino(5);
 
-      expect(apiClient.get).toHaveBeenCalledWith('/actividades/destino/5');
+      expect(apiClient.get).toHaveBeenCalledWith('/actividades/destino/5', undefined);
       expect(result).toEqual(mockActividades);
     });
 
@@ -123,7 +123,7 @@ describe('API Services', () => {
 
       const result = await actividadService.getByPlanificacion(10);
 
-      expect(apiClient.get).toHaveBeenCalledWith('/actividades/planificacion/10');
+      expect(apiClient.get).toHaveBeenCalledWith('/actividades/planificacion/10', undefined);
       expect(result).toEqual(mockActividades);
     });
   });
@@ -135,7 +135,7 @@ describe('API Services', () => {
 
       const result = await usuarioService.getAll();
 
-      expect(apiClient.get).toHaveBeenCalledWith('/usuarios');
+      expect(apiClient.get).toHaveBeenCalledWith('/usuarios', undefined);
       expect(result).toEqual(mockUsers);
     });
   });

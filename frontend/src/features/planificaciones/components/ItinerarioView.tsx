@@ -13,22 +13,20 @@ export const ItinerarioView: React.FC<Props> = ({ planificacionId }) => {
   const [error, setError] = useState<Error | null>(null);
 
   useEffect(() => {
-    let mounted = true;
+    const controller = new AbortController();
     
     const fetchItinerario = async () => {
       try {
         setLoading(true);
-        const data = await itinerarioService.getItinerario(planificacionId);
-        if (mounted) {
-          setDias(data as DiaItinerarioDTO[]);
-          setError(null);
-        }
+        const data = await itinerarioService.getItinerario(planificacionId, { signal: controller.signal });
+        setDias(data as DiaItinerarioDTO[]);
+        setError(null);
       } catch (err) {
-        if (mounted) {
-          setError(err instanceof Error ? err : new Error('Unknown error fetching itinerario'));
-        }
+        const error = err as Error;
+        if (error.name === 'AbortError' || error.name === 'CanceledError') return;
+        setError(error instanceof Error ? error : new Error('Unknown error fetching itinerario'));
       } finally {
-        if (mounted) {
+        if (!controller.signal.aborted) {
           setLoading(false);
         }
       }
@@ -37,7 +35,7 @@ export const ItinerarioView: React.FC<Props> = ({ planificacionId }) => {
     fetchItinerario();
 
     return () => {
-      mounted = false;
+      controller.abort();
     };
   }, [planificacionId]);
 
