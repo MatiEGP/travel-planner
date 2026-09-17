@@ -140,6 +140,35 @@ describe('ItinerarioSection', () => {
     });
   });
 
+  it('shows an error if trying to add an already existing day', async () => {
+    render(
+      <ItinerarioSection
+        planificacionId={10}
+        fechaInicio="2026-09-01"
+        fechaFin="2026-09-10"
+        dias={mockDias}
+        actividades={mockActividades}
+        destinos={mockDestinos}
+        onAddDia={vi.fn()}
+        onDeleteDia={vi.fn()}
+        onAddItem={vi.fn()}
+        onDeleteItem={vi.fn()}
+      />
+    );
+
+    const addDayBtn = screen.getByRole('button', { name: /Agregar Día/i });
+    fireEvent.click(addDayBtn);
+
+    const dateInput = screen.getByLabelText(/Fecha del itinerario \*/i);
+    // mockDias has 2026-09-01
+    fireEvent.change(dateInput, { target: { value: '2026-09-01' } });
+
+    const submitBtn = screen.getByRole('button', { name: /Crear Día/i });
+    fireEvent.click(submitBtn);
+
+    expect(screen.getByText('Este día ya fue agregado al itinerario.')).toBeInTheDocument();
+  });
+
   it('opens add item modal and calls onAddItem with chosen activity', async () => {
     const onAddItemMock = vi.fn().mockResolvedValue(undefined);
     render(
