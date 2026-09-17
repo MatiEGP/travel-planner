@@ -11,6 +11,7 @@ interface ActividadesSectionProps {
   actividades: ActividadResponseDTO[];
   onAddActividad: (data: ActividadRequestDTO) => Promise<void>;
   onDeleteActividad: (id: number) => Promise<void>;
+  openModalTrigger?: number;
 }
 
 export const ActividadesSection: React.FC<ActividadesSectionProps> = ({
@@ -21,6 +22,7 @@ export const ActividadesSection: React.FC<ActividadesSectionProps> = ({
   actividades,
   onAddActividad,
   onDeleteActividad,
+  openModalTrigger,
 }) => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [formData, setFormData] = useState({
@@ -47,6 +49,13 @@ export const ActividadesSection: React.FC<ActividadesSectionProps> = ({
     setIsModalOpen(false);
     setError(null);
   };
+
+  React.useEffect(() => {
+    if (openModalTrigger && openModalTrigger > 0) {
+      handleOpenModal();
+      document.getElementById('section-actividades')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
+  }, [openModalTrigger]);
 
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();

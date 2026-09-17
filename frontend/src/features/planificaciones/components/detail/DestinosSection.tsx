@@ -8,6 +8,7 @@ interface DestinosSectionProps {
   destinos: DestinoResponseDTO[];
   onAddDestino: (data: DestinoRequestDTO) => Promise<void>;
   onDeleteDestino: (id: number) => Promise<void>;
+  openModalTrigger?: number;
 }
 
 export const DestinosSection: React.FC<DestinosSectionProps> = ({
@@ -15,6 +16,7 @@ export const DestinosSection: React.FC<DestinosSectionProps> = ({
   destinos,
   onAddDestino,
   onDeleteDestino,
+  openModalTrigger,
 }) => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [formData, setFormData] = useState({
@@ -36,6 +38,13 @@ export const DestinosSection: React.FC<DestinosSectionProps> = ({
     setIsModalOpen(false);
     setError(null);
   };
+
+  React.useEffect(() => {
+    if (openModalTrigger && openModalTrigger > 0) {
+      handleOpenModal();
+      document.getElementById('section-destinos')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
+  }, [openModalTrigger]);
 
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
