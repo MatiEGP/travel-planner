@@ -20,6 +20,7 @@ interface ItinerarioSectionProps {
   onDeleteDia: (id: number) => Promise<void>;
   onAddItem: (data: ItemItinerarioRequestDTO) => Promise<void>;
   onDeleteItem: (id: number) => Promise<void>;
+  openModalTrigger?: number;
 }
 
 export const ItinerarioSection: React.FC<ItinerarioSectionProps> = ({
@@ -33,6 +34,7 @@ export const ItinerarioSection: React.FC<ItinerarioSectionProps> = ({
   onDeleteDia,
   onAddItem,
   onDeleteItem,
+  openModalTrigger,
 }) => {
   // Sort days chronologically
   const sortedDias = useMemo(() => {
@@ -76,6 +78,15 @@ export const ItinerarioSection: React.FC<ItinerarioSectionProps> = ({
     setError(null);
     setIsDayModalOpen(true);
   };
+
+  React.useEffect(() => {
+    if (openModalTrigger && openModalTrigger > 0) {
+      // eslint-disable-next-line react-hooks/set-state-in-effect
+      handleOpenDayModal();
+      document.getElementById('section-itinerario')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
+     
+  }, [openModalTrigger]);
 
   const handleOpenItemModal = () => {
     const defaultTipo = 'ACTIVIDAD';

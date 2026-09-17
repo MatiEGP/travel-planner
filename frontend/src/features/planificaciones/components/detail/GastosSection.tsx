@@ -7,6 +7,7 @@ interface GastosSectionProps {
   costos: CostoResponseDTO[];
   onAddCosto: (data: CostoRequestDTO) => Promise<void>;
   onDeleteCosto: (id: number) => Promise<void>;
+  openModalTrigger?: number;
 }
 
 const DEFAULT_CATEGORIES = [
@@ -22,6 +23,7 @@ export const GastosSection: React.FC<GastosSectionProps> = ({
   costos,
   onAddCosto,
   onDeleteCosto,
+  openModalTrigger,
 }) => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [formData, setFormData] = useState({
@@ -55,6 +57,15 @@ export const GastosSection: React.FC<GastosSectionProps> = ({
     setIsModalOpen(false);
     setError(null);
   };
+
+  React.useEffect(() => {
+    if (openModalTrigger && openModalTrigger > 0) {
+      // eslint-disable-next-line react-hooks/set-state-in-effect
+      handleOpenModal();
+      document.getElementById('section-gastos')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
+     
+  }, [openModalTrigger]);
 
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();

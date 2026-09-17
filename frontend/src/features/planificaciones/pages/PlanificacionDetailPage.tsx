@@ -175,19 +175,17 @@ export const PlanificacionDetailPage: React.FC = () => {
     setDias(updated);
   };
 
+  const [destinoTrigger, setDestinoTrigger] = useState(0);
+  const [actividadTrigger, setActividadTrigger] = useState(0);
+  const [gastoTrigger, setGastoTrigger] = useState(0);
+  const [diaTrigger, setDiaTrigger] = useState(0);
+
   // Quick Action Handler from Sidebar
   const handleQuickAction = (action: 'destino' | 'actividad' | 'gasto' | 'dia') => {
-    const sectionMap = {
-      destino: 'section-destinos',
-      actividad: 'section-actividades',
-      gasto: 'section-gastos',
-      dia: 'section-itinerario',
-    };
-    const targetId = sectionMap[action];
-    const el = document.getElementById(targetId);
-    if (el) {
-      el.scrollIntoView({ behavior: 'smooth', block: 'start' });
-    }
+    if (action === 'destino') setDestinoTrigger(prev => prev + 1);
+    else if (action === 'actividad') setActividadTrigger(prev => prev + 1);
+    else if (action === 'gasto') setGastoTrigger(prev => prev + 1);
+    else if (action === 'dia') setDiaTrigger(prev => prev + 1);
   };
 
   const totalGastos = costos.reduce((acc, c) => acc + (Number(c.monto) || 0), 0);
@@ -262,6 +260,7 @@ export const PlanificacionDetailPage: React.FC = () => {
               destinos={destinos}
               onAddDestino={handleAddDestino}
               onDeleteDestino={handleDeleteDestino}
+              openModalTrigger={destinoTrigger}
             />
 
             <ActividadesSection
@@ -272,6 +271,7 @@ export const PlanificacionDetailPage: React.FC = () => {
               actividades={actividades}
               onAddActividad={handleAddActividad}
               onDeleteActividad={handleDeleteActividad}
+              openModalTrigger={actividadTrigger}
             />
 
             <GastosSection
@@ -279,6 +279,7 @@ export const PlanificacionDetailPage: React.FC = () => {
               costos={costos}
               onAddCosto={handleAddCosto}
               onDeleteCosto={handleDeleteCosto}
+              openModalTrigger={gastoTrigger}
             />
 
             <ItinerarioSection
@@ -292,6 +293,7 @@ export const PlanificacionDetailPage: React.FC = () => {
               onDeleteDia={handleDeleteDia}
               onAddItem={handleAddItem}
               onDeleteItem={handleDeleteItem}
+              openModalTrigger={diaTrigger}
             />
           </main>
 
