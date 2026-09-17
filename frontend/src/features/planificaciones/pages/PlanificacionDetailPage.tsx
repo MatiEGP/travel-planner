@@ -77,6 +77,8 @@ export const PlanificacionDetailPage: React.FC = () => {
       return;
     }
 
+    setLoading(true);
+
     Promise.all([
       planificacionService.getById(id),
       destinoService.getByPlanificacion(id),

@@ -44,11 +44,11 @@ export const TripAnchorNav: React.FC<TripAnchorNavProps> = ({
         const visibleEntries = entries.filter((e) => e.isIntersecting);
         if (visibleEntries.length > 0) {
           // Sort by top distance to viewport top
-          const topEntry = visibleEntries.reduce((prev, curr) =>
-            curr.boundingClientRect.top < prev.boundingClientRect.top && curr.boundingClientRect.top >= 0
-              ? curr
-              : prev
-          );
+          const topEntry = visibleEntries.reduce((prev, curr) => {
+            // Find the element closest to the top of the viewport
+            // Both might be negative, we want the one with the smallest absolute value
+            return Math.abs(curr.boundingClientRect.top) < Math.abs(prev.boundingClientRect.top) ? curr : prev;
+          });
           setActiveSection(topEntry.target.id);
         }
       },
