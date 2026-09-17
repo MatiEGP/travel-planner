@@ -107,7 +107,7 @@ export const PlanificacionesPage = () => {
   const displayedTrips = activeTab === 'upcoming' ? upcomingTrips : pastTrips;
 
   return (
-    <div className="min-h-screen bg-[#F7F9FA] text-slate-900 py-8 px-4 sm:px-8 lg:px-12">
+    <div className="flex-1 bg-[#F7F9FA] text-slate-900 py-8 px-4 sm:px-8 lg:px-12">
       <div className="max-w-7xl mx-auto">
         {/* Top Header & Actions */}
         <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-6 mb-8">

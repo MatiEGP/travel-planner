@@ -16,7 +16,7 @@ export const AuthLayout = ({
   return (
     <div
       data-testid="auth-layout"
-      className="relative min-h-screen w-full flex items-center justify-center p-4 sm:p-6 overflow-hidden overflow-x-hidden bg-slate-900"
+      className="relative flex-1 w-full flex items-center justify-center p-4 sm:p-6 overflow-hidden overflow-x-hidden bg-slate-900"
     >
       {/* Top-Left Brand Link to Main Menu / Home */}
       <div className="absolute top-6 left-6 sm:top-8 sm:left-10 z-20">

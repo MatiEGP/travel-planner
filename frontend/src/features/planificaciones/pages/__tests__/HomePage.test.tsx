@@ -65,7 +65,7 @@ describe('HomePage', () => {
     expect(screen.queryByText('Panel de Administración')).not.toBeInTheDocument();
   });
 
-  it('renders admin view with Mis Planificaciones and Panel de Administración', () => {
+  it('does not render Panel de Administración even for admin role', () => {
     const adminUser = {
       id: 1,
       nombre: 'Admin',
@@ -92,6 +92,6 @@ describe('HomePage', () => {
     );
 
     expect(screen.getByText('Mis Planificaciones')).toBeInTheDocument();
-    expect(screen.getByText('Panel de Administración')).toBeInTheDocument();
+    expect(screen.queryByText('Panel de Administración')).not.toBeInTheDocument();
   });
 });
