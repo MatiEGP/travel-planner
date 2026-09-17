@@ -52,9 +52,11 @@ export const ActividadesSection: React.FC<ActividadesSectionProps> = ({
 
   React.useEffect(() => {
     if (openModalTrigger && openModalTrigger > 0) {
+      // eslint-disable-next-line react-hooks/set-state-in-effect
       handleOpenModal();
       document.getElementById('section-actividades')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [openModalTrigger]);
 
   const handleSubmit = async (e: FormEvent) => {

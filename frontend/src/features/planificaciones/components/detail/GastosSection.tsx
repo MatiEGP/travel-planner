@@ -60,9 +60,11 @@ export const GastosSection: React.FC<GastosSectionProps> = ({
 
   React.useEffect(() => {
     if (openModalTrigger && openModalTrigger > 0) {
+      // eslint-disable-next-line react-hooks/set-state-in-effect
       handleOpenModal();
       document.getElementById('section-gastos')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
     }
+     
   }, [openModalTrigger]);
 
   const handleSubmit = async (e: FormEvent) => {

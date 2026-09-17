@@ -81,9 +81,11 @@ export const ItinerarioSection: React.FC<ItinerarioSectionProps> = ({
 
   React.useEffect(() => {
     if (openModalTrigger && openModalTrigger > 0) {
+      // eslint-disable-next-line react-hooks/set-state-in-effect
       handleOpenDayModal();
       document.getElementById('section-itinerario')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
     }
+     
   }, [openModalTrigger]);
 
   const handleOpenItemModal = () => {

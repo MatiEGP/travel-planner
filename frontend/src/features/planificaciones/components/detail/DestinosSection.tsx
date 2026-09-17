@@ -41,9 +41,11 @@ export const DestinosSection: React.FC<DestinosSectionProps> = ({
 
   React.useEffect(() => {
     if (openModalTrigger && openModalTrigger > 0) {
+      // eslint-disable-next-line react-hooks/set-state-in-effect
       handleOpenModal();
       document.getElementById('section-destinos')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
     }
+     
   }, [openModalTrigger]);
 
   const handleSubmit = async (e: FormEvent) => {
