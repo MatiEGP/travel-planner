@@ -1,9 +1,5 @@
 package com.travelplanner.api.actividades;
 
-import com.travelplanner.api.actividades.ActividadRequestDTO;
-import com.travelplanner.api.actividades.ActividadResponseDTO;
-import com.travelplanner.api.actividades.Actividad;
-import com.travelplanner.api.actividades.ActividadService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -44,12 +40,13 @@ class ActividadControllerTest {
     @Test
     void crearActividad_debeRetornarCreatedYActividadResponseDTO() {
         ActividadRequestDTO request = new ActividadRequestDTO();
+        request.setPlanificacionId(10L);
         request.setDestinoId(5L);
         request.setNombre("Tour Gastronómico");
         request.setFechaHora(LocalDateTime.of(2026, 8, 20, 19, 0));
         request.setNotas("Probar tapas locales");
 
-        when(actividadService.crearActividad(eq(5L), any(Actividad.class))).thenReturn(actividadPrueba);
+        when(actividadService.crearActividad(eq(10L), eq(5L), any(Actividad.class))).thenReturn(actividadPrueba);
 
         ResponseEntity<ActividadResponseDTO> response = actividadController.crearActividad(request);
 

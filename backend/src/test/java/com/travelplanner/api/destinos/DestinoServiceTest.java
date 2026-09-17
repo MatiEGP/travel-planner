@@ -1,8 +1,6 @@
 package com.travelplanner.api.destinos;
 
-import com.travelplanner.api.destinos.Destino;
 import com.travelplanner.api.planificaciones.Planificacion;
-import com.travelplanner.api.destinos.DestinoRepository;
 import com.travelplanner.api.planificaciones.PlanificacionRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;

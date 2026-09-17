@@ -1,12 +1,9 @@
 package com.travelplanner.api.auth;
 
-import com.travelplanner.api.auth.LoginRequestDTO;
-import com.travelplanner.api.auth.RegistroRequestDTO;
 import com.travelplanner.api.usuarios.UsuarioResponseDTO;
 import com.travelplanner.api.usuarios.Rol;
 import com.travelplanner.api.usuarios.Usuario;
 import com.travelplanner.api.usuarios.RolRepository;
-import com.travelplanner.api.auth.JwtService;
 import com.travelplanner.api.usuarios.UsuarioService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;

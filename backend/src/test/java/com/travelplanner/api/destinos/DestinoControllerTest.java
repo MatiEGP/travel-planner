@@ -1,9 +1,5 @@
 package com.travelplanner.api.destinos;
 
-import com.travelplanner.api.destinos.DestinoRequestDTO;
-import com.travelplanner.api.destinos.DestinoResponseDTO;
-import com.travelplanner.api.destinos.Destino;
-import com.travelplanner.api.destinos.DestinoService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;

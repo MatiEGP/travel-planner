@@ -1,9 +1,6 @@
 package com.travelplanner.api.usuarios;
 
 import com.travelplanner.api.exceptions.CredencialesInvalidasException;
-import com.travelplanner.api.usuarios.Rol;
-import com.travelplanner.api.usuarios.Usuario;
-import com.travelplanner.api.usuarios.UsuarioRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;

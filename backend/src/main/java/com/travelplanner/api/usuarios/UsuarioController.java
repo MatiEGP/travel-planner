@@ -1,9 +1,5 @@
 package com.travelplanner.api.usuarios;
 
-import com.travelplanner.api.usuarios.UsuarioResponseDTO;
-import com.travelplanner.api.usuarios.Rol;
-import com.travelplanner.api.usuarios.Usuario;
-import com.travelplanner.api.usuarios.UsuarioService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;

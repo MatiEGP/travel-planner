@@ -223,3 +223,70 @@ Endpoints para organizar las actividades de un destino en particular. **Requiere
 - **Parámetros de Ruta:** `id` (Long) - ID de la actividad.
 - **Descripción:** Elimina una actividad.
 - **Response `204 No Content`:** Sin contenido en el body.
+
+---
+
+## 6. Costos (/api/costos)
+
+Endpoints para gestionar los presupuestos y costos asociados a una planificacin. **Requieren rol CLIENT.**
+
+### 6.1 Crear Costo
+- **Ruta:** POST /api/costos
+- **Descripcin:** Agrega un registro de costo o gasto a una planificacin.
+- **Request Body (CostoRequestDTO):**
+  ``json
+  {
+    "planificacionId": 1,
+    "categoria": "String (ej: Vuelo, Hotel)",
+    "monto": 500.50,
+    "descripcion": "String"
+  }
+  ``
+- **Response 201 Created (CostoResponseDTO):**
+  ``json
+  {
+    "id": 1,
+    "planificacionId": 1,
+    "categoria": "String",
+    "monto": 500.50,
+    "descripcion": "String"
+  }
+  ``
+
+### 6.2 Listar Costos de una Planificacin
+- **Ruta:** GET /api/costos/planificacion/{planificacionId}
+- **Parometros de Ruta:** planificacionId (Long) - ID de la planificacin.
+- **Descripcin:** Obtiene la lista completa de costos ingresados para un viaje.
+- **Response 200 OK:** Arreglo de objetos CostoResponseDTO.
+
+---
+
+## 7. Itinerarios (/api/itinerarios)
+
+Endpoints para listar el itinerario organizado por das y sus respectivos tems. **Requieren rol CLIENT.**
+
+### 7.1 Listar Das y Rutas de una Planificacin
+- **Ruta:** GET /api/itinerarios/planificacion/{planificacionId}/dias
+- **Parometros de Ruta:** planificacionId (Long) - ID de la planificacin.
+- **Descripcin:** Obtiene el itinerario completo de un viaje organizado jerorquicamente por das y, dentro de cada da, los tems cronolgicos.
+- **Response 200 OK (DiaItinerarioResponseDTO array):**
+  ``json
+  [
+    {
+      "id": 1,
+      "planificacionId": 1,
+      "fecha": "YYYY-MM-DD",
+      "items": [
+        {
+          "id": 1,
+          "diaItinerarioId": 1,
+          "horaInicio": "HH:MM:SS",
+          "horaFin": "HH:MM:SS",
+          "tipo": "ACTIVIDAD | TRANSPORTE | ALOJAMIENTO | OTRO",
+          "referenciaId": 1,
+          "notas": "String"
+        }
+      ]
+    }
+  ]
+  ``

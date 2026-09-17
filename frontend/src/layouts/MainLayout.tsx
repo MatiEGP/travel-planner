@@ -1,11 +1,10 @@
 import { Outlet } from 'react-router-dom';
-import { Header } from '../shared/components/layout/Header';
+
 
 export const MainLayout = () => {
   return (
-    <div className="min-h-screen bg-slate-100 text-slate-800 flex flex-col">
-      <Header />
-      <main className="flex-1">
+    <div className="flex-1 bg-slate-100 text-slate-800 flex flex-col">
+      <main className="flex-1 flex flex-col relative">
         <Outlet />
       </main>
       <footer className="bg-teal-800 text-teal-200 text-center py-4 text-sm">

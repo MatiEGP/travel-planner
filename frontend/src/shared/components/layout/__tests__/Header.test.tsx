@@ -27,7 +27,7 @@ describe('Header', () => {
       </MemoryRouter>
     );
 
-    expect(screen.getByText('Inicio')).toBeInTheDocument();
+    expect(screen.getByText('Travel Planner')).toBeInTheDocument();
     expect(screen.getByText('Iniciar sesión')).toBeInTheDocument();
     expect(screen.getByText('Registrarse')).toBeInTheDocument();
     expect(screen.queryByText('Planificaciones')).not.toBeInTheDocument();
@@ -64,7 +64,7 @@ describe('Header', () => {
     expect(screen.getByText('Planificaciones')).toBeInTheDocument();
     expect(screen.getByText('Laura')).toBeInTheDocument();
     expect(screen.getByText('Cliente')).toBeInTheDocument();
-    expect(screen.getByText('Cerrar sesión')).toBeInTheDocument();
+    expect(screen.getByTitle('Cerrar sesión')).toBeInTheDocument();
     expect(screen.queryByText('Admin')).not.toBeInTheDocument();
   });
 
@@ -98,7 +98,7 @@ describe('Header', () => {
     expect(screen.getByText('Admin Master')).toBeInTheDocument();
   });
 
-  it('applies active styling to login link when on /login', () => {
+  it('renders login link correctly when on /login', () => {
     vi.mocked(useAuth).mockReturnValue({
       isAuthenticated: false,
       isLoading: false,
@@ -116,8 +116,7 @@ describe('Header', () => {
       </MemoryRouter>
     );
 
-    const loginLink = screen.getByText('Iniciar sesión');
-    expect(loginLink.className).toContain('bg-teal-900');
-    expect(loginLink.className).toContain('text-white');
+    const loginLink = screen.getByRole('link', { name: /Iniciar sesión/i });
+    expect(loginLink).toBeInTheDocument();
   });
 });

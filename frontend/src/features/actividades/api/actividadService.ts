@@ -7,6 +7,11 @@ export const actividadService = {
     return response.data;
   },
 
+  getByPlanificacion: async (planificacionId: number): Promise<ActividadResponseDTO[]> => {
+    const response = await apiClient.get<ActividadResponseDTO[]>(`/actividades/planificacion/${planificacionId}`);
+    return response.data;
+  },
+
   getById: async (id: number): Promise<ActividadResponseDTO> => {
     const response = await apiClient.get<ActividadResponseDTO>(`/actividades/${id}`);
     return response.data;
