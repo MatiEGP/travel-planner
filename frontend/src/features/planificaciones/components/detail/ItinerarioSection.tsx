@@ -112,6 +112,12 @@ export const ItinerarioSection: React.FC<ItinerarioSectionProps> = ({
       return;
     }
 
+    const dateExists = dias.some((dia) => dia.fecha.split('T')[0] === newDayFecha);
+    if (dateExists) {
+      setError('Este día ya fue agregado al itinerario.');
+      return;
+    }
+
     try {
       setSubmitting(true);
       setError(null);
