@@ -23,6 +23,10 @@ export default {
           50: '#fdf8f6',
           100: '#f2e8e5',
           500: '#d6bcfa',
+        },
+        coral: {
+          500: '#FF5A5F',
+          600: '#E0484D',
         }
       },
       boxShadow: {
