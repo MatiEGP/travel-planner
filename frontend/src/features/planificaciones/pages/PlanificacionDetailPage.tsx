@@ -17,7 +17,6 @@ import { costoService } from '../api/costoService';
 import { itinerarioService } from '../api/itinerarioService';
 import { TripDetailHeader } from '../components/detail/TripDetailHeader';
 import { TripAnchorNav } from '../components/detail/TripAnchorNav';
-import { TripBottomNav } from '../components/detail/TripBottomNav';
 import { DestinosSection } from '../components/detail/DestinosSection';
 import { ActividadesSection } from '../components/detail/ActividadesSection';
 import { GastosSection } from '../components/detail/GastosSection';
@@ -244,7 +243,7 @@ export const PlanificacionDetailPage: React.FC = () => {
         {/* 3-Column Grid Layout */}
         <div className="grid grid-cols-1 lg:grid-cols-12 lg:gap-8 items-start">
           {/* Left Column: Sticky Anchor Navigation (Desktop) */}
-          <div className="hidden lg:block lg:col-span-3">
+          <div className="col-span-1 lg:col-span-3 space-y-6">
             <TripAnchorNav
               destinosCount={destinos.length}
               actividadesCount={actividades.length}
@@ -298,7 +297,7 @@ export const PlanificacionDetailPage: React.FC = () => {
           </main>
 
           {/* Right Column: Sticky Quick Actions + Trip Summary */}
-          <div className="hidden lg:block lg:col-span-3">
+          <div className="col-span-1 lg:col-span-3 space-y-6">
             <TripDetailSidebar
               planificacion={planificacion}
               destinosCount={destinos.length}
@@ -310,14 +309,6 @@ export const PlanificacionDetailPage: React.FC = () => {
           </div>
         </div>
       </div>
-
-      {/* Mobile Sticky Bottom Navigation */}
-      <TripBottomNav
-        destinosCount={destinos.length}
-        actividadesCount={actividades.length}
-        gastosCount={costos.length}
-        diasCount={dias.length}
-      />
     </div>
   );
 };
