@@ -105,7 +105,7 @@ describe('RootLayout Header Suppression & Background Canvas', () => {
 
     // Header navigation should be rendered
     expect(screen.getByRole('banner')).toBeInTheDocument();
-    expect(screen.getByText('Travel Planner')).toBeInTheDocument();
+    expect(screen.getByRole('banner')).toHaveTextContent(/Travel Planner/i);
     expect(screen.getByTestId('home-content')).toBeInTheDocument();
   });
 });
