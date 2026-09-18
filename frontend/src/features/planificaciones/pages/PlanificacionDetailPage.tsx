@@ -187,6 +187,22 @@ export const PlanificacionDetailPage: React.FC = () => {
     else if (action === 'dia') setDiaTrigger(prev => prev + 1);
   };
 
+  const [isHeaderVisible, setIsHeaderVisible] = useState(true);
+  const headerRef = React.useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        setIsHeaderVisible(entry.isIntersecting);
+      },
+      { threshold: 0 }
+    );
+    if (headerRef.current) {
+      observer.observe(headerRef.current);
+    }
+    return () => observer.disconnect();
+  }, []);
+
   const totalGastos = costos.reduce((acc, c) => acc + (Number(c.monto) || 0), 0);
 
   if (loading) {
@@ -232,18 +248,20 @@ export const PlanificacionDetailPage: React.FC = () => {
     <div className="flex-1 bg-[#F7F9FA] text-[#222222] pb-24 lg:pb-16 font-sans">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-6">
         {/* Full-width Hero Header */}
-        <TripDetailHeader
-          planificacion={planificacion}
-          destinosCount={destinos.length}
-          actividadesCount={actividades.length}
-          gastosTotal={totalGastos}
-          diasCount={dias.length}
-        />
+        <div ref={headerRef}>
+          <TripDetailHeader
+            planificacion={planificacion}
+            destinosCount={destinos.length}
+            actividadesCount={actividades.length}
+            gastosTotal={totalGastos}
+            diasCount={dias.length}
+          />
+        </div>
 
         {/* 3-Column Grid Layout */}
         <div className="grid grid-cols-1 lg:grid-cols-12 lg:gap-8 items-start">
           {/* Left Column: Sticky Anchor Navigation (Desktop) */}
-          <div className="col-span-1 lg:col-span-3 space-y-6">
+          <div className="col-span-1 lg:col-span-3 space-y-6 sticky top-24 h-fit">
             <TripAnchorNav
               destinosCount={destinos.length}
               actividadesCount={actividades.length}
@@ -253,57 +271,66 @@ export const PlanificacionDetailPage: React.FC = () => {
           </div>
 
           {/* Center Column: Content Stream */}
-          <main className="col-span-1 lg:col-span-6 space-y-2">
-            <DestinosSection
-              planificacionId={id}
-              destinos={destinos}
-              onAddDestino={handleAddDestino}
-              onDeleteDestino={handleDeleteDestino}
-              openModalTrigger={destinoTrigger}
-            />
+          <main className="col-span-1 lg:col-span-6 space-y-8">
+            <div className="bg-white rounded-2xl shadow-sm border border-slate-100 p-6 sm:p-8">
+              <DestinosSection
+                planificacionId={id}
+                destinos={destinos}
+                onAddDestino={handleAddDestino}
+                onDeleteDestino={handleDeleteDestino}
+                openModalTrigger={destinoTrigger}
+              />
+            </div>
 
-            <ActividadesSection
-              planificacionId={id}
-              fechaInicio={planificacion.fechaInicio}
-              fechaFin={planificacion.fechaFin}
-              destinos={destinos}
-              actividades={actividades}
-              onAddActividad={handleAddActividad}
-              onDeleteActividad={handleDeleteActividad}
-              openModalTrigger={actividadTrigger}
-            />
+            <div className="bg-white rounded-2xl shadow-sm border border-slate-100 p-6 sm:p-8">
+              <ActividadesSection
+                planificacionId={id}
+                fechaInicio={planificacion.fechaInicio}
+                fechaFin={planificacion.fechaFin}
+                destinos={destinos}
+                actividades={actividades}
+                onAddActividad={handleAddActividad}
+                onDeleteActividad={handleDeleteActividad}
+                openModalTrigger={actividadTrigger}
+              />
+            </div>
 
-            <GastosSection
-              planificacionId={id}
-              costos={costos}
-              onAddCosto={handleAddCosto}
-              onDeleteCosto={handleDeleteCosto}
-              openModalTrigger={gastoTrigger}
-            />
+            <div className="bg-white rounded-2xl shadow-sm border border-slate-100 p-6 sm:p-8">
+              <GastosSection
+                planificacionId={id}
+                costos={costos}
+                onAddCosto={handleAddCosto}
+                onDeleteCosto={handleDeleteCosto}
+                openModalTrigger={gastoTrigger}
+              />
+            </div>
 
-            <ItinerarioSection
-              planificacionId={id}
-              fechaInicio={planificacion.fechaInicio}
-              fechaFin={planificacion.fechaFin}
-              dias={dias}
-              actividades={actividades}
-              destinos={destinos}
-              onAddDia={handleAddDia}
-              onDeleteDia={handleDeleteDia}
-              onAddItem={handleAddItem}
-              onDeleteItem={handleDeleteItem}
-              openModalTrigger={diaTrigger}
-            />
+            <div className="bg-white rounded-2xl shadow-sm border border-slate-100 p-6 sm:p-8">
+              <ItinerarioSection
+                planificacionId={id}
+                fechaInicio={planificacion.fechaInicio}
+                fechaFin={planificacion.fechaFin}
+                dias={dias}
+                actividades={actividades}
+                destinos={destinos}
+                onAddDia={handleAddDia}
+                onDeleteDia={handleDeleteDia}
+                onAddItem={handleAddItem}
+                onDeleteItem={handleDeleteItem}
+                openModalTrigger={diaTrigger}
+              />
+            </div>
           </main>
 
           {/* Right Column: Sticky Quick Actions + Trip Summary */}
-          <div className="col-span-1 lg:col-span-3 space-y-6">
+          <div className="col-span-1 lg:col-span-3 space-y-6 sticky top-24 h-fit">
             <TripDetailSidebar
               planificacion={planificacion}
               destinosCount={destinos.length}
               actividadesCount={actividades.length}
               gastosTotal={totalGastos}
               diasCount={dias.length}
+              isHeaderVisible={isHeaderVisible}
               onQuickAction={handleQuickAction}
             />
           </div>

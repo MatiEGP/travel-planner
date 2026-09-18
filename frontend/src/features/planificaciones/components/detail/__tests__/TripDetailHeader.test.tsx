@@ -36,7 +36,7 @@ describe('TripDetailHeader', () => {
     );
 
     expect(screen.getByText('Viaje a Roma y Florencia')).toBeInTheDocument();
-    expect(screen.getByText('Vacaciones de verano con amigos')).toBeInTheDocument();
+    expect(screen.getByText(/Vacaciones de verano con amigos/)).toBeInTheDocument();
     expect(screen.getByText('Próximo')).toBeInTheDocument();
   });
 

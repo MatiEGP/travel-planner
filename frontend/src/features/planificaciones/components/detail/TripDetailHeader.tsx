@@ -80,16 +80,15 @@ export const TripDetailHeader: React.FC<TripDetailHeaderProps> = ({
         <div className="absolute bottom-6 left-6 right-6 z-10 text-white">
           <div className="inline-flex items-center gap-2 bg-black/40 backdrop-blur-md px-3 py-1 rounded-full text-xs font-medium mb-3">
             <Calendar className="w-3.5 h-3.5 text-[#FF5A5F]" />
-            <span>{formattedDates}</span>
+            <span>Viaje planeado: {formattedDates}</span>
           </div>
-          <h1 className="text-2xl sm:text-3xl md:text-4xl font-extrabold tracking-tight drop-shadow-sm">
+          <h1 className="text-2xl sm:text-3xl md:text-4xl font-extrabold tracking-tight drop-shadow-sm mb-2">
             {planificacion.titulo}
           </h1>
-          {planificacion.descripcion && (
-            <p className="mt-2 text-sm sm:text-base text-slate-200 line-clamp-2 max-w-2xl font-normal">
-              {planificacion.descripcion}
-            </p>
-          )}
+          <p className="text-sm sm:text-base text-slate-100 drop-shadow-md max-w-2xl font-medium">
+            {planificacion.descripcion ? `${planificacion.descripcion} • ` : ''}
+            Explorando {destinosCount} {destinosCount === 1 ? 'destino' : 'destinos'} con {actividadesCount} {actividadesCount === 1 ? 'actividad' : 'actividades'}.
+          </p>
         </div>
       </div>
 
