@@ -3,6 +3,191 @@ import { X, Sparkles } from 'lucide-react';
 import type { PlanificacionRequestDTO } from '../../features/planificaciones/types/planificacion';
 import { useAuth } from '../../features/auth/context/useAuth';
 
+const CalendarRangePicker = ({
+  startDate,
+  endDate,
+  onChange
+}: {
+  startDate: string;
+  endDate: string;
+  onChange: (start: string, end: string) => void;
+}) => {
+  const [currentMonth, setCurrentMonth] = useState(new Date(new Date().getFullYear(), new Date().getMonth(), 1));
+  const [view, setView] = useState<'days' | 'months'>('days');
+
+  const daysInMonth = new Date(currentMonth.getFullYear(), currentMonth.getMonth() + 1, 0).getDate();
+  const startDay = new Date(currentMonth.getFullYear(), currentMonth.getMonth(), 1).getDay();
+
+  const handlePrevMonth = () => setCurrentMonth(new Date(currentMonth.getFullYear(), currentMonth.getMonth() - 1, 1));
+  const handleNextMonth = () => setCurrentMonth(new Date(currentMonth.getFullYear(), currentMonth.getMonth() + 1, 1));
+
+  const handleDayClick = (day: number) => {
+    const date = `${currentMonth.getFullYear()}-${String(currentMonth.getMonth() + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
+    
+    if (!startDate && !endDate) {
+      onChange(date, '');
+    } else if (startDate && !endDate) {
+      if (date === startDate) {
+        onChange('', '');
+      } else if (date < startDate) {
+        onChange(date, '');
+      } else {
+        onChange(startDate, date);
+      }
+    } else if (!startDate && endDate) {
+      if (date === endDate) {
+        onChange('', '');
+      } else if (date < endDate) {
+        onChange(date, endDate);
+      } else {
+        onChange(endDate, date);
+      }
+    } else if (startDate && endDate) {
+      if (date === startDate) {
+        onChange('', endDate);
+      } else if (date === endDate) {
+        onChange(startDate, '');
+      } else if (date < startDate) {
+        onChange(date, endDate);
+      } else if (date > endDate) {
+        onChange(startDate, date);
+      } else {
+        const distToStart = new Date(date).getTime() - new Date(startDate).getTime();
+        const distToEnd = new Date(endDate).getTime() - new Date(date).getTime();
+        
+        if (distToStart <= distToEnd) {
+          onChange(date, endDate);
+        } else {
+          onChange(startDate, date);
+        }
+      }
+    }
+  };
+
+  const days = Array.from({ length: daysInMonth }, (_, i) => i + 1);
+  const blanks = Array.from({ length: startDay }, (_, i) => i);
+
+  const isSelected = (d: number) => {
+    const ds = `${currentMonth.getFullYear()}-${String(currentMonth.getMonth() + 1).padStart(2, '0')}-${String(d).padStart(2, '0')}`;
+    return ds === startDate || ds === endDate;
+  };
+  const isStart = (d: number) => {
+    const ds = `${currentMonth.getFullYear()}-${String(currentMonth.getMonth() + 1).padStart(2, '0')}-${String(d).padStart(2, '0')}`;
+    return ds === startDate;
+  };
+  const isEnd = (d: number) => {
+    const ds = `${currentMonth.getFullYear()}-${String(currentMonth.getMonth() + 1).padStart(2, '0')}-${String(d).padStart(2, '0')}`;
+    return ds === endDate;
+  };
+  const isInRange = (d: number) => {
+    if (!startDate || !endDate) return false;
+    const ds = `${currentMonth.getFullYear()}-${String(currentMonth.getMonth() + 1).padStart(2, '0')}-${String(d).padStart(2, '0')}`;
+    return ds > startDate && ds < endDate;
+  };
+
+  const monthNames = ['Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio', 'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre'];
+  const shortMonthNames = ['Ene', 'Feb', 'Mar', 'Abr', 'May', 'Jun', 'Jul', 'Ago', 'Sep', 'Oct', 'Nov', 'Dic'];
+
+  return (
+    <div className="w-full bg-[#F1F3F4] rounded-xl p-4 select-none min-h-[340px] flex flex-col">
+      {view === 'days' ? (
+        <>
+          <div className="flex justify-between items-center mb-4">
+            <button type="button" onClick={handlePrevMonth} className="p-1 hover:bg-slate-200 rounded-full w-8 h-8 flex items-center justify-center font-bold text-slate-500 transition-colors">
+              &lt;
+            </button>
+            <button 
+              type="button" 
+              onClick={() => setView('months')}
+              className="font-bold text-slate-700 hover:text-coral-500 transition-colors px-3 py-1 hover:bg-slate-200 rounded-lg"
+            >
+              {monthNames[currentMonth.getMonth()]} {currentMonth.getFullYear()}
+            </button>
+            <button type="button" onClick={handleNextMonth} className="p-1 hover:bg-slate-200 rounded-full w-8 h-8 flex items-center justify-center font-bold text-slate-500 transition-colors">
+              &gt;
+            </button>
+          </div>
+          <div className="grid grid-cols-7 gap-y-2 text-center text-xs font-bold text-slate-500 mb-2 uppercase tracking-wide">
+            <div>Do</div><div>Lu</div><div>Ma</div><div>Mi</div><div>Ju</div><div>Vi</div><div>Sa</div>
+          </div>
+          <div className="grid grid-cols-7 gap-y-1 text-center text-sm flex-1">
+            {blanks.map(b => <div key={`blank-${b}`} />)}
+            {days.map(d => {
+              const selected = isSelected(d);
+              const start = isStart(d);
+              const end = isEnd(d);
+              const range = isInRange(d);
+              
+              // Apply continuous band highlighting
+              let wrapperClass = "relative flex justify-center items-center h-8 w-full";
+              if (range) {
+                wrapperClass += " bg-coral-100";
+              } else if (start && endDate && startDate !== endDate) {
+                wrapperClass += " bg-gradient-to-r from-transparent from-50% to-coral-100 to-50%";
+              } else if (end && startDate && startDate !== endDate) {
+                wrapperClass += " bg-gradient-to-l from-transparent from-50% to-coral-100 to-50%";
+              }
+
+              return (
+                <div key={d} className={wrapperClass}>
+                  <button
+                    type="button"
+                    onClick={() => handleDayClick(d)}
+                    className={`w-8 h-8 flex items-center justify-center rounded-full z-10 transition-all ${
+                      selected 
+                        ? 'bg-coral-500 text-white font-bold shadow-md' 
+                        : range 
+                          ? 'bg-transparent text-coral-900 font-medium hover:bg-coral-200' 
+                          : 'hover:bg-slate-200 text-slate-700 font-medium'
+                    }`}
+                  >
+                    {d}
+                  </button>
+                </div>
+              );
+            })}
+          </div>
+        </>
+      ) : (
+        <div className="flex-1 flex flex-col">
+          <div className="flex justify-between items-center mb-4">
+            <button type="button" onClick={() => setCurrentMonth(new Date(currentMonth.getFullYear() - 1, currentMonth.getMonth(), 1))} className="p-1 hover:bg-slate-200 rounded-full w-8 h-8 flex items-center justify-center font-bold text-slate-500 transition-colors">
+              &lt;
+            </button>
+            <span className="font-bold text-slate-700">{currentMonth.getFullYear()}</span>
+            <button type="button" onClick={() => setCurrentMonth(new Date(currentMonth.getFullYear() + 1, currentMonth.getMonth(), 1))} className="p-1 hover:bg-slate-200 rounded-full w-8 h-8 flex items-center justify-center font-bold text-slate-500 transition-colors">
+              &gt;
+            </button>
+          </div>
+          <div className="grid grid-cols-3 gap-3 flex-1 items-center">
+            {shortMonthNames.map((m, idx) => (
+              <button
+                key={m}
+                type="button"
+                onClick={() => {
+                  setCurrentMonth(new Date(currentMonth.getFullYear(), idx, 1));
+                  setView('days');
+                }}
+                className={`py-3 rounded-lg text-sm font-semibold transition-colors ${
+                  currentMonth.getMonth() === idx
+                    ? 'bg-coral-500 text-white shadow-md'
+                    : 'hover:bg-slate-200 text-slate-700'
+                }`}
+              >
+                {m}
+              </button>
+            ))}
+          </div>
+        </div>
+      )}
+      <div className="mt-auto pt-3 flex justify-between text-xs font-bold text-slate-500 border-t border-slate-200">
+        <span className={startDate ? 'text-coral-500' : ''}>Inicio: {startDate || 'Seleccione...'}</span>
+        <span className={endDate ? 'text-coral-500' : ''}>Fin: {endDate || 'Seleccione...'}</span>
+      </div>
+    </div>
+  );
+};
+
 interface PlanificacionFormModalProps {
   isOpen: boolean;
   onClose: () => void;
@@ -170,41 +355,17 @@ export const PlanificacionFormModal: React.FC<PlanificacionFormModalProps> = ({
               />
             </div>
 
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-              <div>
-                <label
-                  htmlFor="fechaInicio"
-                  className="block text-xs font-bold uppercase tracking-wider text-slate-500 mb-1.5"
-                >
-                  Fecha de Inicio *
-                </label>
-                <input
-                  id="fechaInicio"
-                  type="date"
-                  required
-                  value={formData.fechaInicio}
-                  onChange={(e) => setFormData({ ...formData, fechaInicio: e.target.value })}
-                  className="w-full bg-[#F1F3F4] text-slate-900 rounded-xl px-4 py-3 border-0 focus:bg-white focus:ring-2 focus:ring-[#FF5A5F] outline-none transition-all font-medium"
-                />
-              </div>
-
-              <div>
-                <label
-                  htmlFor="fechaFin"
-                  className="block text-xs font-bold uppercase tracking-wider text-slate-500 mb-1.5"
-                >
-                  Fecha de Fin *
-                </label>
-                <input
-                  id="fechaFin"
-                  type="date"
-                  required
-                  min={formData.fechaInicio}
-                  value={formData.fechaFin}
-                  onChange={(e) => setFormData({ ...formData, fechaFin: e.target.value })}
-                  className="w-full bg-[#F1F3F4] text-slate-900 rounded-xl px-4 py-3 border-0 focus:bg-white focus:ring-2 focus:ring-[#FF5A5F] outline-none transition-all font-medium"
-                />
-              </div>
+            <div>
+              <label
+                className="block text-xs font-bold uppercase tracking-wider text-slate-500 mb-1.5"
+              >
+                Fechas del Viaje *
+              </label>
+              <CalendarRangePicker
+                startDate={formData.fechaInicio}
+                endDate={formData.fechaFin}
+                onChange={(start, end) => setFormData({ ...formData, fechaInicio: start, fechaFin: end })}
+              />
             </div>
 
             {/* Actions */}

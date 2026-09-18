@@ -21,6 +21,7 @@ export const PlanificacionesPage = () => {
 
   // Modal state
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [tripToDelete, setTripToDelete] = useState<number | null>(null);
 
   useEffect(() => {
     if (!usuario) return;
@@ -71,16 +72,21 @@ export const PlanificacionesPage = () => {
     };
   }, [usuario]);
 
-  const handleDelete = async (id: number) => {
-    if (!window.confirm('¿Estás seguro de que querés borrar esta planificación?')) return;
+  const handleDelete = (id: number) => {
+    setTripToDelete(id);
+  };
+
+  const confirmDelete = async () => {
+    if (tripToDelete === null) return;
     try {
-      await planificacionService.delete(id);
-      setPlanificaciones((prev) => prev.filter((p) => p.id !== id));
+      await planificacionService.delete(tripToDelete);
+      setPlanificaciones((prev) => prev.filter((p) => p.id !== tripToDelete));
       setDestinosByPlan((prev) => {
         const next = { ...prev };
-        delete next[id];
+        delete next[tripToDelete];
         return next;
       });
+      setTripToDelete(null);
     } catch (err) {
       alert('Error al borrar la planificación: ' + (err as Error).message);
     }
@@ -127,23 +133,28 @@ export const PlanificacionesPage = () => {
           <div className="flex flex-wrap items-center gap-4">
             {/* Pill Tabs */}
             <div
-              className="inline-flex p-1 bg-slate-200/80 rounded-full shadow-inner"
+              className="relative inline-flex p-1 bg-slate-200/80 rounded-full shadow-inner h-12 items-center"
               role="tablist"
               aria-label="Filtro de viajes"
             >
+              <div
+                className={`absolute top-1 bottom-1 w-[calc(50%-4px)] bg-white rounded-full shadow-sm transition-transform duration-300 ease-out ${
+                  activeTab === 'upcoming' ? 'translate-x-0' : 'translate-x-[100%]'
+                }`}
+              />
               <button
                 type="button"
                 role="tab"
                 aria-selected={activeTab === 'upcoming'}
                 onClick={() => setActiveTab('upcoming')}
-                className={`px-5 py-2 rounded-full text-sm font-semibold transition-all duration-200 cursor-pointer ${
+                className={`relative z-10 w-[140px] h-full rounded-full text-sm font-semibold transition-colors duration-200 cursor-pointer flex items-center justify-center ${
                   activeTab === 'upcoming'
-                    ? 'bg-white text-slate-900 shadow-sm'
+                    ? 'text-slate-900'
                     : 'text-slate-600 hover:text-slate-900'
                 }`}
               >
                 Próximos Viajes
-                <span className="ml-2 text-xs px-2 py-0.5 rounded-full bg-slate-100 text-slate-600">
+                <span className={`ml-2 text-xs px-2 py-0.5 rounded-full flex items-center justify-center ${activeTab === 'upcoming' ? 'bg-slate-100 text-slate-600' : 'bg-slate-300/50 text-slate-500'}`}>
                   {upcomingTrips.length}
                 </span>
               </button>
@@ -152,14 +163,14 @@ export const PlanificacionesPage = () => {
                 role="tab"
                 aria-selected={activeTab === 'past'}
                 onClick={() => setActiveTab('past')}
-                className={`px-5 py-2 rounded-full text-sm font-semibold transition-all duration-200 cursor-pointer ${
+                className={`relative z-10 w-[140px] h-full rounded-full text-sm font-semibold transition-colors duration-200 cursor-pointer flex items-center justify-center ${
                   activeTab === 'past'
-                    ? 'bg-white text-slate-900 shadow-sm'
+                    ? 'text-slate-900'
                     : 'text-slate-600 hover:text-slate-900'
                 }`}
               >
                 Viajes Pasados
-                <span className="ml-2 text-xs px-2 py-0.5 rounded-full bg-slate-100 text-slate-600">
+                <span className={`ml-2 text-xs px-2 py-0.5 rounded-full flex items-center justify-center ${activeTab === 'past' ? 'bg-slate-100 text-slate-600' : 'bg-slate-300/50 text-slate-500'}`}>
                   {pastTrips.length}
                 </span>
               </button>
@@ -169,7 +180,7 @@ export const PlanificacionesPage = () => {
             <button
               type="button"
               onClick={() => setIsModalOpen(true)}
-              className="group border-2 border-dashed border-coral-500 text-coral-500 hover:bg-coral-500 hover:text-white font-bold py-2.5 px-6 rounded-full flex items-center gap-2 shadow-sm hover:shadow-rose-500/25 transition-all duration-300 cursor-pointer active:scale-95"
+              className="group border-2 border-dashed border-coral-500 text-coral-500 hover:bg-coral-500 hover:text-white font-bold h-12 px-6 rounded-full flex items-center justify-center gap-2 shadow-sm hover:shadow-rose-500/25 transition-all duration-300 cursor-pointer active:scale-95"
             >
               <Plus className="w-5 h-5 transition-transform duration-300 group-hover:rotate-90" />
               <span>Crear Planificación</span>
@@ -198,7 +209,7 @@ export const PlanificacionesPage = () => {
 
         {/* Trips Grid */}
         {!loading && (
-          <div className="grid gap-8 grid-cols-1 md:grid-cols-2 xl:grid-cols-3">
+          <div className="grid gap-8 grid-cols-1 md:grid-cols-2 xl:grid-cols-3 items-stretch">
             {/* Render travel cards */}
             {displayedTrips.map((plan) => (
               <PlanificacionCard
@@ -229,6 +240,35 @@ export const PlanificacionesPage = () => {
           onClose={() => setIsModalOpen(false)}
           onSubmit={handleCreatePlan}
         />
+
+        {/* Delete Confirmation Modal */}
+        {tripToDelete !== null && (
+          <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+            <div className="absolute inset-0 bg-slate-900/60 backdrop-blur-sm transition-opacity" onClick={() => setTripToDelete(null)} />
+            <div className="relative bg-white rounded-3xl p-6 sm:p-8 max-w-sm w-full shadow-2xl animate-in fade-in zoom-in-95 z-10">
+              <h3 className="text-xl font-bold text-slate-900 mb-2">Eliminar viaje</h3>
+              <p className="text-slate-500 mb-6 text-sm">
+                ¿Estás seguro de que querés borrar esta planificación? Esta acción no se puede deshacer.
+              </p>
+              <div className="flex justify-end gap-3">
+                <button
+                  type="button"
+                  onClick={() => setTripToDelete(null)}
+                  className="px-5 py-2.5 rounded-full text-sm font-semibold text-slate-600 hover:text-slate-900 hover:bg-slate-100 transition-colors"
+                >
+                  Cancelar
+                </button>
+                <button
+                  type="button"
+                  onClick={confirmDelete}
+                  className="px-5 py-2.5 rounded-full text-sm font-bold text-white bg-coral-500 hover:bg-coral-600 shadow-sm transition-colors"
+                >
+                  Eliminar
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
       </div>
     </div>
   );
