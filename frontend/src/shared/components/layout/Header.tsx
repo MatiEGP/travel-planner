@@ -35,8 +35,8 @@ export const Header = () => {
   const getRegisterNavLinkClass = ({ isActive }: { isActive: boolean }) =>
     `text-sm font-semibold py-2 px-4 rounded-xl transition-all duration-200 shadow-sm ${
       isActive
-        ? 'bg-teal-700 text-white shadow-teal-600/25'
-        : 'bg-teal-600 hover:bg-teal-700 text-white shadow-teal-600/20'
+        ? 'bg-coral-600 text-white shadow-rose-500/25'
+        : 'bg-coral-500 hover:bg-coral-600 text-white shadow-rose-500/25'
     }`;
 
   // --------------------------------------------------------------------------
