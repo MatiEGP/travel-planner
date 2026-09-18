@@ -19,10 +19,10 @@ export const Header = () => {
   // Navigation styling helpers (Wanderlog light palette)
   // --------------------------------------------------------------------------
   const getNavLinkClass = ({ isActive }: { isActive: boolean }) =>
-    `text-sm font-semibold transition-colors duration-200 px-3 py-2 rounded-xl ${
+    `h-full flex items-center text-sm font-bold transition-all duration-200 px-5 border-b-2 rounded-none ${
       isActive
-        ? 'bg-teal-50 text-teal-700'
-        : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100/70'
+        ? 'bg-slate-50 border-coral-500 text-coral-600'
+        : 'border-transparent text-slate-500 hover:text-coral-500 hover:bg-slate-50 hover:border-coral-500/50'
     }`;
 
   const getAuthNavLinkClass = ({ isActive }: { isActive: boolean }) =>
@@ -64,7 +64,7 @@ export const Header = () => {
             >
               <svg
                 xmlns="http://www.w3.org/2000/svg"
-                className="h-6 w-6 text-teal-600"
+                className="h-6 w-6 text-coral-500"
                 fill="none"
                 viewBox="0 0 24 24"
                 stroke="currentColor"
@@ -76,15 +76,17 @@ export const Header = () => {
                   d="M3.055 11H5a2 2 0 012 2v1a2 2 0 002 2 2 2 0 012 2v2.945M8 3.935V5.5A2.5 2.5 0 0010.5 8h.5a2 2 0 012 2 2 2 0 104 0 2 2 0 012-2h1.064M15 20.488V18a2 2 0 012-2h3.064M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
                 />
               </svg>
-              Travel Planner
+              <span>
+                <span className="text-coral-500">Travel</span> <span className="text-coral-600">Planner</span>
+              </span>
             </Link>
 
             {/* Navigation and User Identity Actions */}
-            <div className="flex items-center gap-6">
+            <div className="flex items-center gap-6 h-full">
               
               {/* Consumer Trip Navigation Links (Only for authenticated sessions) */}
               {isAuthenticated && (
-                <div className="flex space-x-2">
+                <div className="flex h-full">
                   <NavLink to="/" className={getNavLinkClass} end>Inicio</NavLink>
                   <NavLink to="/planificaciones" className={getNavLinkClass}>Planificaciones</NavLink>
                 </div>
@@ -92,16 +94,17 @@ export const Header = () => {
 
               {/* User Profile Pill or Guest CTA Links */}
               {isAuthenticated && user ? (
-                <div className="flex items-center gap-4 pl-6 border-l border-slate-200">
-                  <div className="hidden sm:flex flex-col items-end leading-tight">
-                    <span className="text-slate-800 text-sm font-medium">{user.nombre || user.email}</span>
-                    <span className="text-[11px] text-teal-600 font-bold tracking-wider uppercase">
+                <div className="flex items-center h-full">
+                  <div className="h-8 w-px bg-slate-200 mr-6" />
+                  <div className="hidden sm:flex flex-col items-end leading-tight mr-3">
+                    <span className="text-slate-800 text-sm font-bold">{user.nombre || user.email}</span>
+                    <span className="text-[11px] text-slate-500 font-bold tracking-wider uppercase">
                       {isUserAdmin ? 'Admin' : 'Cliente'}
                     </span>
                   </div>
 
-                  <div className="w-9 h-9 bg-teal-50 border border-teal-200 rounded-full flex items-center justify-center shadow-xs">
-                    <span className="text-teal-700 text-sm font-bold">
+                  <div className="w-9 h-9 bg-slate-100 border border-slate-200 rounded-full flex items-center justify-center shadow-sm mr-2">
+                    <span className="text-slate-700 text-sm font-extrabold">
                       {user.nombre ? user.nombre.charAt(0).toUpperCase() : 'U'}
                     </span>
                   </div>
@@ -109,7 +112,7 @@ export const Header = () => {
                   <button
                     type="button"
                     onClick={() => setShowLogoutModal(true)}
-                    className="ml-2 text-slate-400 hover:text-rose-600 text-sm font-semibold transition-colors duration-200 flex items-center gap-1.5 cursor-pointer"
+                    className="h-full px-5 flex items-center text-slate-500 hover:text-coral-500 hover:bg-slate-50 rounded-none text-sm font-bold transition-all duration-200 gap-1.5 cursor-pointer border-b-2 border-transparent hover:border-coral-500/50"
                     title="Cerrar sesión"
                   >
                     <svg
@@ -200,7 +203,7 @@ export const Header = () => {
               <button
                 type="button"
                 onClick={handleLogout}
-                className="flex-1 py-2.5 px-4 bg-rose-600 hover:bg-rose-500 text-white rounded-xl text-sm font-bold transition-all shadow-md shadow-rose-600/20 cursor-pointer"
+                className="flex-1 py-2.5 px-4 bg-coral-500 hover:bg-coral-600 text-white rounded-xl text-sm font-bold transition-all shadow-md shadow-coral-500/20 cursor-pointer"
               >
                 Cerrar sesión
               </button>

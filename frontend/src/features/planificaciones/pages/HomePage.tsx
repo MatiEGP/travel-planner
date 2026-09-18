@@ -34,7 +34,7 @@ export const HomePage = () => {
             </svg>
           </div>
           <h1 className="text-4xl sm:text-5xl md:text-6xl font-extrabold text-slate-900 tracking-tight mb-4">
-            Planificá tus viajes con <span className="bg-gradient-to-r from-teal-600 to-emerald-600 bg-clip-text text-transparent">Travel Planner</span>
+            Planificá tus viajes con <span className="text-coral-500">Travel</span> <span className="text-coral-600">Planner</span>
           </h1>
           <p className="text-lg sm:text-xl text-slate-600 max-w-2xl mx-auto leading-relaxed">
             Organizá tus aventuras de manera sencilla y visual. Creá itinerarios completos,

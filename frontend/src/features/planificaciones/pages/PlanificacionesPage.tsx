@@ -6,7 +6,6 @@ import type { PlanificacionResponseDTO, PlanificacionRequestDTO } from '../types
 import type { DestinoResponseDTO } from '../../destinos/types/destino';
 import { Plus, AlertCircle, Compass } from 'lucide-react';
 import { PlanificacionCard } from '../../../components/itinerary/PlanificacionCard';
-import { QuickCreateCard } from '../../../components/itinerary/QuickCreateCard';
 import { PlanificacionFormModal } from '../../../components/itinerary/PlanificacionFormModal';
 import { getTripStatus } from '../../../utils/tripUtils';
 
@@ -170,9 +169,9 @@ export const PlanificacionesPage = () => {
             <button
               type="button"
               onClick={() => setIsModalOpen(true)}
-              className="bg-[#FF5A5F] hover:bg-[#E0484D] text-white font-bold py-2.5 px-6 rounded-full flex items-center gap-2 shadow-md hover:shadow-rose-500/25 transition-all cursor-pointer active:scale-95"
+              className="group border-2 border-dashed border-coral-500 text-coral-500 hover:bg-coral-500 hover:text-white font-bold py-2.5 px-6 rounded-full flex items-center gap-2 shadow-sm hover:shadow-rose-500/25 transition-all duration-300 cursor-pointer active:scale-95"
             >
-              <Plus className="w-5 h-5" />
+              <Plus className="w-5 h-5 transition-transform duration-300 group-hover:rotate-90" />
               <span>Crear Planificación</span>
             </button>
           </div>
@@ -192,7 +191,7 @@ export const PlanificacionesPage = () => {
         {/* Loading State */}
         {loading && (
           <div className="flex flex-col items-center justify-center py-24">
-            <div className="w-12 h-12 border-4 border-[#FF5A5F] border-t-transparent rounded-full animate-spin mb-4" />
+            <div className="w-12 h-12 border-4 border-coral-500 border-t-transparent rounded-full animate-spin mb-4" />
             <p className="text-slate-500 font-medium">Cargando tus viajes...</p>
           </div>
         )}
@@ -200,9 +199,6 @@ export const PlanificacionesPage = () => {
         {/* Trips Grid */}
         {!loading && (
           <div className="grid gap-8 grid-cols-1 md:grid-cols-2 xl:grid-cols-3">
-            {/* First item is ALWAYS QuickCreateCard */}
-            <QuickCreateCard onClick={() => setIsModalOpen(true)} />
-
             {/* Render travel cards */}
             {displayedTrips.map((plan) => (
               <PlanificacionCard
