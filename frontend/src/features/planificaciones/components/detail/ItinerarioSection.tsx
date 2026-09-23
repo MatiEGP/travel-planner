@@ -8,6 +8,9 @@ import type {
 } from '../../types/itinerario';
 import type { ActividadResponseDTO } from '../../../actividades/types/actividad';
 import type { DestinoResponseDTO } from '../../../destinos/types/destino';
+import { CalendarDatePicker } from '../../../../components/ui/CalendarDatePicker';
+import { PopoverDatePicker } from '../../../../components/ui/PopoverDatePicker';
+import { TimePicker } from '../../../../components/ui/TimePicker';
 
 interface ItinerarioSectionProps {
   planificacionId: number;
@@ -471,18 +474,14 @@ export const ItinerarioSection: React.FC<ItinerarioSectionProps> = ({
 
             <form onSubmit={handleAddDaySubmit} className="space-y-4">
               <div>
-                <label htmlFor="modal-day-fecha" className="block text-xs font-semibold text-slate-700 mb-1">
+                <label className="block text-xs font-semibold text-slate-700 mb-1">
                   Fecha del itinerario *
                 </label>
-                <input
-                  id="modal-day-fecha"
-                  type="date"
-                  value={newDayFecha}
-                  onChange={(e) => setNewDayFecha(e.target.value)}
-                  min={fechaInicio}
-                  max={fechaFin}
-                  required
-                  className="w-full px-3.5 py-2 text-sm border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#FF5A5F] focus:border-transparent transition-all bg-white"
+                <CalendarDatePicker
+                  date={newDayFecha}
+                  onChange={setNewDayFecha}
+                  minDate={fechaInicio}
+                  maxDate={fechaFin}
                 />
               </div>
 
@@ -621,24 +620,20 @@ export const ItinerarioSection: React.FC<ItinerarioSectionProps> = ({
                   <label htmlFor="modal-item-inicio" className="block text-xs font-semibold text-slate-700 mb-1">
                     Hora Inicio
                   </label>
-                  <input
+                  <TimePicker
                     id="modal-item-inicio"
-                    type="time"
-                    value={itemFormData.horaInicio}
-                    onChange={(e) => setItemFormData({ ...itemFormData, horaInicio: e.target.value })}
-                    className="w-full px-3.5 py-2 text-sm border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#FF5A5F] focus:border-transparent transition-all bg-white"
+                    time={itemFormData.horaInicio}
+                    onChange={(t) => setItemFormData({ ...itemFormData, horaInicio: t })}
                   />
                 </div>
                 <div>
                   <label htmlFor="modal-item-fin" className="block text-xs font-semibold text-slate-700 mb-1">
                     Hora Fin
                   </label>
-                  <input
+                  <TimePicker
                     id="modal-item-fin"
-                    type="time"
-                    value={itemFormData.horaFin}
-                    onChange={(e) => setItemFormData({ ...itemFormData, horaFin: e.target.value })}
-                    className="w-full px-3.5 py-2 text-sm border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#FF5A5F] focus:border-transparent transition-all bg-white"
+                    time={itemFormData.horaFin}
+                    onChange={(t) => setItemFormData({ ...itemFormData, horaFin: t })}
                   />
                 </div>
               </div>

@@ -11,11 +11,11 @@ interface GastosSectionProps {
 }
 
 const DEFAULT_CATEGORIES = [
-  { name: 'Alojamiento', icon: Home, color: 'bg-indigo-50 text-indigo-700 border-indigo-100' },
-  { name: 'Transporte', icon: Car, color: 'bg-sky-50 text-sky-700 border-sky-100' },
-  { name: 'Comida', icon: Utensils, color: 'bg-amber-50 text-amber-700 border-amber-100' },
-  { name: 'Actividades', icon: Ticket, color: 'bg-rose-50 text-[#FF5A5F] border-rose-100' },
-  { name: 'Otros', icon: MoreHorizontal, color: 'bg-slate-50 text-slate-700 border-slate-200' },
+  { name: 'Alojamiento', icon: Home, color: 'bg-indigo-50 text-indigo-700 border-indigo-100', hexColor: '#6366f1' },
+  { name: 'Transporte', icon: Car, color: 'bg-sky-50 text-sky-700 border-sky-100', hexColor: '#0ea5e9' },
+  { name: 'Comida', icon: Utensils, color: 'bg-amber-50 text-amber-700 border-amber-100', hexColor: '#f59e0b' },
+  { name: 'Actividades', icon: Ticket, color: 'bg-rose-50 text-[#FF5A5F] border-rose-100', hexColor: '#FF5A5F' },
+  { name: 'Otros', icon: MoreHorizontal, color: 'bg-slate-50 text-slate-700 border-slate-200', hexColor: '#64748b' },
 ];
 
 export const GastosSection: React.FC<GastosSectionProps> = ({
@@ -36,11 +36,13 @@ export const GastosSection: React.FC<GastosSectionProps> = ({
 
   const totalSum = costos.reduce((acc, c) => acc + (Number(c.monto) || 0), 0);
 
-  // Group by category
+  // Group by category, normalizing names to match DEFAULT_CATEGORIES exactly
   const categoryTotals: Record<string, number> = {};
   costos.forEach((c) => {
-    const cat = c.categoria || 'Otros';
-    categoryTotals[cat] = (categoryTotals[cat] || 0) + (Number(c.monto) || 0);
+    const rawCat = (c.categoria || 'Otros').trim().toLowerCase();
+    const foundCat = DEFAULT_CATEGORIES.find((cat) => cat.name.toLowerCase() === rawCat);
+    const catName = foundCat ? foundCat.name : 'Otros';
+    categoryTotals[catName] = (categoryTotals[catName] || 0) + (Number(c.monto) || 0);
   });
 
   const handleOpenModal = () => {
@@ -147,26 +149,51 @@ export const GastosSection: React.FC<GastosSectionProps> = ({
           </div>
         </div>
 
+        {/* Progress Bar */}
+        <div className="mt-5 mb-6 h-8 w-full bg-slate-100 rounded-full flex overflow-hidden shadow-inner">
+          {totalSum === 0 ? (
+            <div className="h-full w-full bg-slate-200 flex items-center justify-center text-xs font-medium text-slate-500">
+              Sin gastos
+            </div>
+          ) : (
+            DEFAULT_CATEGORIES.map((cat) => {
+              const amount = categoryTotals[cat.name] || 0;
+              if (amount === 0) return null;
+              const percent = (amount / totalSum) * 100;
+              return (
+                <div
+                  key={`bar-${cat.name}`}
+                  style={{ width: `${percent}%`, backgroundColor: cat.hexColor }}
+                  className="h-full flex items-center justify-center transition-all duration-500 overflow-hidden"
+                  title={`${cat.name}: ${percent.toFixed(1)}%`}
+                >
+                  {percent >= 5 && (
+                    <span className="text-white text-xs font-bold px-1 truncate">
+                      {percent.toFixed(0)}%
+                    </span>
+                  )}
+                </div>
+              );
+            })
+          )}
+        </div>
+
         {/* Category Breakdown Badges */}
-        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-3 mt-5">
+        <div className="flex flex-wrap gap-3 mt-5">
           {DEFAULT_CATEGORIES.map((cat) => {
             const Icon = cat.icon;
             const amount = categoryTotals[cat.name] || 0;
-            const percent = totalSum > 0 ? ((amount / totalSum) * 100).toFixed(0) : '0';
 
             return (
               <div
                 key={cat.name}
-                className="bg-slate-50/70 rounded-xl p-3 border border-slate-100 flex flex-col justify-between"
+                className={`flex-1 min-w-[140px] rounded-xl p-3 border flex flex-col justify-between transition-all ${cat.color}`}
               >
-                <div className="flex items-center justify-between text-xs font-medium text-slate-500 mb-1.5">
-                  <div className="flex items-center gap-1.5">
-                    <Icon className="w-3.5 h-3.5 text-slate-400" />
-                    <span className="truncate">{cat.name}</span>
-                  </div>
-                  <span className="text-[10px] text-slate-400 font-bold">{percent}%</span>
+                <div className="flex items-center gap-1.5 text-[11px] font-bold uppercase tracking-wider mb-1.5 opacity-90">
+                  <Icon className="w-4 h-4" />
+                  <span className="truncate">{cat.name}</span>
                 </div>
-                <div className="text-sm font-bold text-slate-800">
+                <div className="text-lg font-extrabold tracking-tight">
                   ${amount.toLocaleString('es-AR', { minimumFractionDigits: 0, maximumFractionDigits: 2 })}
                 </div>
               </div>

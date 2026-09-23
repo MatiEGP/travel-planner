@@ -2,6 +2,9 @@ import React, { useState, type FormEvent } from 'react';
 import { Sparkles, Plus, Trash2, X, AlertCircle, Clock, Calendar, MapPin } from 'lucide-react';
 import type { ActividadResponseDTO, ActividadRequestDTO } from '../../../actividades/types/actividad';
 import type { DestinoResponseDTO } from '../../../destinos/types/destino';
+import { CalendarDatePicker } from '../../../../components/ui/CalendarDatePicker';
+import { PopoverDatePicker } from '../../../../components/ui/PopoverDatePicker';
+import { TimePicker } from '../../../../components/ui/TimePicker';
 
 interface ActividadesSectionProps {
   planificacionId: number;
@@ -28,7 +31,8 @@ export const ActividadesSection: React.FC<ActividadesSectionProps> = ({
   const [formData, setFormData] = useState({
     destinoId: destinos.length > 0 ? destinos[0].id : 0,
     nombre: '',
-    fechaHora: '',
+    fecha: '',
+    hora: '',
     notas: '',
   });
   const [submitting, setSubmitting] = useState(false);
@@ -38,7 +42,8 @@ export const ActividadesSection: React.FC<ActividadesSectionProps> = ({
     setFormData({
       destinoId: defaultDestinoId || (destinos.length > 0 ? destinos[0].id : 0),
       nombre: '',
-      fechaHora: '',
+      fecha: '',
+      hora: '',
       notas: '',
     });
     setError(null);
@@ -61,7 +66,7 @@ export const ActividadesSection: React.FC<ActividadesSectionProps> = ({
 
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
-    if (!formData.nombre.trim() || !formData.fechaHora) {
+    if (!formData.nombre.trim() || !formData.fecha) {
       setError('Por favor complete los campos obligatorios.');
       return;
     }
@@ -70,11 +75,8 @@ export const ActividadesSection: React.FC<ActividadesSectionProps> = ({
       setSubmitting(true);
       setError(null);
       // Ensure ISO format YYYY-MM-DDTHH:MM:SS
-      const formattedFechaHora = formData.fechaHora.includes(':00', 16)
-        ? formData.fechaHora
-        : formData.fechaHora.length === 16
-        ? `${formData.fechaHora}:00`
-        : formData.fechaHora;
+      const horaFinal = formData.hora || '00:00';
+      const formattedFechaHora = horaFinal.length === 5 ? `${formData.fecha}T${horaFinal}:00` : `${formData.fecha}T${horaFinal}`;
 
       await onAddActividad({
         planificacionId,
@@ -356,17 +358,25 @@ export const ActividadesSection: React.FC<ActividadesSectionProps> = ({
 
               <div>
                 <label htmlFor="modal-act-fecha" className="block text-xs font-semibold text-slate-700 mb-1">
-                  Fecha y Hora *
+                  Fecha de la Actividad *
                 </label>
-                <input
+                <PopoverDatePicker
                   id="modal-act-fecha"
-                  type="datetime-local"
-                  value={formData.fechaHora}
-                  onChange={(e) => setFormData({ ...formData, fechaHora: e.target.value })}
-                  min={`${fechaInicio}T00:00`}
-                  max={`${fechaFin}T23:59`}
-                  required
-                  className="w-full px-3.5 py-2 text-sm border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#FF5A5F] focus:border-transparent transition-all bg-white"
+                  date={formData.fecha}
+                  onChange={(d) => setFormData({ ...formData, fecha: d })}
+                  minDate={fechaInicio}
+                  maxDate={fechaFin}
+                />
+              </div>
+
+              <div>
+                <label htmlFor="modal-act-hora" className="block text-xs font-semibold text-slate-700 mb-1">
+                  Hora de la Actividad (Opcional)
+                </label>
+                <TimePicker
+                  id="modal-act-hora"
+                  time={formData.hora}
+                  onChange={(t) => setFormData({ ...formData, hora: t })}
                 />
               </div>
 
