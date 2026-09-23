@@ -74,7 +74,7 @@ export const CalendarDatePicker: React.FC<CalendarDatePickerProps> = ({
             {days.map(d => {
               const ds = `${currentMonth.getFullYear()}-${String(currentMonth.getMonth() + 1).padStart(2, '0')}-${String(d).padStart(2, '0')}`;
               const selected = ds === date;
-              const isOutOfBounds = (minDate && ds < minDate) || (maxDate && ds > maxDate);
+              const isOutOfBounds = Boolean((minDate && ds < minDate) || (maxDate && ds > maxDate));
               
               let btnClass = "w-8 h-8 flex items-center justify-center rounded-full z-10 transition-all font-medium ";
               
