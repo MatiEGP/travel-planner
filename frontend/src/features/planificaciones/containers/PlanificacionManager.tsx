@@ -2,7 +2,7 @@ import { useState, useEffect, useCallback } from 'react';
 import { planificacionService } from '../api/planificacionService';
 import type { PlanificacionResponseDTO } from '../types/planificacion';
 import { PlanificacionForm } from '../components/PlanificacionForm';
-import { PlanificacionCard } from '../components/PlanificacionCard';
+import { PlanCard } from '../components/PlanCard';
 import { useAuth } from '../../auth/context/useAuth';
 
 export const PlanificacionManager = () => {
@@ -81,9 +81,9 @@ export const PlanificacionManager = () => {
           {!loading && !error && planificaciones.length > 0 && (
             <div className="grid gap-4">
               {planificaciones.map((plan) => (
-                <PlanificacionCard
+                <PlanCard
                   key={plan.id}
-                  planificacion={plan}
+                  planificacion={plan} destinos={[]}
                   onDelete={handleDelete}
                 />
               ))}
