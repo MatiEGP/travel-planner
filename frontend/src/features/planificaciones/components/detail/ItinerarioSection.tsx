@@ -9,7 +9,7 @@ import type {
 import type { ActividadResponseDTO } from '../../../actividades/types/actividad';
 import type { DestinoResponseDTO } from '../../../destinos/types/destino';
 import { CalendarDatePicker } from '../../../../components/ui/CalendarDatePicker';
-import { PopoverDatePicker } from '../../../../components/ui/PopoverDatePicker';
+// import { PopoverDatePicker } from '../../../../components/ui/PopoverDatePicker';
 import { TimePicker } from '../../../../components/ui/TimePicker';
 
 interface ItinerarioSectionProps {
