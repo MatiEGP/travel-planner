@@ -9,6 +9,10 @@ export function Navbar() {
   const { isAuthenticated } = useAuth();
   const location = useLocation();
 
+  const handleLogoClick = () => {
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
+
   return (
     <motion.nav
       initial={{ y: -100 }}
@@ -19,10 +23,13 @@ export function Navbar() {
       <div className="max-w-7xl mx-auto bg-white/70 dark:bg-slate-900/70 backdrop-blur-md border border-slate-200/50 dark:border-slate-800/50 rounded-2xl shadow-lg flex items-center justify-between px-6 py-3">
         
         {/* Logo */}
-        <Link to="/" className="flex items-center gap-2 text-coral-500 dark:text-coral-400 font-black text-xl tracking-tighter cursor-pointer">
+        <button 
+          onClick={handleLogoClick}
+          className="flex items-center gap-2 text-coral-500 dark:text-coral-400 font-black text-xl tracking-tighter cursor-pointer hover:opacity-80 transition-opacity"
+        >
           <Plane className="w-6 h-6" strokeWidth={2.5} />
           <span>Fuimonos</span>
-        </Link>
+        </button>
 
         {/* Acciones */}
         <div className="flex items-center gap-4">

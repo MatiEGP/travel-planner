@@ -55,7 +55,7 @@ export function Hero() {
           transition={{ delay: 0.8 }}
           className="text-lg md:text-xl text-slate-600 dark:text-slate-300 mb-10 max-w-2xl mx-auto"
         >
-          Armá itinerarios, sumá destinos y gestioná tus actividades. Todo lo que necesitás para tu próxima aventura, en una sola SPA.
+          Armá itinerarios, sumá destinos y gestioná tus actividades. La plataforma definitiva para que tu próxima aventura empiece a planearse sola.
         </motion.p>
 
         <motion.div

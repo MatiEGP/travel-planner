@@ -43,20 +43,20 @@ function TiltCard({ feature }: { feature: typeof mockFeatures[0] }) {
       onMouseMove={handleMouseMove}
       onMouseLeave={handleMouseLeave}
       style={{ rotateX, rotateY, transformStyle: "preserve-3d" }}
-      className="relative bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 p-8 rounded-3xl shadow-lg cursor-grab active:cursor-grabbing flex flex-col items-start gap-4"
+      className="relative bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 p-8 rounded-3xl shadow-lg cursor-grab active:cursor-grabbing flex flex-col items-start gap-6"
       drag
       dragConstraints={{ left: 0, right: 0, top: 0, bottom: 0 }}
       dragElastic={0.1}
     >
       <div 
         style={{ transform: "translateZ(50px)" }} 
-        className={`p-4 bg-slate-50 dark:bg-slate-800 rounded-2xl ${feature.color}`}
+        className={`w-14 h-14 flex items-center justify-center bg-slate-50 dark:bg-slate-800 rounded-2xl ${feature.color} shadow-sm shrink-0`}
       >
-        <Icon size={32} />
+        <Icon size={28} />
       </div>
       <div style={{ transform: "translateZ(30px)" }}>
-        <h3 className="text-xl font-bold text-slate-900 dark:text-white mb-2">{feature.title}</h3>
-        <p className="text-slate-600 dark:text-slate-400">{feature.desc}</p>
+        <h3 className="text-xl font-bold text-slate-900 dark:text-white mb-3">{feature.title}</h3>
+        <p className="text-slate-600 dark:text-slate-400 leading-relaxed">{feature.desc}</p>
       </div>
     </motion.div>
   );
