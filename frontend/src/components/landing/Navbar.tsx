@@ -1,5 +1,5 @@
 import { motion } from 'framer-motion';
-import { Plane, Moon, Sun, LogOut } from 'lucide-react';
+import { Compass, Moon, Sun, LogOut } from 'lucide-react';
 import { useTheme } from '../../context/ThemeContext';
 import { Link, useLocation } from 'react-router-dom';
 import { useAuth } from '../../features/auth/context/useAuth';
@@ -23,13 +23,19 @@ export function Navbar() {
       <div className="max-w-7xl mx-auto bg-white/70 dark:bg-slate-900/70 backdrop-blur-md border border-slate-200/50 dark:border-slate-800/50 rounded-2xl shadow-lg flex items-center justify-between px-6 py-3">
         
         {/* Logo */}
-        <button 
+        <motion.button 
           onClick={handleLogoClick}
-          className="flex items-center gap-2 text-coral-500 dark:text-coral-400 font-black text-xl tracking-tighter cursor-pointer hover:opacity-80 transition-opacity"
+          whileHover={{ scale: 1.05 }}
+          whileTap={{ scale: 0.95 }}
+          className="flex items-center gap-2 text-coral-500 dark:text-coral-400 font-black text-xl tracking-tighter cursor-pointer hover:opacity-90 transition-opacity"
         >
-          <Plane className="w-6 h-6" strokeWidth={2.5} />
-          <span>Fuimonos</span>
-        </button>
+          <motion.div
+            whileHover={{ rotate: [0, -10, 10, -5, 5, 0], transition: { duration: 0.5 } }}
+          >
+            <Compass className="w-6 h-6" strokeWidth={2.5} />
+          </motion.div>
+          <span className="bg-clip-text text-transparent bg-gradient-to-r from-coral-500 to-ocean-500">Fuimonos</span>
+        </motion.button>
 
         {/* Acciones */}
         <div className="flex items-center gap-4">

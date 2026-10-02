@@ -49,17 +49,23 @@ export const Header = () => {
         transition={{ type: 'spring', stiffness: 100, damping: 20 }}
         className="sticky top-0 left-0 right-0 z-40 px-4 sm:px-6 py-4"
       >
-        <div className="max-w-7xl mx-auto bg-white/70 dark:bg-slate-900/70 backdrop-blur-xl border border-slate-200/50 dark:border-slate-800/50 rounded-3xl shadow-lg shadow-slate-200/20 dark:shadow-slate-900/50 flex items-center justify-between px-6 py-3">
+        <div className="max-w-7xl mx-auto bg-white/40 dark:bg-slate-900/40 backdrop-blur-xl border border-slate-200/50 dark:border-slate-800/50 rounded-3xl shadow-lg shadow-slate-200/20 dark:shadow-slate-900/50 flex items-center justify-between px-6 py-3">
           
           {/* Brand Logo */}
           <Link
             to="/"
-            className="flex items-center gap-2 text-slate-800 dark:text-white font-black text-xl tracking-tighter hover:opacity-80 transition-opacity"
+            className="flex items-center gap-2 text-slate-800 dark:text-white font-black text-xl tracking-tighter hover:opacity-90 transition-opacity"
           >
-            <Compass className="w-6 h-6 text-coral-500 dark:text-coral-400" strokeWidth={2.5} />
-            <span>
-              <span className="text-coral-500 dark:text-coral-400">Fuimonos</span>
-            </span>
+            <motion.div
+              whileHover={{ scale: 1.05, rotate: [0, -10, 10, -5, 5, 0] }}
+              transition={{ duration: 0.5 }}
+              className="flex items-center gap-2"
+            >
+              <Compass className="w-6 h-6 text-coral-500 dark:text-coral-400" strokeWidth={2.5} />
+              <span>
+                <span className="bg-clip-text text-transparent bg-gradient-to-r from-coral-500 to-ocean-500">Fuimonos</span>
+              </span>
+            </motion.div>
           </Link>
 
           {/* Navigation and User Identity Actions */}

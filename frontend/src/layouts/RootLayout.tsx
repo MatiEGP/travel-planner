@@ -1,6 +1,7 @@
 import { Outlet, useLocation, useNavigation } from 'react-router-dom';
 import { useEffect, useState } from 'react';
 import { Header } from '../shared/components/layout/Header';
+import { DynamicBackground } from '../shared/components/layout/DynamicBackground';
 
 const GlobalLoadingBar = () => {
   let isLoading = false;
@@ -72,8 +73,9 @@ export const RootLayout = () => {
   return (
     <div
       data-testid="root-layout"
-      className="min-h-screen flex flex-col bg-slate-50 dark:bg-slate-950 text-slate-900 dark:text-slate-50 transition-colors duration-500"
+      className="min-h-screen flex flex-col text-slate-900 dark:text-slate-50 transition-colors duration-500 relative z-0"
     >
+      <DynamicBackground />
       <GlobalLoadingBar />
       {!isAuthRoute && !isHomeRoute && <Header />}
       <div className="flex-1 flex flex-col">

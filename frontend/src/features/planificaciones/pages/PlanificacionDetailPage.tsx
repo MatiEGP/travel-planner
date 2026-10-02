@@ -241,7 +241,7 @@ export const PlanificacionDetailPage: React.FC = () => {
   }
 
   return (
-    <div className="flex-1 bg-slate-50 dark:bg-slate-950 text-slate-900 dark:text-slate-100 min-h-screen pb-24 font-sans selection:bg-[#FF5A5F]/20 selection:text-[#FF5A5F]">
+    <div className="flex-1 text-slate-900 dark:text-slate-100 min-h-screen pb-24 font-sans selection:bg-[#FF5A5F]/20 selection:text-[#FF5A5F] relative z-10">
       <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 pt-6 lg:pt-10">
         
         {loading ? (

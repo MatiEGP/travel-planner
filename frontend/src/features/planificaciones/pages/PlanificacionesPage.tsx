@@ -126,7 +126,7 @@ export const PlanificacionesPage = () => {
   const displayedTrips = activeTab === 'upcoming' ? upcomingTrips : pastTrips;
 
   return (
-    <div className="flex-1 bg-slate-50 dark:bg-slate-900 text-slate-900 dark:text-slate-100 min-h-screen py-8 px-4 sm:px-8 lg:px-12 transition-colors duration-300">
+    <div className="flex-1 text-slate-900 dark:text-slate-100 min-h-screen py-8 px-4 sm:px-8 lg:px-12 transition-colors duration-300 relative z-10">
       <div className="max-w-7xl mx-auto">
         {/* Header Section */}
         <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-6 mb-10">
@@ -231,15 +231,23 @@ export const PlanificacionesPage = () => {
         </AnimatePresence>
 
         {/* Main Content Area */}
-        {loading ? (
-          <PlanList>
-            {/* Show 4 skeletons while loading */}
-            {[1, 2, 3, 4].map((n) => (
-              <PlanSkeleton key={n} />
-            ))}
-          </PlanList>
-        ) : (
-          <AnimatePresence mode="wait">
+        <AnimatePresence mode="wait">
+          {loading ? (
+            <motion.div
+              key="loading"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              transition={{ duration: 0.2 }}
+            >
+              <PlanList>
+                {/* Show 4 skeletons while loading */}
+                {[1, 2, 3, 4].map((n) => (
+                  <PlanSkeleton key={n} />
+                ))}
+              </PlanList>
+            </motion.div>
+          ) : (
             <motion.div
               key={activeTab}
               initial={{ opacity: 0, y: 10 }}
@@ -259,14 +267,16 @@ export const PlanificacionesPage = () => {
                   ))}
                 </PlanList>
               ) : (
-                <EmptyPlanState 
-                  type={activeTab} 
-                  onCreateNew={() => setIsModalOpen(true)} 
-                />
+                <div className="flex justify-center items-center min-h-[40vh]">
+                  <EmptyPlanState 
+                    type={activeTab} 
+                    onCreateNew={() => setIsModalOpen(true)} 
+                  />
+                </div>
               )}
             </motion.div>
-          </AnimatePresence>
-        )}
+          )}
+        </AnimatePresence>
 
         {/* Floating Action Button (Mobile Only) */}
         <motion.button

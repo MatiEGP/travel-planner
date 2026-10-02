@@ -23,11 +23,8 @@ export function Hero() {
       className="relative min-h-screen flex items-center justify-center overflow-hidden pt-20"
       onMouseMove={handleMouseMove}
     >
-      {/* Fondo dinámico reacciona al mouse */}
-      <motion.div
-        className="absolute inset-0 z-0 hidden sm:block pointer-events-none"
-        style={{ background: backgroundRadial }}
-      />
+      {/* El fondo dinámico ahora es global a través de DynamicBackground en RootLayout */}
+
       
       <div className="relative z-10 max-w-4xl mx-auto px-6 text-center">
         <h1 className="text-5xl md:text-7xl font-extrabold tracking-tight text-slate-900 dark:text-white mb-8 flex flex-wrap justify-center gap-x-4 gap-y-2">
