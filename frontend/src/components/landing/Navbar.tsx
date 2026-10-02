@@ -19,7 +19,7 @@ export function Navbar() {
       <div className="max-w-7xl mx-auto bg-white/70 dark:bg-slate-900/70 backdrop-blur-md border border-slate-200/50 dark:border-slate-800/50 rounded-2xl shadow-lg flex items-center justify-between px-6 py-3">
         
         {/* Logo */}
-        <Link to="/" className="flex items-center gap-2 text-indigo-600 dark:text-indigo-400 font-black text-xl tracking-tighter cursor-pointer">
+        <Link to="/" className="flex items-center gap-2 text-coral-500 dark:text-coral-400 font-black text-xl tracking-tighter cursor-pointer">
           <Plane className="w-6 h-6" strokeWidth={2.5} />
           <span>yendiendo</span>
         </Link>
@@ -41,7 +41,7 @@ export function Navbar() {
           {isAuthenticated ? (
             <Link
               to="/planificaciones"
-              className="bg-indigo-600 hover:bg-indigo-700 text-white px-5 py-2 rounded-xl font-semibold transition-all hover:scale-105 active:scale-95 shadow-md shadow-indigo-500/30"
+              className="bg-coral-500 hover:bg-coral-600 text-white px-5 py-2 rounded-xl font-semibold transition-all hover:scale-105 active:scale-95 shadow-md shadow-coral-500/30"
             >
               Mis Viajes
             </Link>
@@ -49,7 +49,7 @@ export function Navbar() {
             <Link
               to="/login"
               state={{ from: location }}
-              className="bg-indigo-600 hover:bg-indigo-700 text-white px-5 py-2 rounded-xl font-semibold transition-all hover:scale-105 active:scale-95 shadow-md shadow-indigo-500/30"
+              className="bg-coral-500 hover:bg-coral-600 text-white px-5 py-2 rounded-xl font-semibold transition-all hover:scale-105 active:scale-95 shadow-md shadow-coral-500/30"
             >
               Ingresar
             </Link>

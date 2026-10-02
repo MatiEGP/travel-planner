@@ -2,7 +2,7 @@ import React, { useState, type FormEvent } from 'react';
 import { Sparkles, Plus, Trash2, X, AlertCircle, Clock, Calendar, MapPin } from 'lucide-react';
 import type { ActividadResponseDTO, ActividadRequestDTO } from '../../../actividades/types/actividad';
 import type { DestinoResponseDTO } from '../../../destinos/types/destino';
-// import { CalendarDatePicker } from '../../../../components/ui/CalendarDatePicker';
+import { CalendarDatePicker } from '../../../../components/ui/CalendarDatePicker';
 import { PopoverDatePicker } from '../../../../components/ui/PopoverDatePicker';
 import { TimePicker } from '../../../../components/ui/TimePicker';
 

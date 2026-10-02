@@ -15,7 +15,7 @@ export function Hero() {
     mouseY.set(clientY - top);
   }
 
-  const backgroundRadial = useMotionTemplate`radial-gradient(600px circle at ${mouseX}px ${mouseY}px, rgba(79, 70, 229, 0.15), transparent 80%)`;
+  const backgroundRadial = useMotionTemplate`radial-gradient(600px circle at ${mouseX}px ${mouseY}px, rgba(34, 197, 94, 0.1), transparent 80%)`;
   const titleWords = "Organiza tu próximo viaje con yendiendo".split(" ");
 
   return (
@@ -39,7 +39,7 @@ export function Hero() {
               transition={{ delay: idx * 0.1, type: 'spring', stiffness: 150 }}
             >
               {word === 'yendiendo' ? (
-                <span className="text-transparent bg-clip-text bg-gradient-to-r from-indigo-500 to-purple-600">
+                <span className="text-transparent bg-clip-text bg-gradient-to-r from-coral-500 to-ocean-500">
                   {word}
                 </span>
               ) : (
@@ -55,7 +55,7 @@ export function Hero() {
           transition={{ delay: 0.8 }}
           className="text-lg md:text-xl text-slate-600 dark:text-slate-300 mb-10 max-w-2xl mx-auto"
         >
-          Armá presupuestos, descubrí rutas y compartí con amigos. Todo lo que necesitás para tu próxima aventura, en una sola SPA.
+          Armá itinerarios, sumá destinos y gestioná tus actividades. Todo lo que necesitás para tu próxima aventura, en una sola SPA.
         </motion.p>
 
         <motion.div

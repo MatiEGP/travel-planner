@@ -1,11 +1,11 @@
 import { motion, useMotionValue, useTransform, useSpring } from 'framer-motion';
-import { Map, Wallet, Users } from 'lucide-react';
+import { MapPin, CalendarDays, MousePointer2 } from 'lucide-react';
 import React from 'react';
 
 const mockFeatures = [
-  { id: 1, title: 'Rutas Inteligentes', desc: 'Drag & drop para ordenar tus paradas del día.', icon: Map, color: 'text-blue-500' },
-  { id: 2, title: 'Presupuesto Compartido', desc: 'Llevá la cuenta de quién pagó qué sin estresarte.', icon: Wallet, color: 'text-emerald-500' },
-  { id: 3, title: 'Viaje con Amigos', desc: 'Invitá a tu grupo y planifiquen en tiempo real.', icon: Users, color: 'text-purple-500' },
+  { id: 1, title: 'Itinerarios Día a Día', desc: 'Estructurá cada día de tu viaje con horarios, notas y paradas esenciales.', icon: CalendarDays, color: 'text-ocean-500' },
+  { id: 2, title: 'Destinos Favoritos', desc: 'Agregá y organizá los puntos de interés, visitas guiadas y atracciones.', icon: MapPin, color: 'text-coral-500' },
+  { id: 3, title: 'Gestión Interactiva', desc: 'Organizá tus actividades de forma visual y rápida.', icon: MousePointer2, color: 'text-nature-500' },
 ];
 
 function TiltCard({ feature }: { feature: typeof mockFeatures[0] }) {
