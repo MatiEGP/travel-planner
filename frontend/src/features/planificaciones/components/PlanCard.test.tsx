@@ -1,10 +1,10 @@
 import { render, screen, fireEvent } from '@testing-library/react';
 import { MemoryRouter } from 'react-router-dom';
 import { describe, it, expect, vi } from 'vitest';
-import { PlanificacionCard } from './PlanificacionCard';
-import type { PlanificacionResponseDTO } from '../../planificaciones/types/planificacion';
+import { PlanCard } from './PlanCard';
+import type { PlanificacionResponseDTO } from '../types/planificacion';
 
-describe('PlanificacionCard', () => {
+describe('PlanCard', () => {
   const mockPlanificacion: PlanificacionResponseDTO = {
     id: 1,
     titulo: 'Trip to Europe',
@@ -17,7 +17,7 @@ describe('PlanificacionCard', () => {
     const onDeleteMock = vi.fn();
     render(
       <MemoryRouter>
-        <PlanificacionCard planificacion={mockPlanificacion} onDelete={onDeleteMock} />
+        <PlanCard planificacion={mockPlanificacion} destinos={[]} onDelete={onDeleteMock} />
       </MemoryRouter>
     );
 
@@ -29,11 +29,14 @@ describe('PlanificacionCard', () => {
     const onDeleteMock = vi.fn();
     render(
       <MemoryRouter>
-        <PlanificacionCard planificacion={mockPlanificacion} onDelete={onDeleteMock} />
+        <PlanCard planificacion={mockPlanificacion} destinos={[]} onDelete={onDeleteMock} />
       </MemoryRouter>
     );
     
-    fireEvent.click(screen.getByText('Eliminar'));
+    // The trash icon doesn't have text "Eliminar", but it has an aria-label
+    const deleteButton = screen.getByLabelText('Eliminar viaje');
+    fireEvent.click(deleteButton);
     expect(onDeleteMock).toHaveBeenCalledWith(1);
   });
 });
+

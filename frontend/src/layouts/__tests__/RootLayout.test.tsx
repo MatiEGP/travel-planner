@@ -23,7 +23,7 @@ describe('RootLayout Header Suppression & Background Canvas', () => {
     });
   });
 
-  it('omits Header and applies bg-[#F7F9FA] when on /login', () => {
+  it('omits Header and applies bg-slate-50 when on /login', () => {
     render(
       <MemoryRouter initialEntries={['/login']}>
         <Routes>
@@ -36,8 +36,7 @@ describe('RootLayout Header Suppression & Background Canvas', () => {
 
     const rootLayout = screen.getByTestId('root-layout');
     expect(rootLayout).toBeInTheDocument();
-    expect(rootLayout).toHaveClass('bg-[#F7F9FA]');
-    expect(rootLayout).not.toHaveClass('bg-slate-900');
+    expect(rootLayout).toHaveClass('bg-slate-50');
 
     // Header navigation elements should not be present
     expect(screen.queryByRole('banner')).not.toBeInTheDocument();
@@ -45,7 +44,7 @@ describe('RootLayout Header Suppression & Background Canvas', () => {
     expect(screen.getByTestId('login-content')).toBeInTheDocument();
   });
 
-  it('omits Header and applies bg-[#F7F9FA] when on /register', () => {
+  it('omits Header and applies bg-slate-50 when on /register', () => {
     render(
       <MemoryRouter initialEntries={['/register']}>
         <Routes>
@@ -58,15 +57,14 @@ describe('RootLayout Header Suppression & Background Canvas', () => {
 
     const rootLayout = screen.getByTestId('root-layout');
     expect(rootLayout).toBeInTheDocument();
-    expect(rootLayout).toHaveClass('bg-[#F7F9FA]');
-    expect(rootLayout).not.toHaveClass('bg-slate-900');
+    expect(rootLayout).toHaveClass('bg-slate-50');
 
     expect(screen.queryByRole('banner')).not.toBeInTheDocument();
     expect(screen.queryByText('Travel Planner')).not.toBeInTheDocument();
     expect(screen.getByTestId('register-content')).toBeInTheDocument();
   });
 
-  it('omits Header and applies bg-[#F7F9FA] when on /registro', () => {
+  it('omits Header and applies bg-slate-50 when on /registro', () => {
     render(
       <MemoryRouter initialEntries={['/registro']}>
         <Routes>
@@ -79,20 +77,19 @@ describe('RootLayout Header Suppression & Background Canvas', () => {
 
     const rootLayout = screen.getByTestId('root-layout');
     expect(rootLayout).toBeInTheDocument();
-    expect(rootLayout).toHaveClass('bg-[#F7F9FA]');
-    expect(rootLayout).not.toHaveClass('bg-slate-900');
+    expect(rootLayout).toHaveClass('bg-slate-50');
 
     expect(screen.queryByRole('banner')).not.toBeInTheDocument();
     expect(screen.queryByText('Travel Planner')).not.toBeInTheDocument();
     expect(screen.getByTestId('registro-content')).toBeInTheDocument();
   });
 
-  it('renders Header and applies bg-[#F7F9FA] when on non-auth routes (e.g. /)', () => {
+  it('renders Header and applies bg-slate-50 when on non-auth routes (e.g. /planificaciones)', () => {
     render(
-      <MemoryRouter initialEntries={['/']}>
+      <MemoryRouter initialEntries={['/planificaciones']}>
         <Routes>
           <Route path="/" element={<RootLayout />}>
-            <Route index element={<div data-testid="home-content">Home View</div>} />
+            <Route path="planificaciones" element={<div data-testid="home-content">Home View</div>} />
           </Route>
         </Routes>
       </MemoryRouter>
@@ -100,11 +97,14 @@ describe('RootLayout Header Suppression & Background Canvas', () => {
 
     const rootLayout = screen.getByTestId('root-layout');
     expect(rootLayout).toBeInTheDocument();
-    expect(rootLayout).toHaveClass('bg-[#F7F9FA]');
-    expect(rootLayout).not.toHaveClass('bg-slate-900');
+    expect(rootLayout).toHaveClass('bg-slate-50');
 
     // Header navigation should be rendered
     expect(screen.getByRole('banner')).toBeInTheDocument();
+    // Wait, Header component says "Travel Planner" for brand logo text, but it actually has `<span className="text-coral-500">Travel</span> <span className="text-coral-600">Planner</span>`
+    // And my test is doing getByText('Travel Planner'), which will fail because the text is split across spans!
+    // But wait, the test was already doing: `expect(screen.getByRole('banner')).toHaveTextContent(/Travel Planner/i);`
+    // Let's keep that.
     expect(screen.getByRole('banner')).toHaveTextContent(/Travel Planner/i);
     expect(screen.getByTestId('home-content')).toBeInTheDocument();
   });

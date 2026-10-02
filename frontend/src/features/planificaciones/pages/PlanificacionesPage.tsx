@@ -1,13 +1,19 @@
 import { useState, useEffect, useMemo } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
 import { useAuth } from '../../auth/context/useAuth';
 import { planificacionService } from '../api/planificacionService';
 import { destinoService } from '../../destinos/api/destinoService';
 import type { PlanificacionResponseDTO, PlanificacionRequestDTO } from '../types/planificacion';
 import type { DestinoResponseDTO } from '../../destinos/types/destino';
-import { Plus, AlertCircle, Compass } from 'lucide-react';
-import { PlanificacionCard } from '../../../components/itinerary/PlanificacionCard';
-import { PlanificacionFormModal } from '../../../components/itinerary/PlanificacionFormModal';
+import { Plus, AlertCircle } from 'lucide-react';
 import { getTripStatus } from '../../../utils/tripUtils';
+
+// New Refactored Components
+import { PlanCard } from '../components/PlanCard';
+import { PlanList } from '../components/PlanList';
+import { PlanSkeleton } from '../components/PlanSkeleton';
+import { EmptyPlanState } from '../components/EmptyPlanState';
+import { PlanificacionFormModal } from '../components/PlanificacionFormModal';
 
 type FilterTab = 'upcoming' | 'past';
 
@@ -19,7 +25,7 @@ export const PlanificacionesPage = () => {
   const [error, setError] = useState<string | null>(null);
   const [activeTab, setActiveTab] = useState<FilterTab>('upcoming');
 
-  // Modal state
+  // Modal & Delete state
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [tripToDelete, setTripToDelete] = useState<number | null>(null);
 
@@ -35,7 +41,6 @@ export const PlanificacionesPage = () => {
         setPlanificaciones(data);
         setError(null);
 
-        // Fetch destinations in parallel
         const destPromises = data.map((plan) =>
           destinoService
             .getByPlanificacion(plan.id, { signal: controller.signal })
@@ -58,7 +63,7 @@ export const PlanificacionesPage = () => {
       } catch (err) {
         const error = err as Error;
         if (error.name === 'AbortError' || error.name === 'CanceledError') return;
-        setError(error.message || 'Error loading data');
+        setError(error.message || 'Error al cargar los viajes');
       } finally {
         if (!controller.signal.aborted) {
           setLoading(false);
@@ -97,7 +102,6 @@ export const PlanificacionesPage = () => {
     setPlanificaciones((prev) => [...prev, newPlan]);
   };
 
-  // Filter trips based on activeTab
   const { upcomingTrips, pastTrips } = useMemo(() => {
     const upcoming: PlanificacionResponseDTO[] = [];
     const past: PlanificacionResponseDTO[] = [];
@@ -111,34 +115,47 @@ export const PlanificacionesPage = () => {
       }
     });
 
+    // Sort upcoming trips by start date (closest first)
+    upcoming.sort((a, b) => new Date(a.fechaInicio).getTime() - new Date(b.fechaInicio).getTime());
+    // Sort past trips by start date (most recent first)
+    past.sort((a, b) => new Date(b.fechaInicio).getTime() - new Date(a.fechaInicio).getTime());
+
     return { upcomingTrips: upcoming, pastTrips: past };
   }, [planificaciones]);
 
   const displayedTrips = activeTab === 'upcoming' ? upcomingTrips : pastTrips;
 
   return (
-    <div className="flex-1 bg-[#F7F9FA] text-slate-900 py-8 px-4 sm:px-8 lg:px-12">
+    <div className="flex-1 bg-slate-50 dark:bg-slate-900 text-slate-900 dark:text-slate-100 min-h-screen py-8 px-4 sm:px-8 lg:px-12 transition-colors duration-300">
       <div className="max-w-7xl mx-auto">
-        {/* Top Header & Actions */}
-        <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-6 mb-8">
-          <div>
-            <h1 className="text-3xl sm:text-4xl font-extrabold text-slate-900 tracking-tight">
+        {/* Header Section */}
+        <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-6 mb-10">
+          <motion.div 
+            initial={{ opacity: 0, x: -20 }}
+            animate={{ opacity: 1, x: 0 }}
+            className="flex-1"
+          >
+            <h1 className="text-3xl sm:text-4xl font-extrabold tracking-tight text-slate-900 dark:text-white mb-2">
               Mis Viajes
             </h1>
-            <p className="text-slate-500 font-medium mt-1">
+            <p className="text-slate-500 dark:text-slate-400 font-medium">
               Planificá tus itinerarios, actividades y descubrí nuevos lugares.
             </p>
-          </div>
+          </motion.div>
 
-          <div className="flex flex-wrap items-center gap-4">
+          <motion.div 
+            initial={{ opacity: 0, x: 20 }}
+            animate={{ opacity: 1, x: 0 }}
+            className="flex flex-col-reverse sm:flex-row items-center gap-4"
+          >
             {/* Pill Tabs */}
             <div
-              className="relative inline-flex p-1 bg-slate-200/80 rounded-full shadow-inner h-12 items-center"
+              className="relative inline-flex p-1 bg-slate-200/50 dark:bg-slate-800/50 rounded-full shadow-inner h-12 w-full sm:w-auto items-center backdrop-blur-sm border border-slate-200/50 dark:border-slate-700/50"
               role="tablist"
               aria-label="Filtro de viajes"
             >
               <div
-                className={`absolute top-1 bottom-1 w-[calc(50%-4px)] bg-white rounded-full shadow-sm transition-transform duration-300 ease-out ${
+                className={`absolute top-1 bottom-1 w-[calc(50%-4px)] bg-white dark:bg-slate-700 rounded-full shadow-sm transition-transform duration-300 ease-out ${
                   activeTab === 'upcoming' ? 'translate-x-0' : 'translate-x-[100%]'
                 }`}
               />
@@ -147,14 +164,18 @@ export const PlanificacionesPage = () => {
                 role="tab"
                 aria-selected={activeTab === 'upcoming'}
                 onClick={() => setActiveTab('upcoming')}
-                className={`relative z-10 w-[140px] h-full rounded-full text-sm font-semibold transition-colors duration-200 cursor-pointer flex items-center justify-center ${
+                className={`relative z-10 flex-1 sm:w-[150px] h-full rounded-full text-sm font-semibold transition-colors duration-200 cursor-pointer flex items-center justify-center gap-2 ${
                   activeTab === 'upcoming'
-                    ? 'text-slate-900'
-                    : 'text-slate-600 hover:text-slate-900'
+                    ? 'text-slate-900 dark:text-white'
+                    : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-200'
                 }`}
               >
-                Próximos Viajes
-                <span className={`ml-2 text-xs px-2 py-0.5 rounded-full flex items-center justify-center ${activeTab === 'upcoming' ? 'bg-slate-100 text-slate-600' : 'bg-slate-300/50 text-slate-500'}`}>
+                Próximos
+                <span className={`text-xs px-2 py-0.5 rounded-full font-bold ${
+                  activeTab === 'upcoming' 
+                    ? 'bg-slate-100 dark:bg-slate-600 text-slate-800 dark:text-slate-100' 
+                    : 'bg-slate-300/50 dark:bg-slate-800 text-slate-600 dark:text-slate-400'
+                }`}>
                   {upcomingTrips.length}
                 </span>
               </button>
@@ -163,76 +184,102 @@ export const PlanificacionesPage = () => {
                 role="tab"
                 aria-selected={activeTab === 'past'}
                 onClick={() => setActiveTab('past')}
-                className={`relative z-10 w-[140px] h-full rounded-full text-sm font-semibold transition-colors duration-200 cursor-pointer flex items-center justify-center ${
+                className={`relative z-10 flex-1 sm:w-[150px] h-full rounded-full text-sm font-semibold transition-colors duration-200 cursor-pointer flex items-center justify-center gap-2 ${
                   activeTab === 'past'
-                    ? 'text-slate-900'
-                    : 'text-slate-600 hover:text-slate-900'
+                    ? 'text-slate-900 dark:text-white'
+                    : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-200'
                 }`}
               >
-                Viajes Pasados
-                <span className={`ml-2 text-xs px-2 py-0.5 rounded-full flex items-center justify-center ${activeTab === 'past' ? 'bg-slate-100 text-slate-600' : 'bg-slate-300/50 text-slate-500'}`}>
+                Pasados
+                <span className={`text-xs px-2 py-0.5 rounded-full font-bold ${
+                  activeTab === 'past' 
+                    ? 'bg-slate-100 dark:bg-slate-600 text-slate-800 dark:text-slate-100' 
+                    : 'bg-slate-300/50 dark:bg-slate-800 text-slate-600 dark:text-slate-400'
+                }`}>
                   {pastTrips.length}
                 </span>
               </button>
             </div>
 
-            {/* Primary Coral CTA */}
-            <button
-              type="button"
+            {/* Primary Action Button (Desktop) */}
+            <motion.button
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.95 }}
               onClick={() => setIsModalOpen(true)}
-              className="group border-2 border-dashed border-coral-500 text-coral-500 hover:bg-coral-500 hover:text-white font-bold h-12 px-6 rounded-full flex items-center justify-center gap-2 shadow-sm hover:shadow-rose-500/25 transition-all duration-300 cursor-pointer active:scale-95"
+              className="hidden sm:flex bg-coral-500 hover:bg-coral-600 text-white font-bold h-12 px-6 rounded-full items-center justify-center gap-2 shadow-lg shadow-coral-500/30 transition-all duration-300"
             >
-              <Plus className="w-5 h-5 transition-transform duration-300 group-hover:rotate-90" />
-              <span>Crear Planificación</span>
-            </button>
-          </div>
+              <Plus className="w-5 h-5" />
+              <span>Nuevo Viaje</span>
+            </motion.button>
+          </motion.div>
         </div>
 
         {/* Error Alert */}
-        {error && (
-          <div
-            className="p-4 mb-8 bg-rose-50 border border-rose-200 rounded-2xl text-rose-700 text-sm flex items-center gap-3 shadow-sm"
-            role="alert"
-          >
-            <AlertCircle className="w-5 h-5 shrink-0 text-rose-500" />
-            <span className="font-medium">{error}</span>
-          </div>
-        )}
+        <AnimatePresence>
+          {error && (
+            <motion.div
+              initial={{ opacity: 0, y: -10 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -10 }}
+              className="mb-8 p-4 bg-rose-50 dark:bg-rose-500/10 border border-rose-200 dark:border-rose-500/20 rounded-2xl text-rose-700 dark:text-rose-400 text-sm flex items-center gap-3 shadow-sm"
+              role="alert"
+            >
+              <AlertCircle className="w-5 h-5 shrink-0" />
+              <span className="font-medium">{error}</span>
+            </motion.div>
+          )}
+        </AnimatePresence>
 
-        {/* Loading State */}
-        {loading && (
-          <div className="flex flex-col items-center justify-center py-24">
-            <div className="w-12 h-12 border-4 border-coral-500 border-t-transparent rounded-full animate-spin mb-4" />
-            <p className="text-slate-500 font-medium">Cargando tus viajes...</p>
-          </div>
-        )}
-
-        {/* Trips Grid */}
-        {!loading && (
-          <div className="grid gap-8 grid-cols-1 md:grid-cols-2 xl:grid-cols-3 items-stretch">
-            {/* Render travel cards */}
-            {displayedTrips.map((plan) => (
-              <PlanificacionCard
-                key={plan.id}
-                planificacion={plan}
-                destinos={destinosByPlan[plan.id] || []}
-                onDelete={handleDelete}
-              />
+        {/* Main Content Area */}
+        {loading ? (
+          <PlanList>
+            {/* Show 4 skeletons while loading */}
+            {[1, 2, 3, 4].map((n) => (
+              <PlanSkeleton key={n} />
             ))}
-          </div>
+          </PlanList>
+        ) : (
+          <AnimatePresence mode="wait">
+            <motion.div
+              key={activeTab}
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -10 }}
+              transition={{ duration: 0.2 }}
+            >
+              {displayedTrips.length > 0 ? (
+                <PlanList>
+                  {displayedTrips.map((plan) => (
+                    <PlanCard
+                      key={plan.id}
+                      planificacion={plan}
+                      destinos={destinosByPlan[plan.id] || []}
+                      onDelete={handleDelete}
+                    />
+                  ))}
+                </PlanList>
+              ) : (
+                <EmptyPlanState 
+                  type={activeTab} 
+                  onCreateNew={() => setIsModalOpen(true)} 
+                />
+              )}
+            </motion.div>
+          </AnimatePresence>
         )}
 
-        {/* Empty state notice if no trips match current tab */}
-        {!loading && displayedTrips.length === 0 && (
-          <div className="mt-8 text-center py-8 px-4">
-            <Compass className="w-10 h-10 text-slate-300 mx-auto mb-2" />
-            <p className="text-slate-500 font-medium text-sm">
-              {activeTab === 'upcoming'
-                ? 'No tenés viajes próximos planificados. Hacé clic en la tarjeta para crear uno.'
-                : 'No tenés viajes finalizados en tu historial.'}
-            </p>
-          </div>
-        )}
+        {/* Floating Action Button (Mobile Only) */}
+        <motion.button
+          initial={{ scale: 0 }}
+          animate={{ scale: 1 }}
+          whileHover={{ scale: 1.1 }}
+          whileTap={{ scale: 0.9 }}
+          onClick={() => setIsModalOpen(true)}
+          className="sm:hidden fixed bottom-24 right-6 z-40 bg-coral-500 text-white p-4 rounded-full shadow-xl shadow-coral-500/30 flex items-center justify-center"
+          aria-label="Crear nuevo viaje"
+        >
+          <Plus className="w-6 h-6" />
+        </motion.button>
 
         {/* Creation Form Modal */}
         <PlanificacionFormModal
@@ -242,34 +289,54 @@ export const PlanificacionesPage = () => {
         />
 
         {/* Delete Confirmation Modal */}
-        {tripToDelete !== null && (
-          <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
-            <div className="absolute inset-0 bg-slate-900/60 backdrop-blur-sm transition-opacity" onClick={() => setTripToDelete(null)} />
-            <div className="relative bg-white rounded-3xl p-6 sm:p-8 max-w-sm w-full shadow-2xl animate-in fade-in zoom-in-95 z-10">
-              <h3 className="text-xl font-bold text-slate-900 mb-2">Eliminar viaje</h3>
-              <p className="text-slate-500 mb-6 text-sm">
-                ¿Estás seguro de que querés borrar esta planificación? Esta acción no se puede deshacer.
-              </p>
-              <div className="flex justify-end gap-3">
-                <button
-                  type="button"
-                  onClick={() => setTripToDelete(null)}
-                  className="px-5 py-2.5 rounded-full text-sm font-semibold text-slate-600 hover:text-slate-900 hover:bg-slate-100 transition-colors"
-                >
-                  Cancelar
-                </button>
-                <button
-                  type="button"
-                  onClick={confirmDelete}
-                  className="px-5 py-2.5 rounded-full text-sm font-bold text-white bg-coral-500 hover:bg-coral-600 shadow-sm transition-colors"
-                >
-                  Eliminar
-                </button>
-              </div>
+        <AnimatePresence>
+          {tripToDelete !== null && (
+            <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+              <motion.div 
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0 }}
+                className="absolute inset-0 bg-slate-900/60 backdrop-blur-sm" 
+                onClick={() => setTripToDelete(null)} 
+              />
+              <motion.div 
+                initial={{ opacity: 0, scale: 0.95 }}
+                animate={{ opacity: 1, scale: 1 }}
+                exit={{ opacity: 0, scale: 0.95 }}
+                transition={{ type: 'spring', damping: 25, stiffness: 300 }}
+                className="relative bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-3xl p-6 sm:p-8 max-w-sm w-full shadow-2xl z-10"
+              >
+                <div className="w-12 h-12 rounded-full bg-rose-100 dark:bg-rose-500/20 flex items-center justify-center mb-4">
+                  <AlertCircle className="w-6 h-6 text-rose-500 dark:text-rose-400" />
+                </div>
+                <h3 className="text-xl font-bold text-slate-900 dark:text-white mb-2">Eliminar viaje</h3>
+                <p className="text-slate-500 dark:text-slate-400 mb-8 text-sm">
+                  ¿Estás seguro de que querés borrar esta planificación? Esta acción no se puede deshacer y eliminará todos los itinerarios asociados.
+                </p>
+                <div className="flex flex-col-reverse sm:flex-row justify-end gap-3">
+                  <button
+                    type="button"
+                    onClick={() => setTripToDelete(null)}
+                    className="w-full sm:w-auto px-5 py-2.5 rounded-xl text-sm font-semibold text-slate-600 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-slate-700 transition-colors"
+                  >
+                    Cancelar
+                  </button>
+                  <motion.button
+                    whileHover={{ scale: 1.02 }}
+                    whileTap={{ scale: 0.98 }}
+                    type="button"
+                    onClick={confirmDelete}
+                    className="w-full sm:w-auto px-5 py-2.5 rounded-xl text-sm font-bold text-white bg-rose-500 hover:bg-rose-600 shadow-lg shadow-rose-500/30 transition-all"
+                  >
+                    Eliminar
+                  </motion.button>
+                </div>
+              </motion.div>
             </div>
-          </div>
-        )}
+          )}
+        </AnimatePresence>
       </div>
     </div>
   );
 };
+
