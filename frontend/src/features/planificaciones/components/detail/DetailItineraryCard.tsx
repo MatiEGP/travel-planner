@@ -10,7 +10,6 @@ import type {
 } from '../../types/itinerario';
 import type { ActividadResponseDTO } from '../../../actividades/types/actividad';
 import type { DestinoResponseDTO } from '../../../destinos/types/destino';
-import { PopoverDatePicker } from '../../../../components/ui/PopoverDatePicker';
 import { CalendarDatePicker } from '../../../../components/ui/CalendarDatePicker';
 import { TimePicker } from '../../../../components/ui/TimePicker';
 

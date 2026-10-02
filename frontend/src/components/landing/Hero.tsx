@@ -1,4 +1,4 @@
-import { motion, useMotionTemplate, useMotionValue } from 'framer-motion';
+import { motion, useMotionValue } from 'framer-motion';
 import type { MouseEvent } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { useAuth } from '../../features/auth/context/useAuth';
@@ -15,7 +15,6 @@ export function Hero() {
     mouseY.set(clientY - top);
   }
 
-  const backgroundRadial = useMotionTemplate`radial-gradient(600px circle at ${mouseX}px ${mouseY}px, rgba(34, 197, 94, 0.1), transparent 80%)`;
   const titleWords = "Organiza tu próximo viaje con Fuimonos".split(" ");
 
   return (

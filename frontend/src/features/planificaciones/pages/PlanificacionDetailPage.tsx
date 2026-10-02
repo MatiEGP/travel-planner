@@ -110,7 +110,6 @@ export const PlanificacionDetailPage: React.FC = () => {
     if (isNaN(id)) return;
 
     const controller = new AbortController();
-    setLoading(true);
 
     Promise.all([
       planificacionService.getById(id, { signal: controller.signal }),

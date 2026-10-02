@@ -275,8 +275,8 @@ export const PlanificacionFormModal: React.FC<PlanificacionFormModalProps> = ({
         fechaFin: formData.fechaFin,
       });
       onClose();
-    } catch (err: any) {
-      setError(err.message || 'Error al crear la planificación');
+    } catch (err) {
+      setError((err as Error).message || 'Error al crear la planificación');
     } finally {
       setLoading(false);
     }

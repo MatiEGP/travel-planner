@@ -1,11 +1,9 @@
-import React, { useState, type FormEvent } from 'react';
+import React, { useState } from 'react';
 import { createPortal } from 'react-dom';
 import { Sparkles, Plus, Trash2, X, Clock, Calendar, MapPin } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import type { ActividadResponseDTO, ActividadRequestDTO } from '../../../actividades/types/actividad';
 import type { DestinoResponseDTO } from '../../../destinos/types/destino';
-import { PopoverDatePicker } from '../../../../components/ui/PopoverDatePicker';
-import { TimePicker } from '../../../../components/ui/TimePicker';
 import { ActividadForm } from '../../../actividades/components/ActividadForm';
 
 interface DetailActivitiesCardProps {
