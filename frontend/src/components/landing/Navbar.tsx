@@ -1,12 +1,12 @@
 import { motion } from 'framer-motion';
-import { Plane, Moon, Sun } from 'lucide-react';
+import { Plane, Moon, Sun, LogOut } from 'lucide-react';
 import { useTheme } from '../../context/ThemeContext';
 import { Link, useLocation } from 'react-router-dom';
 import { useAuth } from '../../features/auth/context/useAuth';
 
 export function Navbar() {
   const { theme, toggleTheme } = useTheme();
-  const { isAuthenticated } = useAuth();
+  const { isAuthenticated, logout } = useAuth();
   const location = useLocation();
 
   const handleLogoClick = () => {
@@ -46,12 +46,21 @@ export function Navbar() {
           </button>
           
           {isAuthenticated ? (
-            <Link
-              to="/planificaciones"
-              className="bg-coral-500 hover:bg-coral-600 text-white px-5 py-2 rounded-xl font-semibold transition-all hover:scale-105 active:scale-95 shadow-md shadow-coral-500/30"
-            >
-              Mis Viajes
-            </Link>
+            <div className="flex items-center gap-3">
+              <Link
+                to="/planificaciones"
+                className="bg-coral-500 hover:bg-coral-600 text-white px-5 py-2 rounded-xl font-semibold transition-all hover:scale-105 active:scale-95 shadow-md shadow-coral-500/30"
+              >
+                Mis Viajes
+              </Link>
+              <button
+                onClick={() => void logout()}
+                className="p-2 text-slate-500 hover:text-coral-500 hover:bg-coral-50 dark:hover:bg-slate-800/80 rounded-xl transition-colors"
+                title="Cerrar sesión"
+              >
+                <LogOut className="w-5 h-5" />
+              </button>
+            </div>
           ) : (
             <Link
               to="/login"
