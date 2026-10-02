@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { X, Calendar } from 'lucide-react';
+import { X } from 'lucide-react';
 import type { PlanificacionRequestDTO } from '../../planificaciones/types/planificacion';
 import { useAuth } from '../../auth/context/useAuth';
 

@@ -1,8 +1,10 @@
 import React, { useState, type FormEvent } from 'react';
-import { MapPin, Plus, Trash2, X, AlertCircle } from 'lucide-react';
+import { createPortal } from 'react-dom';
+import { MapPin, Plus, Trash2, X } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import type { DestinoResponseDTO, DestinoRequestDTO } from '../../../destinos/types/destino';
 import { getTripCoverImage } from '../../../../utils/tripUtils';
+import { DestinoForm } from '../../../destinos/components/DestinoForm';
 
 interface DetailDestinationsCardProps {
   planificacionId: number;
@@ -18,48 +20,13 @@ export const DetailDestinationsCard: React.FC<DetailDestinationsCardProps> = ({
   onDeleteDestino,
 }) => {
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [formData, setFormData] = useState({
-    nombre: '',
-    pais: '',
-    ciudad: '',
-    notas: '',
-  });
-  const [submitting, setSubmitting] = useState(false);
-  const [error, setError] = useState<string | null>(null);
 
   const handleOpenModal = () => {
-    setFormData({ nombre: '', pais: '', ciudad: '', notas: '' });
-    setError(null);
     setIsModalOpen(true);
   };
 
   const handleCloseModal = () => {
     setIsModalOpen(false);
-    setError(null);
-  };
-
-  const handleSubmit = async (e: FormEvent) => {
-    e.preventDefault();
-    if (!formData.nombre.trim() || !formData.pais.trim() || !formData.ciudad.trim()) {
-      setError('Por favor complete los campos obligatorios.');
-      return;
-    }
-    try {
-      setSubmitting(true);
-      setError(null);
-      await onAddDestino({
-        planificacionId,
-        nombre: formData.nombre.trim(),
-        pais: formData.pais.trim(),
-        ciudad: formData.ciudad.trim(),
-        notas: formData.notas.trim(),
-      });
-      setIsModalOpen(false);
-    } catch (err) {
-      setError((err as Error).message || 'Error al agregar destino');
-    } finally {
-      setSubmitting(false);
-    }
   };
 
   return (
@@ -174,118 +141,55 @@ export const DetailDestinationsCard: React.FC<DetailDestinationsCardProps> = ({
         )}
       </div>
 
-      <AnimatePresence>
-        {isModalOpen && (
-          <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
-            <motion.div 
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
-              className="absolute inset-0 bg-slate-900/60 backdrop-blur-sm" 
-              onClick={handleCloseModal}
-            />
-            <motion.div 
-              initial={{ opacity: 0, scale: 0.95, y: 10 }}
-              animate={{ opacity: 1, scale: 1, y: 0 }}
-              exit={{ opacity: 0, scale: 0.95, y: 10 }}
-              className="bg-white dark:bg-slate-900 rounded-3xl max-w-md w-full p-6 sm:p-8 shadow-2xl border border-slate-100 dark:border-slate-800 relative z-10"
-            >
-              <div className="flex items-center justify-between mb-6">
-                <div className="flex items-center gap-3">
-                  <div className="w-10 h-10 rounded-2xl bg-rose-50 dark:bg-rose-500/10 flex items-center justify-center text-[#FF5A5F] dark:text-rose-400">
-                    <MapPin className="w-5 h-5" />
+      {typeof document !== 'undefined' && createPortal(
+        <AnimatePresence>
+          {isModalOpen && (
+            <div className="fixed inset-0 z-[9999] flex items-center justify-center p-4">
+              <motion.div 
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0 }}
+                className="absolute inset-0 bg-slate-900/60 backdrop-blur-sm" 
+                onClick={handleCloseModal}
+              />
+              <motion.div 
+                initial={{ opacity: 0, scale: 0.95, y: 10 }}
+                animate={{ opacity: 1, scale: 1, y: 0 }}
+                exit={{ opacity: 0, scale: 0.95, y: 10 }}
+                className="bg-white dark:bg-slate-900 rounded-3xl max-w-md w-full p-6 sm:p-8 shadow-2xl border border-slate-100 dark:border-slate-800 relative z-10"
+              >
+                <div className="flex items-center justify-between mb-6">
+                  <div className="flex items-center gap-3">
+                    <div className="w-10 h-10 rounded-2xl bg-rose-50 dark:bg-rose-500/10 flex items-center justify-center text-[#FF5A5F] dark:text-rose-400">
+                      <MapPin className="w-5 h-5" />
+                    </div>
+                    <h3 className="text-xl font-bold text-slate-900 dark:text-white">Nuevo Destino</h3>
                   </div>
-                  <h3 className="text-xl font-bold text-slate-900 dark:text-white">Nuevo Destino</h3>
-                </div>
-                <button
-                  type="button"
-                  onClick={handleCloseModal}
-                  className="p-2 text-slate-400 hover:text-slate-700 dark:hover:text-slate-200 rounded-full hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors"
-                >
-                  <X className="w-5 h-5" />
-                </button>
-              </div>
-
-              {error && (
-                <div className="mb-6 p-4 bg-rose-50 dark:bg-rose-500/10 border border-rose-200 dark:border-rose-500/20 rounded-2xl text-rose-600 dark:text-rose-400 text-sm flex items-start gap-3">
-                  <AlertCircle className="w-5 h-5 shrink-0 mt-0.5" />
-                  <span>{error}</span>
-                </div>
-              )}
-
-              <form onSubmit={handleSubmit} className="space-y-4">
-                <div>
-                  <label className="block text-sm font-semibold text-slate-700 dark:text-slate-300 mb-1.5">
-                    Nombre del lugar <span className="text-rose-500">*</span>
-                  </label>
-                  <input
-                    type="text"
-                    required
-                    value={formData.nombre}
-                    onChange={(e) => setFormData({ ...formData, nombre: e.target.value })}
-                    className="w-full px-4 py-3 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 text-slate-900 dark:text-white focus:ring-2 focus:ring-[#FF5A5F]/20 focus:border-[#FF5A5F] transition-all outline-none"
-                    placeholder="Ej. Machu Picchu"
-                  />
-                </div>
-                <div className="grid grid-cols-2 gap-4">
-                  <div>
-                    <label className="block text-sm font-semibold text-slate-700 dark:text-slate-300 mb-1.5">
-                      Ciudad <span className="text-rose-500">*</span>
-                    </label>
-                    <input
-                      type="text"
-                      required
-                      value={formData.ciudad}
-                      onChange={(e) => setFormData({ ...formData, ciudad: e.target.value })}
-                      className="w-full px-4 py-3 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 text-slate-900 dark:text-white focus:ring-2 focus:ring-[#FF5A5F]/20 focus:border-[#FF5A5F] transition-all outline-none"
-                      placeholder="Ej. Cusco"
-                    />
-                  </div>
-                  <div>
-                    <label className="block text-sm font-semibold text-slate-700 dark:text-slate-300 mb-1.5">
-                      País <span className="text-rose-500">*</span>
-                    </label>
-                    <input
-                      type="text"
-                      required
-                      value={formData.pais}
-                      onChange={(e) => setFormData({ ...formData, pais: e.target.value })}
-                      className="w-full px-4 py-3 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 text-slate-900 dark:text-white focus:ring-2 focus:ring-[#FF5A5F]/20 focus:border-[#FF5A5F] transition-all outline-none"
-                      placeholder="Ej. Perú"
-                    />
-                  </div>
-                </div>
-                <div>
-                  <label className="block text-sm font-semibold text-slate-700 dark:text-slate-300 mb-1.5">
-                    Notas o descripción
-                  </label>
-                  <textarea
-                    value={formData.notas}
-                    onChange={(e) => setFormData({ ...formData, notas: e.target.value })}
-                    className="w-full px-4 py-3 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 text-slate-900 dark:text-white focus:ring-2 focus:ring-[#FF5A5F]/20 focus:border-[#FF5A5F] transition-all outline-none min-h-[100px] resize-y"
-                    placeholder="Detalles adicionales..."
-                  />
-                </div>
-                <div className="pt-2">
-                  <motion.button
-                    whileHover={{ scale: 1.02 }}
-                    whileTap={{ scale: 0.98 }}
-                    type="submit"
-                    disabled={submitting}
-                    className="w-full bg-[#FF5A5F] hover:bg-[#e0484d] text-white font-bold py-3.5 px-4 rounded-xl transition-colors disabled:opacity-50 flex items-center justify-center gap-2"
+                  <button
+                    type="button"
+                    onClick={handleCloseModal}
+                    className="p-2 text-slate-400 hover:text-slate-700 dark:hover:text-slate-200 rounded-full hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors"
                   >
-                    {submitting ? (
-                      <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin" />
-                    ) : (
-                      'Guardar destino'
-                    )}
-                  </motion.button>
+                    <X className="w-5 h-5" />
+                  </button>
                 </div>
-              </form>
-            </motion.div>
-          </div>
-        )}
-      </AnimatePresence>
+
+                <div className="pt-2">
+                  <DestinoForm
+                    planificacionId={planificacionId}
+                    onSubmit={async (data) => {
+                      await onAddDestino(data as DestinoRequestDTO);
+                    }}
+                    onCreated={handleCloseModal}
+                    onCancel={handleCloseModal}
+                  />
+                </div>
+              </motion.div>
+            </div>
+          )}
+        </AnimatePresence>,
+        document.body
+      )}
     </div>
   );
 };

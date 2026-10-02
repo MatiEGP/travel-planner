@@ -1,12 +1,10 @@
 import React, { useState, type FormEvent } from 'react';
-import { createPortal } from 'react-dom';
-import { Sparkles, Plus, Trash2, X, Clock, Calendar, MapPin } from 'lucide-react';
+import { Sparkles, Plus, Trash2, X, AlertCircle, Clock, Calendar, MapPin } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import type { ActividadResponseDTO, ActividadRequestDTO } from '../../../actividades/types/actividad';
 import type { DestinoResponseDTO } from '../../../destinos/types/destino';
 import { PopoverDatePicker } from '../../../../components/ui/PopoverDatePicker';
 import { TimePicker } from '../../../../components/ui/TimePicker';
-import { ActividadForm } from '../../../actividades/components/ActividadForm';
 
 interface DetailActivitiesCardProps {
   planificacionId: number;
@@ -28,16 +26,59 @@ export const DetailActivitiesCard: React.FC<DetailActivitiesCardProps> = ({
   onDeleteActividad,
 }) => {
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [selectedDestinoId, setSelectedDestinoId] = useState<number | undefined>(undefined);
+  const [formData, setFormData] = useState({
+    destinoId: destinos.length > 0 ? destinos[0].id : 0,
+    nombre: '',
+    fecha: '',
+    hora: '',
+    notas: '',
+  });
+  const [submitting, setSubmitting] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
   const handleOpenModal = (defaultDestinoId?: number) => {
-    setSelectedDestinoId(defaultDestinoId);
+    setFormData({
+      destinoId: defaultDestinoId || (destinos.length > 0 ? destinos[0].id : 0),
+      nombre: '',
+      fecha: '',
+      hora: '',
+      notas: '',
+    });
+    setError(null);
     setIsModalOpen(true);
   };
 
   const handleCloseModal = () => {
     setIsModalOpen(false);
-    setSelectedDestinoId(undefined);
+    setError(null);
+  };
+
+  const handleSubmit = async (e: FormEvent) => {
+    e.preventDefault();
+    if (!formData.nombre.trim() || !formData.fecha) {
+      setError('Por favor complete los campos obligatorios.');
+      return;
+    }
+
+    try {
+      setSubmitting(true);
+      setError(null);
+      const horaFinal = formData.hora || '00:00';
+      const formattedFechaHora = horaFinal.length === 5 ? `${formData.fecha}T${horaFinal}:00` : `${formData.fecha}T${horaFinal}`;
+
+      await onAddActividad({
+        planificacionId,
+        ...(Number(formData.destinoId) !== 0 ? { destinoId: Number(formData.destinoId) } : {}),
+        nombre: formData.nombre.trim(),
+        fechaHora: formattedFechaHora,
+        notas: formData.notas.trim(),
+      });
+      setIsModalOpen(false);
+    } catch (err) {
+      setError((err as Error).message || 'Error al registrar actividad');
+    } finally {
+      setSubmitting(false);
+    }
   };
 
   const formatActivityDateTime = (isoString: string) => {
@@ -254,62 +295,145 @@ export const DetailActivitiesCard: React.FC<DetailActivitiesCardProps> = ({
         )}
       </div>
 
-      {typeof document !== 'undefined' && createPortal(
-        <AnimatePresence>
-          {isModalOpen && (
-            <div className="fixed inset-0 z-[9999] flex items-center justify-center p-4">
-              <motion.div 
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                exit={{ opacity: 0 }}
-                className="absolute inset-0 bg-slate-900/60 backdrop-blur-sm" 
-                onClick={handleCloseModal}
-              />
-              <motion.div 
-                initial={{ opacity: 0, scale: 0.95, y: 10 }}
-                animate={{ opacity: 1, scale: 1, y: 0 }}
-                exit={{ opacity: 0, scale: 0.95, y: 10 }}
-                className="bg-white dark:bg-slate-900 rounded-3xl max-w-md w-full p-6 sm:p-8 shadow-2xl border border-slate-100 dark:border-slate-800 relative z-10"
-              >
-                <div className="flex items-center justify-between mb-6">
-                  <div className="flex items-center gap-3">
-                    <div className="w-10 h-10 rounded-2xl bg-amber-50 dark:bg-amber-500/10 flex items-center justify-center text-amber-500">
-                      <Sparkles className="w-5 h-5" />
-                    </div>
-                    <h3 className="text-xl font-bold text-slate-900 dark:text-white">Nueva Actividad</h3>
+      <AnimatePresence>
+        {isModalOpen && (
+          <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+            <motion.div 
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              className="absolute inset-0 bg-slate-900/60 backdrop-blur-sm" 
+              onClick={handleCloseModal}
+            />
+            <motion.div 
+              initial={{ opacity: 0, scale: 0.95, y: 10 }}
+              animate={{ opacity: 1, scale: 1, y: 0 }}
+              exit={{ opacity: 0, scale: 0.95, y: 10 }}
+              className="bg-white dark:bg-slate-900 rounded-3xl max-w-md w-full p-6 sm:p-8 shadow-2xl border border-slate-100 dark:border-slate-800 relative z-10"
+            >
+              <div className="flex items-center justify-between mb-6">
+                <div className="flex items-center gap-3">
+                  <div className="w-10 h-10 rounded-2xl bg-amber-50 dark:bg-amber-500/10 flex items-center justify-center text-amber-500">
+                    <Sparkles className="w-5 h-5" />
                   </div>
-                  <button
-                    type="button"
-                    onClick={handleCloseModal}
-                    className="p-2 text-slate-400 hover:text-slate-700 dark:hover:text-slate-200 rounded-full hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors"
-                  >
-                    <X className="w-5 h-5" />
-                  </button>
+                  <h3 className="text-xl font-bold text-slate-900 dark:text-white">Nueva Actividad</h3>
                 </div>
+                <button
+                  type="button"
+                  onClick={handleCloseModal}
+                  className="p-2 text-slate-400 hover:text-slate-700 dark:hover:text-slate-200 rounded-full hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors"
+                >
+                  <X className="w-5 h-5" />
+                </button>
+              </div>
 
+              {error && (
+                <div className="mb-6 p-4 bg-rose-50 dark:bg-rose-500/10 border border-rose-200 dark:border-rose-500/20 rounded-2xl text-rose-600 dark:text-rose-400 text-sm flex items-start gap-3">
+                  <AlertCircle className="w-5 h-5 shrink-0 mt-0.5" />
+                  <span>{error}</span>
+                </div>
+              )}
 
-                <div className="pt-2">
-                  <ActividadForm
-                    planificacionId={planificacionId}
-                    destinoId={selectedDestinoId}
-                    destinos={destinos}
-                    fechaInicio={fechaInicio}
-                    fechaFin={fechaFin}
-                    onSubmit={async (data) => {
-                      await onAddActividad(data as ActividadRequestDTO);
-                    }}
-                    onCreated={handleCloseModal}
-                    onCancel={handleCloseModal}
+              <form onSubmit={handleSubmit} className="space-y-4">
+                <div>
+                  <label className="block text-sm font-semibold text-slate-700 dark:text-slate-300 mb-1.5">
+                    Destino
+                  </label>
+                  <select
+                    value={formData.destinoId}
+                    onChange={(e) => setFormData({ ...formData, destinoId: Number(e.target.value) })}
+                    className="w-full px-4 py-3 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 text-slate-900 dark:text-white focus:ring-2 focus:ring-[#FF5A5F]/20 focus:border-[#FF5A5F] transition-all outline-none"
+                  >
+                    <option value={0}>Sin destino específico</option>
+                    {destinos.map((dest) => (
+                      <option key={dest.id} value={dest.id}>
+                        {dest.nombre} ({dest.ciudad})
+                      </option>
+                    ))}
+                  </select>
+                </div>
+                <div>
+                  <label className="block text-sm font-semibold text-slate-700 dark:text-slate-300 mb-1.5">
+                    Nombre de la actividad <span className="text-rose-500">*</span>
+                  </label>
+                  <input
+                    type="text"
+                    required
+                    value={formData.nombre}
+                    onChange={(e) => setFormData({ ...formData, nombre: e.target.value })}
+                    className="w-full px-4 py-3 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 text-slate-900 dark:text-white focus:ring-2 focus:ring-[#FF5A5F]/20 focus:border-[#FF5A5F] transition-all outline-none"
+                    placeholder="Ej. Tour por la ciudad"
                   />
                 </div>
-              </motion.div>
-            </div>
-          )}
-        </AnimatePresence>,
-        document.body
-      )}
+                
+                <div className="grid grid-cols-2 gap-4">
+                  <div>
+                    <label className="block text-sm font-semibold text-slate-700 dark:text-slate-300 mb-1.5">
+                      Fecha <span className="text-rose-500">*</span>
+                    </label>
+                    <PopoverDatePicker
+                      date={formData.fecha ? new Date(`${formData.fecha}T00:00:00`) : undefined}
+                      onSelect={(date) => {
+                        if (date) {
+                          const year = date.getFullYear();
+                          const month = String(date.getMonth() + 1).padStart(2, '0');
+                          const day = String(date.getDate()).padStart(2, '0');
+                          setFormData({ ...formData, fecha: `${year}-${month}-${day}` });
+                        } else {
+                          setFormData({ ...formData, fecha: '' });
+                        }
+                      }}
+                      minDate={new Date(`${fechaInicio}T00:00:00`)}
+                      maxDate={new Date(`${fechaFin}T00:00:00`)}
+                      placeholder="Seleccionar..."
+                      className="w-full"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-semibold text-slate-700 dark:text-slate-300 mb-1.5">
+                      Hora
+                    </label>
+                    <TimePicker
+                      time={formData.hora}
+                      onTimeChange={(time) => setFormData({ ...formData, hora: time })}
+                      className="w-full"
+                    />
+                  </div>
+                </div>
+
+                <div>
+                  <label className="block text-sm font-semibold text-slate-700 dark:text-slate-300 mb-1.5">
+                    Notas adicionales
+                  </label>
+                  <textarea
+                    value={formData.notas}
+                    onChange={(e) => setFormData({ ...formData, notas: e.target.value })}
+                    className="w-full px-4 py-3 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 text-slate-900 dark:text-white focus:ring-2 focus:ring-[#FF5A5F]/20 focus:border-[#FF5A5F] transition-all outline-none min-h-[100px] resize-y"
+                    placeholder="Detalles de la reserva, links..."
+                  />
+                </div>
+                
+                <div className="pt-2">
+                  <motion.button
+                    whileHover={{ scale: 1.02 }}
+                    whileTap={{ scale: 0.98 }}
+                    type="submit"
+                    disabled={submitting}
+                    className="w-full bg-[#FF5A5F] hover:bg-[#e0484d] text-white font-bold py-3.5 px-4 rounded-xl transition-colors disabled:opacity-50 flex items-center justify-center gap-2"
+                  >
+                    {submitting ? (
+                      <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+                    ) : (
+                      'Guardar actividad'
+                    )}
+                  </motion.button>
+                </div>
+              </form>
+            </motion.div>
+          </div>
+        )}
+      </AnimatePresence>
     </div>
   );
 };
-
 

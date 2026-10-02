@@ -1,38 +1,60 @@
 import { useState, type FormEvent } from 'react';
 import { actividadService } from '../api/actividadService';
 import type { ActividadRequestDTO } from '../types/actividad';
+import { PopoverDatePicker } from '../../../components/ui/PopoverDatePicker';
+import { TimePicker } from '../../../components/ui/TimePicker';
+import type { DestinoResponseDTO } from '../../destinos/types/destino';
 
 interface ActividadFormProps {
   destinoId?: number;
   planificacionId?: number;
-  onCreated: () => void;
+  onCreated?: () => void;
+  onSubmit?: (data: Omit<ActividadRequestDTO, 'planificacionId'> & { planificacionId?: number }) => Promise<void>;
+  onCancel?: () => void;
+  fechaInicio?: string;
+  fechaFin?: string;
+  destinos?: DestinoResponseDTO[];
 }
 
-export const ActividadForm = ({ destinoId, planificacionId, onCreated }: ActividadFormProps) => {
+export const ActividadForm = ({ destinoId: initialDestinoId, planificacionId, onCreated, onSubmit, onCancel, fechaInicio, fechaFin, destinos }: ActividadFormProps) => {
   const [formData, setFormData] = useState({
     nombre: '',
-    fechaHora: '',
+    fecha: '',
+    hora: '',
     notas: '',
+    destinoId: initialDestinoId || 0,
   });
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
-    const request: ActividadRequestDTO = {
-      ...(destinoId ? { destinoId } : {}),
+    if (!formData.nombre.trim() || !formData.fecha) {
+      setError('Por favor complete los campos obligatorios.');
+      return;
+    }
+
+    const horaFinal = formData.hora || '00:00';
+    const formattedFechaHora = horaFinal.length === 5 ? `${formData.fecha}T${horaFinal}:00` : `${formData.fecha}T${horaFinal}`;
+
+    const request = {
+      ...(formData.destinoId ? { destinoId: formData.destinoId } : {}),
       ...(planificacionId ? { planificacionId } : {}),
-      nombre: formData.nombre,
-      fechaHora: formData.fechaHora + ':00', // Add seconds for LocalDateTime format
-      notas: formData.notas,
+      nombre: formData.nombre.trim(),
+      fechaHora: formattedFechaHora,
+      notas: formData.notas.trim(),
     };
 
     try {
       setSubmitting(true);
       setError(null);
-      await actividadService.create(request);
-      setFormData({ nombre: '', fechaHora: '', notas: '' });
-      onCreated();
+      if (onSubmit) {
+        await onSubmit(request);
+      } else {
+        await actividadService.create(request as ActividadRequestDTO);
+      }
+      setFormData({ nombre: '', fecha: '', hora: '', notas: '', destinoId: 0 });
+      if (onCreated) onCreated();
     } catch (err) {
       setError((err as Error).message);
     } finally {
@@ -41,16 +63,35 @@ export const ActividadForm = ({ destinoId, planificacionId, onCreated }: Activid
   };
 
   return (
-    <div className="bg-white rounded-xl shadow-md p-6">
-      <h3 className="text-lg font-semibold text-slate-800 mb-4">Agregar Actividad</h3>
+    <div className="w-full">
+      <h3 className="text-lg font-semibold text-slate-800 dark:text-white mb-4">Agregar Actividad</h3>
       {error && (
-        <div className="mb-4 p-3 bg-rose-50 border border-rose-200 rounded-lg text-rose-600 text-sm">
+        <div className="mb-4 p-3 bg-rose-50 dark:bg-rose-500/10 border border-rose-200 dark:border-rose-500/20 rounded-lg text-rose-600 dark:text-rose-400 text-sm">
           {error}
         </div>
       )}
       <form onSubmit={handleSubmit} className="space-y-4">
+        {destinos && (
+          <div>
+            <label className="block text-sm font-semibold text-slate-700 dark:text-slate-300 mb-1.5">
+              Destino
+            </label>
+            <select
+              value={formData.destinoId}
+              onChange={(e) => setFormData({ ...formData, destinoId: Number(e.target.value) })}
+              className="w-full px-4 py-2.5 rounded-lg border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-900 text-slate-900 dark:text-white focus:ring-2 focus:ring-[#FF5A5F] focus:border-transparent transition-all outline-none"
+            >
+              <option value={0}>Sin destino específico</option>
+              {destinos.map((dest) => (
+                <option key={dest.id} value={dest.id}>
+                  {dest.nombre} ({dest.ciudad})
+                </option>
+              ))}
+            </select>
+          </div>
+        )}
         <div>
-          <label htmlFor="act-nombre" className="block text-sm font-medium text-slate-700 mb-1.5">Nombre de la actividad</label>
+          <label htmlFor="act-nombre" className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1.5">Nombre de la actividad <span className="text-rose-500">*</span></label>
           <input
             id="act-nombre"
             type="text"
@@ -58,38 +99,51 @@ export const ActividadForm = ({ destinoId, planificacionId, onCreated }: Activid
             value={formData.nombre}
             onChange={(e) => setFormData({ ...formData, nombre: e.target.value })}
             required
-            className="w-full px-4 py-2.5 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-teal-500 focus:border-teal-500 transition-colors duration-200 bg-white text-slate-800 placeholder-slate-400"
+            className="w-full px-4 py-2.5 border border-slate-300 dark:border-slate-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#FF5A5F] focus:border-transparent transition-colors duration-200 bg-white dark:bg-slate-900 text-slate-800 dark:text-white placeholder-slate-400"
           />
         </div>
-        <div>
-          <label htmlFor="act-fecha" className="block text-sm font-medium text-slate-700 mb-1.5">Fecha y hora</label>
-          <input
-            id="act-fecha"
-            type="datetime-local"
-            value={formData.fechaHora}
-            onChange={(e) => setFormData({ ...formData, fechaHora: e.target.value })}
-            required
-            className="w-full px-4 py-2.5 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-teal-500 focus:border-teal-500 transition-colors duration-200 bg-white text-slate-800"
-          />
+        
+        <div className="grid grid-cols-2 gap-4">
+          <div>
+            <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1.5">Fecha <span className="text-rose-500">*</span></label>
+            <PopoverDatePicker date={formData.fecha} onChange={(date) => setFormData({ ...formData, fecha: date })} minDate={fechaInicio} maxDate={fechaFin} placeholder="Seleccionar..." />
+          </div>
+          <div>
+            <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1.5">Hora</label>
+            <TimePicker time={formData.hora} onChange={(time) => setFormData({ ...formData, hora: time })} />
+          </div>
         </div>
+
         <div>
-          <label htmlFor="act-notas" className="block text-sm font-medium text-slate-700 mb-1.5">Notas</label>
+          <label htmlFor="act-notas" className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1.5">Notas</label>
           <textarea
             id="act-notas"
             placeholder="Detalles adicionales..."
             value={formData.notas}
             onChange={(e) => setFormData({ ...formData, notas: e.target.value })}
             rows={2}
-            className="w-full px-4 py-2.5 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-teal-500 focus:border-teal-500 transition-colors duration-200 bg-white text-slate-800 placeholder-slate-400 resize-none"
+            className="w-full px-4 py-2.5 border border-slate-300 dark:border-slate-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#FF5A5F] focus:border-transparent transition-colors duration-200 bg-white dark:bg-slate-900 text-slate-800 dark:text-white placeholder-slate-400 resize-none"
           />
         </div>
-        <button
-          type="submit"
-          disabled={submitting}
-          className="w-full bg-teal-600 hover:bg-teal-700 text-white font-semibold py-2.5 px-5 rounded-lg transition-colors duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
-        >
-          {submitting ? 'Agregando...' : 'Agregar Actividad'}
-        </button>
+
+        <div className="flex items-center justify-end gap-3 pt-4">
+          {onCancel && (
+            <button
+              type="button"
+              onClick={onCancel}
+              className="px-4 py-2 text-sm font-semibold text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-xl transition-colors"
+            >
+              Cancelar
+            </button>
+          )}
+          <button
+            type="submit"
+            disabled={submitting}
+            className="w-full sm:w-auto bg-[#FF5A5F] hover:bg-[#e0484d] text-white font-semibold py-2.5 px-6 rounded-xl transition-colors duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
+          >
+            {submitting ? 'Agregando...' : 'Guardar Actividad'}
+          </button>
+        </div>
       </form>
     </div>
   );
