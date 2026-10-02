@@ -16,7 +16,7 @@ export function Hero() {
   }
 
   const backgroundRadial = useMotionTemplate`radial-gradient(600px circle at ${mouseX}px ${mouseY}px, rgba(34, 197, 94, 0.1), transparent 80%)`;
-  const titleWords = "Organiza tu próximo viaje con yendiendo".split(" ");
+  const titleWords = "Organiza tu próximo viaje con Fuimonos".split(" ");
 
   return (
     <section 
@@ -38,7 +38,7 @@ export function Hero() {
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: idx * 0.1, type: 'spring', stiffness: 150 }}
             >
-              {word === 'yendiendo' ? (
+              {word === 'Fuimonos' ? (
                 <span className="text-transparent bg-clip-text bg-gradient-to-r from-coral-500 to-ocean-500">
                   {word}
                 </span>

@@ -21,7 +21,7 @@ export function Navbar() {
         {/* Logo */}
         <Link to="/" className="flex items-center gap-2 text-coral-500 dark:text-coral-400 font-black text-xl tracking-tighter cursor-pointer">
           <Plane className="w-6 h-6" strokeWidth={2.5} />
-          <span>yendiendo</span>
+          <span>Fuimonos</span>
         </Link>
 
         {/* Acciones */}
