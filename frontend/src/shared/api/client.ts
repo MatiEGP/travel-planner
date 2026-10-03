@@ -1,6 +1,7 @@
 import axios, { type AxiosError, type InternalAxiosRequestConfig } from "axios";
 import type { ErrorResponseDTO } from "../types/error";
 import { setAccessToken, getAccessToken } from "./tokenStore";
+import { router } from '../../router';
 export { setAccessToken };
 
 export const apiClient = axios.create({
@@ -85,7 +86,7 @@ apiClient.interceptors.response.use(
         
         // Prevent infinite reload loop if already on /login
         if (window.location.pathname !== '/login') {
-          window.location.href = '/login';
+          router.navigate('/login');
         }
         return Promise.reject(refreshError);
       } finally {

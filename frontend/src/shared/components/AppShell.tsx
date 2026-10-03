@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import { useLocation } from 'react-router-dom';
 import { useAuth } from '../../features/auth/context/useAuth';
 import { PageTransitionOverlay } from './PageTransitionOverlay';
 
@@ -9,6 +10,16 @@ interface AppShellProps {
 export function AppShell({ children }: AppShellProps) {
   const { isLoading, isHydrating } = useAuth();
   const [isRefreshingToken, setIsRefreshingToken] = useState(false);
+  const [isNavigating, setIsNavigating] = useState(false);
+  const location = useLocation();
+
+  useEffect(() => {
+    setIsNavigating(true);
+    const timeoutId = setTimeout(() => {
+      setIsNavigating(false);
+    }, 400);
+    return () => clearTimeout(timeoutId);
+  }, [location.pathname]);
 
   useEffect(() => {
     const handleTokenRefresh = (event: Event) => {
@@ -23,13 +34,13 @@ export function AppShell({ children }: AppShellProps) {
     };
   }, []);
 
-  const showOverlay = isLoading || isRefreshingToken;
+  const showOverlay = isLoading || isRefreshingToken || isNavigating;
   
   let message = "Cargando...";
-  if (isHydrating || (isLoading && !isRefreshingToken)) {
-    message = "Cargando sesión...";
-  } else if (isRefreshingToken) {
+  if (isRefreshingToken) {
     message = "Renovando sesión segura...";
+  } else if (isHydrating || (isLoading && !isNavigating)) {
+    message = "Cargando sesión...";
   }
 
   return (
