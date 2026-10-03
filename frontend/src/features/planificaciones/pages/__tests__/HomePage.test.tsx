@@ -3,13 +3,28 @@ import { render, screen } from '@testing-library/react';
 import { MemoryRouter } from 'react-router-dom';
 import { HomePage } from '../HomePage';
 import { useAuth } from '../../../auth/context/useAuth';
+import { ThemeProvider } from '../../../../context/ThemeContext';
 
 vi.mock('../../../auth/context/useAuth', () => ({
   useAuth: vi.fn(),
 }));
 
+Object.defineProperty(window, 'matchMedia', {
+  writable: true,
+  value: vi.fn().mockImplementation(query => ({
+    matches: false,
+    media: query,
+    onchange: null,
+    addListener: vi.fn(),
+    removeListener: vi.fn(),
+    addEventListener: vi.fn(),
+    removeEventListener: vi.fn(),
+    dispatchEvent: vi.fn(),
+  })),
+});
+
 describe('HomePage', () => {
-  it('renders guest view with Registrarse and Iniciar sesión and no admin panel', () => {
+  it('renders guest view with Iniciar sesión and Comenzá ahora and no admin panel', () => {
     vi.mocked(useAuth).mockReturnValue({
       isAuthenticated: false,
       isLoading: false,
@@ -23,12 +38,14 @@ describe('HomePage', () => {
 
     render(
       <MemoryRouter>
-        <HomePage />
+        <ThemeProvider>
+          <HomePage />
+        </ThemeProvider>
       </MemoryRouter>
     );
 
-    expect(screen.getAllByText('Registrarse')[0]).toBeInTheDocument();
-    expect(screen.getAllByText('Iniciar sesión')[0]).toBeInTheDocument();
+    expect(screen.getByText('Comenzar Aventura')).toBeInTheDocument();
+    expect(screen.getByText('Ingresar')).toBeInTheDocument();
     expect(screen.queryByText('Mis Planificaciones')).not.toBeInTheDocument();
     expect(screen.queryByText('Panel de Administración')).not.toBeInTheDocument();
   });
@@ -55,13 +72,15 @@ describe('HomePage', () => {
 
     render(
       <MemoryRouter>
-        <HomePage />
+        <ThemeProvider>
+          <HomePage />
+        </ThemeProvider>
       </MemoryRouter>
     );
 
     expect(screen.getByText('Mis Planificaciones')).toBeInTheDocument();
-    expect(screen.queryByText('Registrarse')).not.toBeInTheDocument();
-    expect(screen.queryByText('Iniciar sesión')).not.toBeInTheDocument();
+    expect(screen.queryByText('Comenzar Aventura')).not.toBeInTheDocument();
+    expect(screen.queryByText('Ingresar')).not.toBeInTheDocument();
     expect(screen.queryByText('Panel de Administración')).not.toBeInTheDocument();
   });
 
@@ -87,7 +106,9 @@ describe('HomePage', () => {
 
     render(
       <MemoryRouter>
-        <HomePage />
+        <ThemeProvider>
+          <HomePage />
+        </ThemeProvider>
       </MemoryRouter>
     );
 

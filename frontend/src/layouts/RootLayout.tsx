@@ -1,6 +1,7 @@
 import { Outlet, useLocation, useNavigation } from 'react-router-dom';
 import { useEffect, useState } from 'react';
 import { Header } from '../shared/components/layout/Header';
+import { DynamicBackground } from '../shared/components/layout/DynamicBackground';
 
 const GlobalLoadingBar = () => {
   let isLoading = false;
@@ -67,14 +68,16 @@ const GlobalLoadingBar = () => {
 export const RootLayout = () => {
   const location = useLocation();
   const isAuthRoute = ['/login', '/register', '/registro'].includes(location.pathname);
+  const isHomeRoute = location.pathname === '/';
 
   return (
     <div
       data-testid="root-layout"
-      className="min-h-screen flex flex-col bg-[#F7F9FA] text-slate-800"
+      className="min-h-screen flex flex-col text-slate-900 dark:text-slate-50 transition-colors duration-500 relative z-0"
     >
+      <DynamicBackground />
       <GlobalLoadingBar />
-      {!isAuthRoute && <Header />}
+      {!isAuthRoute && !isHomeRoute && <Header />}
       <div className="flex-1 flex flex-col">
         <Outlet />
       </div>

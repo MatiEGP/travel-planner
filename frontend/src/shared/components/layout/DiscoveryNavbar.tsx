@@ -1,5 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
+import { motion } from 'framer-motion';
+import { Compass } from 'lucide-react';
 import { useAuth } from '../../../features/auth/context/useAuth';
 
 const DiscoveryNavbar: React.FC = () => {
@@ -32,10 +34,17 @@ const DiscoveryNavbar: React.FC = () => {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between h-16 items-center">
           <div className="flex-shrink-0">
-            <Link to="/">
-              <span className="text-xl font-bold text-slate-800">
-                Travel Planner
-              </span>
+            <Link to="/" className="flex items-center gap-2 hover:opacity-90 transition-opacity">
+              <motion.div
+                whileHover={{ scale: 1.05, rotate: [0, -10, 10, -5, 5, 0] }}
+                transition={{ duration: 0.5 }}
+                className="flex items-center gap-2"
+              >
+                <Compass className="w-6 h-6 text-coral-500" strokeWidth={2.5} />
+                <span className="text-xl font-black tracking-tighter bg-clip-text text-transparent bg-gradient-to-r from-coral-500 to-ocean-500">
+                  Fuimonos
+                </span>
+              </motion.div>
             </Link>
           </div>
           <div className="flex items-center space-x-4">
