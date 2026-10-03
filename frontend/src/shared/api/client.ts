@@ -1,5 +1,7 @@
-import axios, { type AxiosError } from "axios";
+import axios, { type AxiosError, type InternalAxiosRequestConfig } from "axios";
 import type { ErrorResponseDTO } from "../types/error";
+import { currentAccessToken, setAccessToken } from "./tokenStore";
+export { setAccessToken };
 
 export const apiClient = axios.create({
   baseURL: import.meta.env.VITE_BACKEND_API_URL,
@@ -9,26 +11,87 @@ export const apiClient = axios.create({
   },
 });
 
-// Interceptor para procesar respuestas de error de forma centralizada.
+// Request interceptor to attach token
+apiClient.interceptors.request.use((config: InternalAxiosRequestConfig) => {
+  if (currentAccessToken) {
+    config.headers.Authorization = `Bearer ${currentAccessToken}`;
+  }
+  return config;
+});
+
+// For the mutex/queue
+let isRefreshing = false;
+let failedQueue: Array<{ resolve: (value?: unknown) => void; reject: (reason?: any) => void }> = [];
+
+const processQueue = (error: AxiosError | null, token: string | null = null) => {
+  failedQueue.forEach((prom) => {
+    if (error) {
+      prom.reject(error);
+    } else {
+      prom.resolve(token);
+    }
+  });
+  failedQueue = [];
+};
+
 apiClient.interceptors.response.use(
-  // Si la respuesta es exitosa (2xx), la devuelve sin más.
   (response) => response,
-  // Si hay un error, lo procesamos aquí.
-  (error: AxiosError<ErrorResponseDTO>) => {
-    // Verificamos si el error viene del backend con nuestro formato esperado.
-    if (error.response && error.response.data && error.response.data.message) {
-      return Promise.reject(new Error(error.response.data.message));
+  async (error: AxiosError<ErrorResponseDTO>) => {
+    const originalRequest = error.config as InternalAxiosRequestConfig & { _retry?: boolean };
+
+    if (error.response?.status === 401 && originalRequest && !originalRequest._retry) {
+      if (isRefreshing) {
+        return new Promise(function (resolve, reject) {
+          failedQueue.push({ resolve, reject });
+        })
+          .then((token) => {
+            originalRequest.headers.Authorization = `Bearer ${token}`;
+            return apiClient(originalRequest);
+          })
+          .catch((err) => {
+            return Promise.reject(err);
+          });
+      }
+
+      originalRequest._retry = true;
+      isRefreshing = true;
+
+      try {
+        const { data } = await axios.post(
+          `${import.meta.env.VITE_BACKEND_API_URL}/auth/refresh`,
+          {},
+          { withCredentials: true }
+        );
+        // Assuming data contains the new token
+        const newAccessToken = data.accessToken || data.token;
+        if (newAccessToken) {
+           setAccessToken(newAccessToken);
+        }
+        processQueue(null, newAccessToken);
+        
+        if (newAccessToken) {
+          originalRequest.headers.Authorization = `Bearer ${newAccessToken}`;
+        }
+        return apiClient(originalRequest);
+      } catch (refreshError) {
+        processQueue(refreshError as AxiosError, null);
+        setAccessToken(null);
+        // Redirect to login or dispatch a global logout event if needed
+        window.location.href = '/login';
+        return Promise.reject(refreshError);
+      } finally {
+        isRefreshing = false;
+      }
     }
 
-    if (error.response && error.response.status === 401) {
-      return Promise.reject(new Error("No autorizado. Por favor inicia sesión."));
+    if (error.response && error.response.data && error.response.data.message) {
+      return Promise.reject(new Error(error.response.data.message));
     }
 
     if (error.response && error.response.status === 403) {
       return Promise.reject(new Error("No tienes permisos suficientes para realizar esta acción."));
     }
 
-    // Fallback para errores de red u otros problemas no controlados por el backend.
     return Promise.reject(new Error("Ocurrió un error de red o en el servidor. Intenta de nuevo más tarde."));
   }
 );
