@@ -38,6 +38,9 @@ class AuthControllerTest {
     @Mock
     private RolRepository rolRepository;
 
+    @Mock
+    private RefreshTokenService refreshTokenService;
+
     @InjectMocks
     private AuthController authController;
 
@@ -91,6 +94,7 @@ class AuthControllerTest {
 
         when(usuarioService.autenticar("carlos@example.com", "password123")).thenReturn(usuario);
         when(jwtService.generarToken(usuario)).thenReturn("mock.jwt.token");
+        when(refreshTokenService.createRefreshToken(usuario)).thenReturn(RefreshToken.builder().token("mock.refresh.token").build());
 
         ResponseEntity<UsuarioResponseDTO> response = authController.login(request);
 
@@ -102,7 +106,7 @@ class AuthControllerTest {
 
     @Test
     void logout_debeRetornarCookieConMaxAgeCero() {
-        ResponseEntity<Void> response = authController.logout();
+        ResponseEntity<Void> response = authController.logout(null);
 
         assertEquals(HttpStatus.OK, response.getStatusCode());
         String setCookie = response.getHeaders().getFirst(HttpHeaders.SET_COOKIE);
@@ -159,6 +163,7 @@ class AuthControllerTest {
 
         when(usuarioService.autenticar("nuevo@example.com", "password123")).thenReturn(usuario);
         when(jwtService.generarToken(usuario)).thenReturn("nuevo.jwt.token");
+        when(refreshTokenService.createRefreshToken(usuario)).thenReturn(RefreshToken.builder().token("nuevo.refresh.token").build());
 
         ResponseEntity<UsuarioResponseDTO> response = authController.login(request);
 
