@@ -54,7 +54,7 @@ describe('PlanificacionesPage', () => {
     vi.clearAllMocks();
     vi.mocked(useAuth).mockReturnValue({
       isAuthenticated: true,
-      isLoading: false,
+      isHydrating: false, isLoading: false,
       user: mockUser,
       usuario: mockUser,
       login: vi.fn(),

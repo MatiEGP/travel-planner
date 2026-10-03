@@ -12,7 +12,7 @@ describe('GuestRoute', () => {
   it('renders loading indicator when auth is loading', () => {
     vi.mocked(useAuth).mockReturnValue({
       isAuthenticated: false,
-      isLoading: true,
+      isHydrating: false, isLoading: true,
       user: null,
       usuario: null,
       login: vi.fn(),
@@ -38,7 +38,7 @@ describe('GuestRoute', () => {
   it('renders child guest content when unauthenticated', () => {
     vi.mocked(useAuth).mockReturnValue({
       isAuthenticated: false,
-      isLoading: false,
+      isHydrating: false, isLoading: false,
       user: null,
       usuario: null,
       login: vi.fn(),
@@ -71,7 +71,7 @@ describe('GuestRoute', () => {
 
     vi.mocked(useAuth).mockReturnValue({
       isAuthenticated: true,
-      isLoading: false,
+      isHydrating: false, isLoading: false,
       user: mockUser,
       usuario: mockUser,
       login: vi.fn(),

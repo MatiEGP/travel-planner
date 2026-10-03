@@ -6,6 +6,7 @@ export interface AuthContextType {
   usuario: UsuarioResponseDTO | null;
   isAuthenticated: boolean;
   isLoading: boolean;
+  isHydrating: boolean;
   login: (credentials: LoginRequestDTO) => Promise<void>;
   register: (data: RegistroRequestDTO) => Promise<void>;
   logout: () => Promise<void>;
