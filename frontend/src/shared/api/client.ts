@@ -1,6 +1,6 @@
 import axios, { type AxiosError, type InternalAxiosRequestConfig } from "axios";
 import type { ErrorResponseDTO } from "../types/error";
-import { currentAccessToken, setAccessToken } from "./tokenStore";
+import { setAccessToken, getAccessToken } from "./tokenStore";
 export { setAccessToken };
 
 export const apiClient = axios.create({
@@ -13,8 +13,9 @@ export const apiClient = axios.create({
 
 // Request interceptor to attach token
 apiClient.interceptors.request.use((config: InternalAxiosRequestConfig) => {
-  if (currentAccessToken) {
-    config.headers.Authorization = `Bearer ${currentAccessToken}`;
+  const token = getAccessToken();
+  if (token) {
+    config.headers.set("Authorization", `Bearer ${token}`);
   }
   return config;
 });
@@ -49,8 +50,8 @@ apiClient.interceptors.response.use(
           failedQueue.push({ resolve, reject });
         })
           .then((token) => {
-            originalRequest.headers.Authorization = `Bearer ${token}`;
-            return apiClient(originalRequest);
+            originalRequest.headers.set('Authorization', `Bearer ${token}`);
+            return apiClient.request(originalRequest);
           })
           .catch((err) => {
             return Promise.reject(err);
@@ -74,9 +75,9 @@ apiClient.interceptors.response.use(
         processQueue(null, newAccessToken);
         
         if (newAccessToken) {
-          originalRequest.headers.Authorization = `Bearer ${newAccessToken}`;
+          originalRequest.headers.set('Authorization', `Bearer ${newAccessToken}`);
         }
-        return apiClient(originalRequest);
+        return apiClient.request(originalRequest);
       } catch (refreshError) {
         processQueue(refreshError as AxiosError, null);
         setAccessToken(null);
