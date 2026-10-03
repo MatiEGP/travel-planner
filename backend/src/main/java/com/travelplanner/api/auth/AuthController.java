@@ -30,6 +30,7 @@ public class AuthController {
     private final UsuarioService usuarioService;
     private final JwtService jwtService;
     private final RolRepository rolRepository;
+    private final RefreshTokenService refreshTokenService;
 
     @Value("${app.jwt.cookie-secure:false}")
     private boolean cookieSecure;
@@ -71,18 +72,61 @@ public class AuthController {
         String token = jwtService.generarToken(usuario);
         ResponseCookie cookie = crearCookieJwt(token, 86400);
 
+        RefreshToken refreshToken = refreshTokenService.createRefreshToken(usuario);
+        ResponseCookie refreshCookie = crearCookieRefreshToken(refreshToken.getToken(), 604800);
+
         UsuarioResponseDTO response = mapearAResponse(usuario);
         return ResponseEntity.ok()
                 .header(HttpHeaders.SET_COOKIE, cookie.toString())
+                .header(HttpHeaders.SET_COOKIE, refreshCookie.toString())
                 .body(response);
     }
 
     /**
+     * POST /api/auth/refresh
+     * Refresca el token JWT usando el refresh_token de la cookie.
+     */
+    @PostMapping("/refresh")
+    public ResponseEntity<LoginResponseDTO> refresh(@CookieValue(name = "refresh_token", required = false) String requestRefreshToken) {
+        if (requestRefreshToken == null) {
+            throw new IllegalArgumentException("Refresh Token is missing!");
+        }
+
+        return refreshTokenService.findByToken(requestRefreshToken)
+                .map(refreshTokenService::verifyExpiration)
+                .map(RefreshToken::getUsuario)
+                .map(usuario -> {
+                    String token = jwtService.generarToken(usuario);
+                    
+                    refreshTokenService.deleteByToken(requestRefreshToken);
+                    RefreshToken newRefreshToken = refreshTokenService.createRefreshToken(usuario);
+                    ResponseCookie refreshCookie = crearCookieRefreshToken(newRefreshToken.getToken(), 604800);
+
+                    List<String> roles = usuario.getRoles().stream().map(Rol::getNombre).toList();
+                    LoginResponseDTO response = LoginResponseDTO.builder()
+                            .token(token)
+                            .email(usuario.getEmail())
+                            .nombre(usuario.getNombre())
+                            .roles(roles)
+                            .build();
+
+                    return ResponseEntity.ok()
+                            .header(HttpHeaders.SET_COOKIE, refreshCookie.toString())
+                            .body(response);
+                })
+                .orElseThrow(() -> new RuntimeException("Refresh token is not in database!"));
+    }
+
+    /**
      * POST /api/auth/logout
-     * Limpia la cookie HttpOnly "token".
+     * Limpia la cookie HttpOnly "token" y "refresh_token", y borra el refresh token de la base de datos.
      */
     @PostMapping("/logout")
-    public ResponseEntity<Void> logout() {
+    public ResponseEntity<Void> logout(@CookieValue(name = "refresh_token", required = false) String requestRefreshToken) {
+        if (requestRefreshToken != null) {
+            refreshTokenService.deleteByToken(requestRefreshToken);
+        }
+
         ResponseCookie cookie = ResponseCookie.from("token", "")
                 .httpOnly(true)
                 .secure(cookieSecure)
@@ -91,8 +135,17 @@ public class AuthController {
                 .sameSite("Strict")
                 .build();
 
+        ResponseCookie refreshCookie = ResponseCookie.from("refresh_token", "")
+                .httpOnly(true)
+                .secure(cookieSecure)
+                .path("/api/auth/refresh")
+                .maxAge(0)
+                .sameSite("Strict")
+                .build();
+
         return ResponseEntity.ok()
                 .header(HttpHeaders.SET_COOKIE, cookie.toString())
+                .header(HttpHeaders.SET_COOKIE, refreshCookie.toString())
                 .build();
     }
 
@@ -119,6 +172,16 @@ public class AuthController {
                 .httpOnly(true)
                 .secure(cookieSecure)
                 .path("/")
+                .maxAge(maxAgeSegundos)
+                .sameSite("Strict")
+                .build();
+    }
+
+    private ResponseCookie crearCookieRefreshToken(String token, long maxAgeSegundos) {
+        return ResponseCookie.from("refresh_token", token)
+                .httpOnly(true)
+                .secure(cookieSecure)
+                .path("/api/auth/refresh")
                 .maxAge(maxAgeSegundos)
                 .sameSite("Strict")
                 .build();
