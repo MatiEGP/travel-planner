@@ -48,7 +48,7 @@ const DiscoveryNavbar: React.FC = () => {
                 <Link to="/login" className="font-medium text-slate-600 hover:text-teal-600 transition">
                   Iniciar Sesión
                 </Link>
-                <Link to="/register" className="bg-teal-600 text-white px-4 py-2 rounded-lg hover:bg-teal-700 transition shadow-sm font-medium">
+                <Link to="/register" className="bg-coral-500 text-white px-4 py-2 rounded-lg hover:bg-coral-600 transition shadow-sm font-medium">
                   Registrarse
                 </Link>
               </div>

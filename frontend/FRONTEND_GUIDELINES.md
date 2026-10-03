@@ -2,18 +2,38 @@
 
 Esta guía documenta las decisiones de diseño, paleta de colores y patrones de componentes de la aplicación web "Travel Planner". Todo el desarrollo futuro del frontend debe basarse en estas reglas para mantener consistencia y coherencia visual.
 
-## 1. Paleta de Colores
+## 1. Paleta de Colores y Estética Principal
 
-### Marca y Acentos (Primary)
-- **Teal (Verde Agua)**: Es el color principal de la marca, elegido para dar una sensación natural y orientada a los viajes.
-  - Elementos interactivos sobre fondos claros: `teal-600` (Hover: `teal-700`).
-  - Elementos interactivos sobre fondos oscuros: `teal-400` / `teal-500` (Hover: `teal-300` / `teal-400`).
-  - Anillos de foco (Focus rings): `focus:ring-teal-400` / `focus:ring-teal-500`.
+La aplicación utiliza un diseño basado en un esquema neutral con un fuerte contraste para los Call To Action (CTA).
 
-### Neutrales y Textos
-- **Textos Principales (Light Mode)**: `slate-900` para títulos (con `font-extrabold tracking-tight`), `slate-700` o `slate-600` para cuerpos de texto.
-- **Textos Secundarios (Light Mode)**: `slate-500`.
-- **Textos en Dark Mode / Paneles Oscuros**: `white` para títulos, `slate-200` y `slate-300` para subtítulos y labels.
+### Paleta Base y Textos (Neutros / Slate)
+- **Fondo General (Light Mode)**: `bg-[#F7F9FA]` (Gris ultra-claro, da sensación de amplitud).
+- **Contenedores de Tarjetas y Modales**: `bg-white` puro para contrastar contra el fondo.
+- **Títulos Principales**: `slate-900` (suele acompañarse con `font-extrabold tracking-tight`).
+- **Subtítulos y Descripciones**: `slate-500` con `font-medium`.
+- **Contadores / Badges Numéricos**: Texto `slate-600` sobre fondo `bg-slate-100`.
+
+### Marca y Acentos (Primary CTA)
+El protagonista visual es el **Coral** (estilo Airbnb), que se usa estrictamente para llamar la atención en la acción principal (crear viaje) y estados de carga.
+- **Color Principal (Background)**: `bg-[#FF5A5F]` (`coral-500` en Tailwind).
+- **Estado Hover**: `hover:bg-[#E0484D]` (`coral-600` en Tailwind).
+- **Sombras de interacción**: `hover:shadow-rose-500/25` (Da un resplandor integrado).
+- **Indicadores de Carga (Spinners)**: `border-coral-500` (`border-[#FF5A5F]`).
+
+### Filtros (Pill Tabs)
+Utilizados para navegaciones internas o cambios de vista (Ej: Próximos Viajes vs Viajes Pasados).
+- **Contenedor**: `bg-slate-200/80` con sombra interna (`shadow-inner`).
+- **Tab Activo**: Elevado visualmente usando `bg-white text-slate-900 shadow-sm`.
+- **Tab Inactivo**: Transparente, con texto `text-slate-600 hover:text-slate-900`.
+
+### Alertas y Errores
+Se usa la paleta `rose` de Tailwind, que acompaña armónicamente al coral sin perder el significado de "alerta".
+- **Fondo de Alerta**: `bg-rose-50`.
+- **Bordes**: `border-rose-200`.
+- **Textos e Íconos de Error**: `text-rose-700` y `text-rose-500`.
+
+### Formas y Layout
+- **Radios de Borde (Border Radius)**: Tiende a formas orgánicas. Los botones y selectores principales usan `rounded-full`, mientras que las tarjetas o inputs usan `rounded-xl` o `rounded-2xl`.
 
 ### Temática Especial: "Marino Texturizado" y Glassmorphism
 Se utiliza para destacar paneles importantes y las vistas principales de la aplicación:

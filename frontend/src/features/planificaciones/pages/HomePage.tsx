@@ -34,7 +34,7 @@ export const HomePage = () => {
             </svg>
           </div>
           <h1 className="text-4xl sm:text-5xl md:text-6xl font-extrabold text-slate-900 tracking-tight mb-4">
-            Planificá tus viajes con <span className="bg-gradient-to-r from-teal-600 to-emerald-600 bg-clip-text text-transparent">Travel Planner</span>
+            Planificá tus viajes con <span className="text-coral-500">Travel</span> <span className="text-coral-600">Planner</span>
           </h1>
           <p className="text-lg sm:text-xl text-slate-600 max-w-2xl mx-auto leading-relaxed">
             Organizá tus aventuras de manera sencilla y visual. Creá itinerarios completos,
@@ -47,7 +47,7 @@ export const HomePage = () => {
           {isAuthenticated ? (
             <Link
               to="/planificaciones"
-              className="inline-flex items-center gap-2 bg-teal-600 hover:bg-teal-500 text-white font-semibold py-3.5 px-8 rounded-xl transition-all duration-200 shadow-md shadow-teal-600/20 hover:shadow-lg hover:shadow-teal-600/30 hover:-translate-y-0.5 cursor-pointer"
+              className="inline-flex items-center gap-2 bg-coral-500 hover:bg-coral-600 text-white font-semibold py-3.5 px-8 rounded-xl transition-all duration-200 shadow-md shadow-coral-500/20 hover:shadow-lg hover:shadow-coral-500/30 hover:-translate-y-0.5 cursor-pointer"
             >
               <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
                 <path strokeLinecap="round" strokeLinejoin="round" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
@@ -59,7 +59,7 @@ export const HomePage = () => {
               <Link
                 to="/register"
                 state={{ from: location }}
-                className="inline-flex items-center gap-2 bg-teal-600 hover:bg-teal-500 text-white font-semibold py-3.5 px-8 rounded-xl transition-all duration-200 shadow-md shadow-teal-600/20 hover:shadow-lg hover:shadow-teal-600/30 hover:-translate-y-0.5 cursor-pointer"
+                className="inline-flex items-center gap-2 bg-coral-500 hover:bg-coral-600 text-white font-semibold py-3.5 px-8 rounded-xl transition-all duration-200 shadow-md shadow-coral-500/20 hover:shadow-lg hover:shadow-coral-500/30 hover:-translate-y-0.5 cursor-pointer"
               >
                 Registrarse
               </Link>

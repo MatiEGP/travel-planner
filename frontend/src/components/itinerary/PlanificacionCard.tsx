@@ -73,11 +73,11 @@ export const PlanificacionCard: React.FC<PlanificacionCardProps> = ({
   return (
     <article
       onClick={handleCardClick}
-      className="group bg-white rounded-2xl shadow-sm hover:shadow-xl hover:-translate-y-1 transition-all duration-300 overflow-hidden flex flex-col cursor-pointer border border-transparent hover:border-slate-100 relative"
+      className="group bg-white rounded-2xl shadow-sm hover:shadow-xl hover:-translate-y-1 transition-all duration-300 overflow-hidden flex flex-col cursor-pointer border border-transparent hover:border-slate-100 relative h-full"
       aria-label={`Planificación: ${planificacion.titulo}`}
     >
       {/* 16:9 Cover Image Container */}
-      <div className="relative w-full h-48 sm:h-52 overflow-hidden bg-slate-100">
+      <div className="relative w-full h-48 sm:h-52 overflow-hidden bg-slate-100 shrink-0">
         <img
           src={coverImage}
           alt={planificacion.titulo}
@@ -122,28 +122,28 @@ export const PlanificacionCard: React.FC<PlanificacionCardProps> = ({
       </div>
 
       {/* Card Body */}
-      <div className="p-5 flex-1 flex flex-col">
+      <div className="p-5 flex-1 flex flex-col min-h-0">
         {/* Title */}
-        <h3 className="text-slate-900 font-bold text-xl mb-1 line-clamp-1 group-hover:text-[#FF5A5F] transition-colors">
+        <h3 className="text-slate-900 font-bold text-xl mb-1 line-clamp-1 group-hover:text-[#FF5A5F] transition-colors shrink-0">
           {planificacion.titulo}
         </h3>
 
         {/* Description */}
-        <p className="text-slate-500 text-sm line-clamp-2 mb-4">
+        <p className="text-slate-500 text-sm line-clamp-2 mb-4 shrink-0">
           {planificacion.descripcion || 'Sin descripción disponible.'}
         </p>
 
         {/* Destinos Tags */}
-        <div className="mb-4">
+        <div className="mb-4 flex-1 overflow-hidden min-h-0">
           {destinos.length > 0 ? (
-            <div className="flex flex-wrap gap-1.5">
+            <div className="flex flex-wrap gap-1.5 overflow-hidden max-h-full">
               {destinos.map((dest) => (
                 <span
                   key={dest.id}
-                  className="bg-slate-100 text-slate-700 text-xs px-2.5 py-1 rounded-full font-medium flex items-center gap-1"
+                  className="bg-slate-100 text-slate-700 text-xs px-2.5 py-1 rounded-full font-medium flex items-center gap-1 truncate max-w-full"
                 >
-                  <MapPin className="w-3 h-3 text-[#FF5A5F]" />
-                  <span>
+                  <MapPin className="w-3 h-3 text-[#FF5A5F] shrink-0" />
+                  <span className="truncate">
                     {dest.nombre ? dest.nombre : `${dest.ciudad}, ${dest.pais}`}
                   </span>
                 </span>
@@ -157,7 +157,7 @@ export const PlanificacionCard: React.FC<PlanificacionCardProps> = ({
         </div>
 
         {/* Dates Footer */}
-        <div className="mt-auto pt-3 border-t border-slate-100 flex items-center justify-between text-xs text-slate-400 font-medium">
+        <div className="mt-auto pt-3 border-t border-slate-100 flex items-center justify-between text-xs text-slate-400 font-medium shrink-0">
           <div className="flex items-center gap-1.5">
             <Calendar className="w-3.5 h-3.5 text-slate-400" />
             <span>{formattedDates}</span>

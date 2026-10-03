@@ -78,10 +78,6 @@ describe('PlanificacionesPage', () => {
     expect(screen.getByRole('tab', { name: /Próximos Viajes/i })).toBeInTheDocument();
     expect(screen.getByRole('tab', { name: /Viajes Pasados/i })).toBeInTheDocument();
     expect(screen.getByRole('button', { name: /Crear Planificación/i })).toBeInTheDocument();
-
-    await waitFor(() => {
-      expect(screen.getByText('Crear nueva planificación')).toBeInTheDocument();
-    });
   });
 
   it('filters trips: shows upcoming trips by default and switches to past trips when tab is clicked', async () => {
@@ -104,8 +100,6 @@ describe('PlanificacionesPage', () => {
     // Should now show past trips
     expect(screen.getByText('Aventura Pasada en Bariloche')).toBeInTheDocument();
     expect(screen.queryByText('Viaje Futuro a Europa')).not.toBeInTheDocument();
-    // QuickCreateCard is always present
-    expect(screen.getByText('Crear nueva planificación')).toBeInTheDocument();
   });
 
   it('opens creation modal when clicking the CTA button', async () => {
@@ -126,25 +120,7 @@ describe('PlanificacionesPage', () => {
     expect(screen.getByLabelText(/Título del Viaje/i)).toBeInTheDocument();
   });
 
-  it('opens creation modal when clicking QuickCreateCard', async () => {
-    render(
-      <MemoryRouter>
-        <PlanificacionesPage />
-      </MemoryRouter>
-    );
-
-    await waitFor(() => {
-      expect(screen.getByText('Crear nueva planificación')).toBeInTheDocument();
-    });
-
-    const quickCard = screen.getByRole('button', { name: /Crear nueva planificación/i });
-    fireEvent.click(quickCard);
-
-    expect(screen.getByRole('dialog')).toBeInTheDocument();
-  });
-
   it('deletes a trip when confirmed', async () => {
-    vi.spyOn(window, 'confirm').mockReturnValue(true);
     vi.mocked(planificacionService.delete).mockResolvedValue();
 
     render(
@@ -159,6 +135,10 @@ describe('PlanificacionesPage', () => {
 
     const deleteBtn = screen.getByTitle('Borrar Plan');
     fireEvent.click(deleteBtn);
+
+    // Wait for the custom modal to appear and click "Eliminar"
+    const confirmBtn = await screen.findByRole('button', { name: /Eliminar/i });
+    fireEvent.click(confirmBtn);
 
     await waitFor(() => {
       expect(planificacionService.delete).toHaveBeenCalledWith(1);

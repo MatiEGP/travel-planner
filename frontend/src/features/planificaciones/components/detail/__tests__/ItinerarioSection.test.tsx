@@ -126,8 +126,8 @@ describe('ItinerarioSection', () => {
 
     expect(screen.getByText('Nuevo Día', { selector: 'h3' })).toBeInTheDocument();
 
-    const dateInput = screen.getByLabelText(/Fecha del itinerario \*/i);
-    fireEvent.change(dateInput, { target: { value: '2026-09-03' } });
+    const dateBtn = screen.getByRole('button', { name: '3' });
+    fireEvent.click(dateBtn);
 
     const submitBtn = screen.getByRole('button', { name: /Crear Día/i });
     fireEvent.click(submitBtn);
@@ -159,9 +159,9 @@ describe('ItinerarioSection', () => {
     const addDayBtn = screen.getByRole('button', { name: /Agregar Día/i });
     fireEvent.click(addDayBtn);
 
-    const dateInput = screen.getByLabelText(/Fecha del itinerario \*/i);
+    const dateBtn = screen.getByRole('button', { name: '1' });
     // mockDias has 2026-09-01
-    fireEvent.change(dateInput, { target: { value: '2026-09-01' } });
+    fireEvent.click(dateBtn);
 
     const submitBtn = screen.getByRole('button', { name: /Crear Día/i });
     fireEvent.click(submitBtn);
@@ -196,6 +196,11 @@ describe('ItinerarioSection', () => {
 
     const inicioInput = screen.getByLabelText(/Hora Inicio/i);
     fireEvent.change(inicioInput, { target: { value: '15:00' } });
+    fireEvent.click(inicioInput);
+    const hourBtn = screen.getAllByRole('button', { name: '15' })[1];
+    fireEvent.click(hourBtn);
+    const minuteBtn = screen.getAllByRole('button', { name: '00' })[1];
+    fireEvent.click(minuteBtn);
 
     const notasInput = screen.getByLabelText(/Notas \/ Observaciones/i);
     fireEvent.change(notasInput, { target: { value: 'Llegar 15 min antes' } });

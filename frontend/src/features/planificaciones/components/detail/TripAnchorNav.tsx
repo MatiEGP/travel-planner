@@ -54,15 +54,24 @@ export const TripAnchorNav: React.FC<TripAnchorNavProps> = ({
       },
       {
         root: null,
-        rootMargin: '-20% 0px -60% 0px',
+        rootMargin: '-100px 0px -60% 0px',
         threshold: [0, 0.2, 0.5],
       }
     );
 
     elements.forEach((el) => observer.observe(el));
 
+    const handleScroll = () => {
+      if (window.innerHeight + window.scrollY >= document.body.offsetHeight - 50) {
+        setActiveSection('section-itinerario');
+      }
+    };
+
+    window.addEventListener('scroll', handleScroll);
+
     return () => {
       observer.disconnect();
+      window.removeEventListener('scroll', handleScroll);
     };
   }, []);
 
@@ -76,7 +85,7 @@ export const TripAnchorNav: React.FC<TripAnchorNavProps> = ({
 
   return (
     <nav
-      className="sticky top-24 bg-white rounded-2xl p-3 shadow-sm border border-slate-100 space-y-1"
+      className="sticky top-24 h-fit bg-white rounded-2xl p-3 shadow-sm border border-slate-100 space-y-1"
       aria-label="Navegación del viaje"
     >
       <div className="px-3 py-2 text-xs font-bold uppercase tracking-wider text-slate-400">
