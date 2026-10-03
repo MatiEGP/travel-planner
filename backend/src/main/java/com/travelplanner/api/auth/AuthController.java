@@ -97,7 +97,8 @@ public class AuthController {
                 .map(RefreshToken::getUsuario)
                 .map(usuario -> {
                     String token = jwtService.generarToken(usuario);
-                    
+                    ResponseCookie jwtCookie = crearCookieJwt(token, 86400);
+
                     refreshTokenService.deleteByToken(requestRefreshToken);
                     RefreshToken newRefreshToken = refreshTokenService.createRefreshToken(usuario);
                     ResponseCookie refreshCookie = crearCookieRefreshToken(newRefreshToken.getToken(), 604800);
@@ -111,6 +112,7 @@ public class AuthController {
                             .build();
 
                     return ResponseEntity.ok()
+                            .header(HttpHeaders.SET_COOKIE, jwtCookie.toString())
                             .header(HttpHeaders.SET_COOKIE, refreshCookie.toString())
                             .body(response);
                 })
