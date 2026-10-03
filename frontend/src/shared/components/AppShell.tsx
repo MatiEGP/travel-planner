@@ -14,6 +14,10 @@ export function AppShell({ children }: AppShellProps) {
   const location = useLocation();
 
   useLayoutEffect(() => {
+    if (location.pathname === '/') {
+      setIsNavigating(false);
+      return;
+    }
     setIsNavigating(true);
     const timeoutId = setTimeout(() => {
       setIsNavigating(false);

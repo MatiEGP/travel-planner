@@ -52,7 +52,7 @@ export function PageTransitionOverlay({ visible, message = "Cargando..." }: Page
     <AnimatePresence>
       {isShowing && (
         <motion.div
-          initial={{ opacity: 0 }}
+          initial={{ opacity: 1 }}
           animate={{ opacity: 1 }}
           exit={{ opacity: 0 }}
           className="fixed inset-0 z-[100] flex items-center justify-center bg-slate-50 dark:bg-slate-900"
