@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useLayoutEffect, useState } from 'react';
 import { useLocation } from 'react-router-dom';
 import { useAuth } from '../../features/auth/context/useAuth';
 import { PageTransitionOverlay } from './PageTransitionOverlay';
@@ -13,7 +13,7 @@ export function AppShell({ children }: AppShellProps) {
   const [isNavigating, setIsNavigating] = useState(false);
   const location = useLocation();
 
-  useEffect(() => {
+  useLayoutEffect(() => {
     setIsNavigating(true);
     const timeoutId = setTimeout(() => {
       setIsNavigating(false);
