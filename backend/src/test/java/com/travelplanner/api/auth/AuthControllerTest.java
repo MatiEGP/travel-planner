@@ -1,5 +1,6 @@
 package com.travelplanner.api.auth;
 
+import com.travelplanner.api.config.JwtConfig;
 import com.travelplanner.api.usuarios.UsuarioResponseDTO;
 import com.travelplanner.api.usuarios.Rol;
 import com.travelplanner.api.usuarios.Usuario;
@@ -17,7 +18,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.test.util.ReflectionTestUtils;
 
 import java.util.Optional;
 import java.util.Set;
@@ -41,13 +41,18 @@ class AuthControllerTest {
     @Mock
     private RefreshTokenService refreshTokenService;
 
+    @Mock
+    private JwtConfig jwtConfig;
+
     @InjectMocks
     private AuthController authController;
 
     @BeforeEach
     void setUp() {
         SecurityContextHolder.clearContext();
-        ReflectionTestUtils.setField(authController, "cookieSecure", false);
+        lenient().when(jwtConfig.isCookieSecure()).thenReturn(false);
+        lenient().when(refreshTokenService.getAccessTokenExpirationSeconds()).thenReturn(86400L);
+        lenient().when(refreshTokenService.getRefreshExpirationSeconds()).thenReturn(604800L);
     }
 
     @Test

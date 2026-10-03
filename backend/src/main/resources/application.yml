@@ -35,8 +35,11 @@ app:
     # Clave simétrica en Base64 (mínimo 256 bits = 32 bytes). Generar con:
     #   openssl rand -base64 32
     secret: ${JWT_SECRET}
-    # Tiempo de vida del token en milisegundos.
-    # Desarrollo: 86400000 (24h) | Producción: 3600000 (1h)
+    # Tiempo de vida del Access Token en milisegundos.
+    # Desarrollo: 86400000 (24h) | Producción: 900000 (15min)
     expiration-ms: ${JWT_EXPIRATION_MS:86400000}
+    # Tiempo de vida del Refresh Token en milisegundos (expiración absoluta desde el login).
+    # Desarrollo: 604800000 (7 días) | Producción: 604800000 (7 días)
+    refresh-expiration-ms: ${JWT_REFRESH_EXPIRATION_MS:604800000}
     # Flag Secure para cookies HttpOnly (false en desarrollo local HTTP, true en producción HTTPS)
     cookie-secure: ${JWT_COOKIE_SECURE:false}

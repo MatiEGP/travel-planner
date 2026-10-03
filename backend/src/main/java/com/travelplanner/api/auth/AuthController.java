@@ -1,12 +1,12 @@
 package com.travelplanner.api.auth;
 
+import com.travelplanner.api.config.JwtConfig;
 import com.travelplanner.api.usuarios.UsuarioResponseDTO;
 import com.travelplanner.api.usuarios.Rol;
 import com.travelplanner.api.usuarios.Usuario;
 import com.travelplanner.api.usuarios.RolRepository;
 import com.travelplanner.api.usuarios.UsuarioService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseCookie;
@@ -16,6 +16,8 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.Duration;
+import java.time.Instant;
 import java.util.List;
 
 /**
@@ -31,9 +33,7 @@ public class AuthController {
     private final JwtService jwtService;
     private final RolRepository rolRepository;
     private final RefreshTokenService refreshTokenService;
-
-    @Value("${app.jwt.cookie-secure:false}")
-    private boolean cookieSecure;
+    private final JwtConfig jwtConfig;
 
     /**
      * POST /api/auth/registro
@@ -54,7 +54,7 @@ public class AuthController {
         Usuario usuarioGuardado = usuarioService.registrarUsuario(nuevoUsuario);
 
         String token = jwtService.generarToken(usuarioGuardado);
-        ResponseCookie cookie = crearCookieJwt(token, 86400);
+        ResponseCookie cookie = crearCookieJwt(token, refreshTokenService.getAccessTokenExpirationSeconds());
 
         UsuarioResponseDTO response = mapearAResponse(usuarioGuardado);
         return ResponseEntity.status(HttpStatus.CREATED)
@@ -70,10 +70,10 @@ public class AuthController {
     public ResponseEntity<UsuarioResponseDTO> login(@RequestBody LoginRequestDTO request) {
         Usuario usuario = usuarioService.autenticar(request.getEmail(), request.getPassword());
         String token = jwtService.generarToken(usuario);
-        ResponseCookie cookie = crearCookieJwt(token, 86400);
+        ResponseCookie cookie = crearCookieJwt(token, refreshTokenService.getAccessTokenExpirationSeconds());
 
         RefreshToken refreshToken = refreshTokenService.createRefreshToken(usuario);
-        ResponseCookie refreshCookie = crearCookieRefreshToken(refreshToken.getToken(), 604800);
+        ResponseCookie refreshCookie = crearCookieRefreshToken(refreshToken.getToken(), refreshTokenService.getRefreshExpirationSeconds());
 
         UsuarioResponseDTO response = mapearAResponse(usuario);
         return ResponseEntity.ok()
@@ -85,6 +85,8 @@ public class AuthController {
     /**
      * POST /api/auth/refresh
      * Refresca el token JWT usando el refresh_token de la cookie.
+     * Implementa Absolute Expiration: el nuevo refresh token hereda la fecha
+     * de expiración original, no genera una nueva ventana de 7 días.
      */
     @PostMapping("/refresh")
     public ResponseEntity<LoginResponseDTO> refresh(@CookieValue(name = "refresh_token", required = false) String requestRefreshToken) {
@@ -94,14 +96,18 @@ public class AuthController {
 
         return refreshTokenService.findByToken(requestRefreshToken)
                 .map(refreshTokenService::verifyExpiration)
-                .map(RefreshToken::getUsuario)
-                .map(usuario -> {
+                .map(oldRefreshToken -> {
+                    Usuario usuario = oldRefreshToken.getUsuario();
+                    Instant absoluteExpiry = oldRefreshToken.getExpiryDate();
+
                     String token = jwtService.generarToken(usuario);
-                    ResponseCookie jwtCookie = crearCookieJwt(token, 86400);
+                    ResponseCookie jwtCookie = crearCookieJwt(token, refreshTokenService.getAccessTokenExpirationSeconds());
 
                     refreshTokenService.deleteByToken(requestRefreshToken);
-                    RefreshToken newRefreshToken = refreshTokenService.createRefreshToken(usuario);
-                    ResponseCookie refreshCookie = crearCookieRefreshToken(newRefreshToken.getToken(), 604800);
+                    RefreshToken newRefreshToken = refreshTokenService.createRefreshToken(usuario, absoluteExpiry);
+
+                    long remainingSeconds = Duration.between(Instant.now(), absoluteExpiry).getSeconds();
+                    ResponseCookie refreshCookie = crearCookieRefreshToken(newRefreshToken.getToken(), Math.max(remainingSeconds, 0));
 
                     List<String> roles = usuario.getRoles().stream().map(Rol::getNombre).toList();
                     LoginResponseDTO response = LoginResponseDTO.builder()
@@ -131,7 +137,7 @@ public class AuthController {
 
         ResponseCookie cookie = ResponseCookie.from("token", "")
                 .httpOnly(true)
-                .secure(cookieSecure)
+                .secure(jwtConfig.isCookieSecure())
                 .path("/")
                 .maxAge(0)
                 .sameSite("Strict")
@@ -139,7 +145,7 @@ public class AuthController {
 
         ResponseCookie refreshCookie = ResponseCookie.from("refresh_token", "")
                 .httpOnly(true)
-                .secure(cookieSecure)
+                .secure(jwtConfig.isCookieSecure())
                 .path("/api/auth")
                 .maxAge(0)
                 .sameSite("Strict")
@@ -172,7 +178,7 @@ public class AuthController {
     private ResponseCookie crearCookieJwt(String token, long maxAgeSegundos) {
         return ResponseCookie.from("token", token)
                 .httpOnly(true)
-                .secure(cookieSecure)
+                .secure(jwtConfig.isCookieSecure())
                 .path("/")
                 .maxAge(maxAgeSegundos)
                 .sameSite("Strict")
@@ -182,7 +188,7 @@ public class AuthController {
     private ResponseCookie crearCookieRefreshToken(String token, long maxAgeSegundos) {
         return ResponseCookie.from("refresh_token", token)
                 .httpOnly(true)
-                .secure(cookieSecure)
+                .secure(jwtConfig.isCookieSecure())
                 .path("/api/auth")
                 .maxAge(maxAgeSegundos)
                 .sameSite("Strict")

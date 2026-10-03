@@ -1,8 +1,8 @@
 package com.travelplanner.api.auth;
 
+import com.travelplanner.api.config.JwtConfig;
 import com.travelplanner.api.usuarios.Usuario;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -15,16 +15,33 @@ import java.util.UUID;
 public class RefreshTokenService {
 
     private final RefreshTokenRepository refreshTokenRepository;
+    private final JwtConfig jwtConfig;
 
-    @Value("${app.jwt.refresh-expiration-ms:604800000}")
-    private Long refreshTokenDurationMs;
-
+    /**
+     * Creates a new refresh token with the configured default expiration (e.g. 7 days from now).
+     * Used on first login.
+     */
     @Transactional
     public RefreshToken createRefreshToken(Usuario usuario) {
         RefreshToken refreshToken = RefreshToken.builder()
                 .usuario(usuario)
                 .token(UUID.randomUUID().toString())
-                .expiryDate(Instant.now().plusMillis(refreshTokenDurationMs))
+                .expiryDate(Instant.now().plusMillis(jwtConfig.getRefreshExpirationMs()))
+                .revoked(false)
+                .build();
+        return refreshTokenRepository.save(refreshToken);
+    }
+
+    /**
+     * Creates a new refresh token preserving the original absolute expiry date.
+     * Used on token rotation to enforce absolute expiration.
+     */
+    @Transactional
+    public RefreshToken createRefreshToken(Usuario usuario, Instant absoluteExpiryDate) {
+        RefreshToken refreshToken = RefreshToken.builder()
+                .usuario(usuario)
+                .token(UUID.randomUUID().toString())
+                .expiryDate(absoluteExpiryDate)
                 .revoked(false)
                 .build();
         return refreshTokenRepository.save(refreshToken);
@@ -49,5 +66,19 @@ public class RefreshTokenService {
     @Transactional
     public void deleteByToken(String token) {
         refreshTokenRepository.deleteByToken(token);
+    }
+
+    /**
+     * Returns the configured refresh token duration in seconds (for cookie Max-Age).
+     */
+    public long getRefreshExpirationSeconds() {
+        return jwtConfig.getRefreshExpirationMs() / 1000;
+    }
+
+    /**
+     * Returns the configured access token duration in seconds (for cookie Max-Age).
+     */
+    public long getAccessTokenExpirationSeconds() {
+        return jwtConfig.getExpirationMs() / 1000;
     }
 }
