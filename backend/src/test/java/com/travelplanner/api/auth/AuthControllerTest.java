@@ -51,6 +51,7 @@ class AuthControllerTest {
     void setUp() {
         SecurityContextHolder.clearContext();
         lenient().when(jwtConfig.isCookieSecure()).thenReturn(false);
+        lenient().when(jwtConfig.getCookieSameSite()).thenReturn("Lax");
         lenient().when(refreshTokenService.getAccessTokenExpirationSeconds()).thenReturn(86400L);
         lenient().when(refreshTokenService.getRefreshExpirationSeconds()).thenReturn(604800L);
     }

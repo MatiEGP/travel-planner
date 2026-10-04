@@ -36,4 +36,8 @@ public class JwtConfig {
      * false en desarrollo local (HTTP), true en producción (HTTPS).
      */
     private boolean cookieSecure = false;
+
+    public String getCookieSameSite() {
+        return cookieSecure ? "None" : "Lax";
+    }
 }

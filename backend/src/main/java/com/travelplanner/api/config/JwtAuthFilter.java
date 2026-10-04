@@ -8,6 +8,8 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.HttpHeaders;
+import org.springframework.util.StringUtils;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -45,6 +47,14 @@ public class JwtAuthFilter extends OncePerRequestFilter {
                     token = cookie.getValue();
                     break;
                 }
+            }
+        }
+
+        // Si no viene en la cookie, intentar extraer del header Authorization: Bearer <token>
+        if (token == null || token.isBlank()) {
+            String authHeader = request.getHeader(HttpHeaders.AUTHORIZATION);
+            if (StringUtils.hasText(authHeader) && authHeader.startsWith("Bearer ")) {
+                token = authHeader.substring(7).trim();
             }
         }
 

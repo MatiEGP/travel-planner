@@ -135,20 +135,22 @@ public class AuthController {
             refreshTokenService.deleteByToken(requestRefreshToken);
         }
 
+        String sameSite = jwtConfig.getCookieSameSite();
+
         ResponseCookie cookie = ResponseCookie.from("token", "")
                 .httpOnly(true)
                 .secure(jwtConfig.isCookieSecure())
                 .path("/")
                 .maxAge(0)
-                .sameSite("Strict")
+                .sameSite(sameSite)
                 .build();
 
         ResponseCookie refreshCookie = ResponseCookie.from("refresh_token", "")
                 .httpOnly(true)
                 .secure(jwtConfig.isCookieSecure())
-                .path("/api/auth")
+                .path("/")
                 .maxAge(0)
-                .sameSite("Strict")
+                .sameSite(sameSite)
                 .build();
 
         return ResponseEntity.ok()
@@ -181,7 +183,7 @@ public class AuthController {
                 .secure(jwtConfig.isCookieSecure())
                 .path("/")
                 .maxAge(maxAgeSegundos)
-                .sameSite("Strict")
+                .sameSite(jwtConfig.getCookieSameSite())
                 .build();
     }
 
@@ -189,9 +191,9 @@ public class AuthController {
         return ResponseCookie.from("refresh_token", token)
                 .httpOnly(true)
                 .secure(jwtConfig.isCookieSecure())
-                .path("/api/auth")
+                .path("/")
                 .maxAge(maxAgeSegundos)
-                .sameSite("Strict")
+                .sameSite(jwtConfig.getCookieSameSite())
                 .build();
     }
 
