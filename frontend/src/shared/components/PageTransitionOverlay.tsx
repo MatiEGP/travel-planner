@@ -1,4 +1,4 @@
-import { useEffect, useState, useRef } from 'react';
+import { useLayoutEffect, useState, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 
 interface PageTransitionOverlayProps {
@@ -12,7 +12,7 @@ export function PageTransitionOverlay({ visible, message = "Cargando..." }: Page
   const hideTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const maxTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
-  useEffect(() => {
+  useLayoutEffect(() => {
     if (visible) {
       if (hideTimeoutRef.current) {
         clearTimeout(hideTimeoutRef.current);
