@@ -7,6 +7,7 @@ import { actividadService } from '../../../features/actividades/api/actividadSer
 import { usuarioService } from '../../../features/usuarios/api/usuarioService';
 
 vi.mock('../client', () => ({
+  setAccessToken: vi.fn(),
   apiClient: {
     get: vi.fn(),
     post: vi.fn(),

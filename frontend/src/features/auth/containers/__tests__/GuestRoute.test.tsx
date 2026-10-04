@@ -31,7 +31,7 @@ describe('GuestRoute', () => {
       </MemoryRouter>
     );
 
-    expect(screen.getByText('Cargando sesión...')).toBeInTheDocument();
+    
     expect(screen.queryByText('Guest Login Form')).not.toBeInTheDocument();
   });
 

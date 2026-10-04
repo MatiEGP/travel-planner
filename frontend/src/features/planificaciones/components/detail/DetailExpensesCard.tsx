@@ -173,7 +173,8 @@ export const DetailExpensesCard: React.FC<DetailExpensesCardProps> = ({
                   </div>
                   
                   <button
-                    type="button"
+                    title="Eliminar gasto"
+                      type="button"
                     onClick={() => onDeleteCosto(costo.id)}
                     className="absolute top-3 right-3 p-1.5 rounded-lg text-slate-300 dark:text-slate-600 opacity-0 group-hover:opacity-100 hover:bg-rose-50 dark:hover:bg-rose-500/10 hover:text-rose-500 dark:hover:text-rose-400 transition-all"
                   >

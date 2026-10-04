@@ -27,7 +27,7 @@ describe('DiscoveryNavbar', () => {
       </MemoryRouter>
     );
     
-    expect(screen.getByRole('link', { name: /Travel Planner/i })).toBeInTheDocument();
+    expect(screen.getByRole('link', { name: /Fuimonos/i })).toBeInTheDocument();
     expect(screen.getByRole('link', { name: /Iniciar Sesión/i })).toBeInTheDocument();
     expect(screen.getByRole('link', { name: /Registrarse/i })).toBeInTheDocument();
   });
@@ -50,7 +50,7 @@ describe('DiscoveryNavbar', () => {
       </MemoryRouter>
     );
     
-    expect(screen.getByRole('link', { name: /Travel Planner/i })).toBeInTheDocument();
+    expect(screen.getByRole('link', { name: /Fuimonos/i })).toBeInTheDocument();
     expect(screen.getByText('TestUser')).toBeInTheDocument();
   });
 });

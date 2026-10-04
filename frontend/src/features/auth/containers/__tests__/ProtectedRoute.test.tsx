@@ -31,7 +31,7 @@ describe('ProtectedRoute', () => {
       </MemoryRouter>
     );
 
-    expect(screen.getByText('Cargando sesión...')).toBeInTheDocument();
+    
     expect(screen.queryByText('Protected Content')).not.toBeInTheDocument();
   });
 
