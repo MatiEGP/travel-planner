@@ -18,4 +18,5 @@ public class UsuarioResponseDTO {
     private String email;
     private LocalDateTime fechaRegistro;
     private List<String> roles;
+    private String accessToken;
 }

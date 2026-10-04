@@ -51,6 +51,7 @@ class AuthControllerTest {
     void setUp() {
         SecurityContextHolder.clearContext();
         lenient().when(jwtConfig.isCookieSecure()).thenReturn(false);
+        lenient().when(jwtConfig.getCookieSameSite()).thenReturn("Lax");
         lenient().when(refreshTokenService.getAccessTokenExpirationSeconds()).thenReturn(86400L);
         lenient().when(refreshTokenService.getRefreshExpirationSeconds()).thenReturn(604800L);
     }
@@ -73,6 +74,7 @@ class AuthControllerTest {
         when(rolRepository.findByNombre("CLIENT")).thenReturn(Optional.of(rolClient));
         when(usuarioService.registrarUsuario(any(Usuario.class))).thenReturn(usuarioGuardado);
         when(jwtService.generarToken(usuarioGuardado)).thenReturn("mock.jwt.token");
+        when(refreshTokenService.createRefreshToken(usuarioGuardado)).thenReturn(RefreshToken.builder().token("mock.refresh.token").build());
 
         ResponseEntity<UsuarioResponseDTO> response = authController.registro(request);
 
