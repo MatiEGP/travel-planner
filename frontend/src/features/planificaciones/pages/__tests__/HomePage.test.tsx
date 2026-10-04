@@ -27,7 +27,7 @@ describe('HomePage', () => {
   it('renders guest view with Iniciar sesión and Comenzá ahora and no admin panel', () => {
     vi.mocked(useAuth).mockReturnValue({
       isAuthenticated: false,
-      isLoading: false,
+      isHydrating: false, isLoading: false,
       user: null,
       usuario: null,
       login: vi.fn(),
@@ -61,7 +61,7 @@ describe('HomePage', () => {
 
     vi.mocked(useAuth).mockReturnValue({
       isAuthenticated: true,
-      isLoading: false,
+      isHydrating: false, isLoading: false,
       user: clientUser,
       usuario: clientUser,
       login: vi.fn(),
@@ -95,7 +95,7 @@ describe('HomePage', () => {
 
     vi.mocked(useAuth).mockReturnValue({
       isAuthenticated: true,
-      isLoading: false,
+      isHydrating: false, isLoading: false,
       user: adminUser,
       usuario: adminUser,
       login: vi.fn(),

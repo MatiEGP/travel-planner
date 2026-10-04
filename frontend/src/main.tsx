@@ -7,6 +7,7 @@ import { router } from './router';
 import { AuthProvider } from './features/auth/context/AuthContext';
 import { ThemeProvider } from './context/ThemeContext';
 
+
 ReactDOM.createRoot(document.getElementById('root')!).render(
   <React.StrictMode>
     <ThemeProvider>
@@ -16,4 +17,3 @@ ReactDOM.createRoot(document.getElementById('root')!).render(
     </ThemeProvider>
   </React.StrictMode>,
 );
-

@@ -10,6 +10,7 @@ export interface UsuarioResponseDTO {
   email: string;
   fechaRegistro: string;
   roles: string[];
+  accessToken?: string;
 }
 
 export interface LoginRequestDTO {

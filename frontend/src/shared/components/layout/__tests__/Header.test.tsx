@@ -13,7 +13,7 @@ describe('Header', () => {
   it('renders light translucent surface with brand link and guest navigation', () => {
     vi.mocked(useAuth).mockReturnValue({
       isAuthenticated: false,
-      isLoading: false,
+      isHydrating: false, isLoading: false,
       user: null,
       usuario: null,
       login: vi.fn(),
@@ -55,7 +55,7 @@ describe('Header', () => {
 
     vi.mocked(useAuth).mockReturnValue({
       isAuthenticated: true,
-      isLoading: false,
+      isHydrating: false, isLoading: false,
       user: clientUser,
       usuario: clientUser,
       login: vi.fn(),
@@ -89,7 +89,7 @@ describe('Header', () => {
 
     vi.mocked(useAuth).mockReturnValue({
       isAuthenticated: true,
-      isLoading: false,
+      isHydrating: false, isLoading: false,
       user: adminUser,
       usuario: adminUser,
       login: vi.fn(),
@@ -113,7 +113,7 @@ describe('Header', () => {
   it('renders login link correctly when on /login', () => {
     vi.mocked(useAuth).mockReturnValue({
       isAuthenticated: false,
-      isLoading: false,
+      isHydrating: false, isLoading: false,
       user: null,
       usuario: null,
       login: vi.fn(),
@@ -145,7 +145,7 @@ describe('Header', () => {
 
     vi.mocked(useAuth).mockReturnValue({
       isAuthenticated: true,
-      isLoading: false,
+      isHydrating: false, isLoading: false,
       user: clientUser,
       usuario: clientUser,
       login: vi.fn(),

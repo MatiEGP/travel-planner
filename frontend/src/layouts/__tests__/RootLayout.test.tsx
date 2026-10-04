@@ -13,7 +13,7 @@ describe('RootLayout Header Suppression & Background Canvas', () => {
     vi.clearAllMocks();
     vi.mocked(useAuth).mockReturnValue({
       isAuthenticated: false,
-      isLoading: false,
+      isHydrating: false, isLoading: false,
       user: null,
       usuario: null,
       login: vi.fn(),

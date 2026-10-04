@@ -6,6 +6,7 @@ import { authService } from '../api/authService';
 export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const [user, setUser] = useState<UsuarioResponseDTO | null>(null);
   const [isLoading, setIsLoading] = useState<boolean>(true);
+  const [isHydrating, setIsHydrating] = useState<boolean>(true);
 
   // Hidratar la sesión del usuario al montar el componente vía /api/auth/me
   useEffect(() => {
@@ -22,6 +23,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       } finally {
         if (!controller.signal.aborted) {
           setIsLoading(false);
+          setIsHydrating(false);
         }
       }
     };
@@ -65,6 +67,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     usuario: user,
     isAuthenticated: user !== null,
     isLoading,
+    isHydrating,
     login,
     register,
     logout,

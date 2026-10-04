@@ -1,5 +1,6 @@
 package com.travelplanner.api.auth;
 
+import com.travelplanner.api.config.JwtConfig;
 import com.travelplanner.api.usuarios.UsuarioResponseDTO;
 import com.travelplanner.api.usuarios.Rol;
 import com.travelplanner.api.usuarios.Usuario;
@@ -17,7 +18,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.test.util.ReflectionTestUtils;
 
 import java.util.Optional;
 import java.util.Set;
@@ -38,13 +38,21 @@ class AuthControllerTest {
     @Mock
     private RolRepository rolRepository;
 
+    @Mock
+    private RefreshTokenService refreshTokenService;
+
+    @Mock
+    private JwtConfig jwtConfig;
+
     @InjectMocks
     private AuthController authController;
 
     @BeforeEach
     void setUp() {
         SecurityContextHolder.clearContext();
-        ReflectionTestUtils.setField(authController, "cookieSecure", false);
+        lenient().when(jwtConfig.isCookieSecure()).thenReturn(false);
+        lenient().when(refreshTokenService.getAccessTokenExpirationSeconds()).thenReturn(86400L);
+        lenient().when(refreshTokenService.getRefreshExpirationSeconds()).thenReturn(604800L);
     }
 
     @Test
@@ -91,6 +99,7 @@ class AuthControllerTest {
 
         when(usuarioService.autenticar("carlos@example.com", "password123")).thenReturn(usuario);
         when(jwtService.generarToken(usuario)).thenReturn("mock.jwt.token");
+        when(refreshTokenService.createRefreshToken(usuario)).thenReturn(RefreshToken.builder().token("mock.refresh.token").build());
 
         ResponseEntity<UsuarioResponseDTO> response = authController.login(request);
 
@@ -102,7 +111,7 @@ class AuthControllerTest {
 
     @Test
     void logout_debeRetornarCookieConMaxAgeCero() {
-        ResponseEntity<Void> response = authController.logout();
+        ResponseEntity<Void> response = authController.logout(null);
 
         assertEquals(HttpStatus.OK, response.getStatusCode());
         String setCookie = response.getHeaders().getFirst(HttpHeaders.SET_COOKIE);
@@ -159,6 +168,7 @@ class AuthControllerTest {
 
         when(usuarioService.autenticar("nuevo@example.com", "password123")).thenReturn(usuario);
         when(jwtService.generarToken(usuario)).thenReturn("nuevo.jwt.token");
+        when(refreshTokenService.createRefreshToken(usuario)).thenReturn(RefreshToken.builder().token("nuevo.refresh.token").build());
 
         ResponseEntity<UsuarioResponseDTO> response = authController.login(request);
 

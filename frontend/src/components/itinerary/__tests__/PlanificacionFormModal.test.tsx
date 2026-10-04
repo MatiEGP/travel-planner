@@ -19,7 +19,7 @@ describe('PlanificacionFormModal', () => {
   beforeEach(() => {
     vi.mocked(useAuth).mockReturnValue({
       isAuthenticated: true,
-      isLoading: false,
+      isHydrating: false, isLoading: false,
       user: mockUser,
       usuario: mockUser,
       login: vi.fn(),

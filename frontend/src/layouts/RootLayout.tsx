@@ -65,23 +65,27 @@ const GlobalLoadingBar = () => {
 // Unifies the background canvas to a clean light palette (#F7F9FA) across all
 // application routes and manages contextual header presentation.
 // ============================================================================
+import { AppShell } from '../shared/components/AppShell';
+
 export const RootLayout = () => {
   const location = useLocation();
   const isAuthRoute = ['/login', '/register', '/registro'].includes(location.pathname);
   const isHomeRoute = location.pathname === '/';
 
   return (
-    <div
-      data-testid="root-layout"
-      className="min-h-screen flex flex-col text-slate-900 dark:text-slate-50 transition-colors duration-500 relative z-0"
-    >
-      <DynamicBackground />
-      <GlobalLoadingBar />
-      {!isAuthRoute && !isHomeRoute && <Header />}
-      <div className="flex-1 flex flex-col">
-        <Outlet />
+    <AppShell>
+      <div
+        data-testid="root-layout"
+        className="min-h-screen flex flex-col text-slate-900 dark:text-slate-50 transition-colors duration-500 relative z-0"
+      >
+        <DynamicBackground />
+        <GlobalLoadingBar />
+        {!isAuthRoute && !isHomeRoute && <Header />}
+        <div className="flex-1 flex flex-col">
+          <Outlet />
+        </div>
       </div>
-    </div>
+    </AppShell>
   );
 };
 
