@@ -1,4 +1,4 @@
-package com.travelplanner.api.config;
+﻿package com.travelplanner.api.config;
 
 import io.swagger.v3.oas.annotations.OpenAPIDefinition;
 import io.swagger.v3.oas.annotations.enums.SecuritySchemeType;
@@ -9,7 +9,7 @@ import org.springframework.context.annotation.Configuration;
 
 @Configuration
 @OpenAPIDefinition(
-        info = @Info(title = "Travel Planner API", version = "1.0", description = "API REST para Travel Planner"),
+        info = @Info(title = "Fuimonos API", version = "v1.2.0", description = "API REST para Travel Planner"),
         security = @SecurityRequirement(name = "bearerAuth")
 )
 @SecurityScheme(
