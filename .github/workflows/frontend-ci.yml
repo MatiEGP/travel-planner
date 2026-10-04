@@ -43,3 +43,14 @@ jobs:
       - name: Build (TypeScript + Vite)
         working-directory: ./frontend
         run: npm run build
+
+      - name: Run Tests with Coverage
+        working-directory: ./frontend
+        run: npm run test:coverage
+
+      - name: Upload Coverage Report
+        uses: actions/upload-artifact@v4
+        with:
+          name: frontend-coverage
+          path: frontend/coverage/
+          retention-days: 14

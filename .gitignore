@@ -4,6 +4,7 @@
 .atl/
 .idea/
 .vscode/
+.pi/
 *.suo
 *.ntvs*
 *.njsproj
@@ -51,4 +52,5 @@ pnpm-debug.log*
 # =====================
 # Personal
 # =====================
+.agents/plugins/
 ANOTACIONES.md

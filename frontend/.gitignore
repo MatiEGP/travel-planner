@@ -13,6 +13,9 @@ dist-ssr/
 logs/
 *.log
 
+# Testing
+coverage/
+
 # Environment Variables
 .env
 .env.local
