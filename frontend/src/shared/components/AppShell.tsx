@@ -17,7 +17,8 @@ export function AppShell({ children }: AppShellProps) {
 
   if (location.pathname !== prevPath) {
     setPrevPath(location.pathname);
-    if (location.pathname !== '/') {
+    const isNoTransitionRoute = ['/', '/login', '/register', '/registro'].includes(location.pathname);
+    if (!isNoTransitionRoute) {
       setIsNavigating(true);
     } else {
       setIsNavigating(false);

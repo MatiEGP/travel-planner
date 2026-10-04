@@ -1,4 +1,4 @@
-import { useEffect, useState, useRef } from 'react';
+import { useLayoutEffect, useState, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 
 interface PageTransitionOverlayProps {
@@ -12,9 +12,7 @@ export function PageTransitionOverlay({ visible, message = "Cargando..." }: Page
   const hideTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const maxTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
-  useEffect(() => {
-    let startTimeoutId: ReturnType<typeof setTimeout> | null = null;
-
+  useLayoutEffect(() => {
     if (visible) {
       if (hideTimeoutRef.current) {
         clearTimeout(hideTimeoutRef.current);
@@ -25,10 +23,8 @@ export function PageTransitionOverlay({ visible, message = "Cargando..." }: Page
       }
 
       if (!isShowing) {
-        startTimeoutId = setTimeout(() => {
-          setIsShowing(true);
-          showStartTime.current = Date.now();
-        }, 0);
+        setIsShowing(true);
+        showStartTime.current = Date.now();
       }
 
       // Maximum 8s safety net
@@ -47,7 +43,6 @@ export function PageTransitionOverlay({ visible, message = "Cargando..." }: Page
     }
 
     return () => {
-      if (startTimeoutId) clearTimeout(startTimeoutId);
       if (hideTimeoutRef.current) clearTimeout(hideTimeoutRef.current);
       if (maxTimeoutRef.current) clearTimeout(maxTimeoutRef.current);
     };
