@@ -1,4 +1,4 @@
-# Travel Planner - Development Guidelines
+﻿# Travel Planner - Development Guidelines
 
 Este documento establece las políticas de desarrollo, gestión de configuración (SCM) y buenas prácticas implementadas en el monorepo de **travel-planner**. El objetivo es emular un entorno de desarrollo profesional, ordenado y escalable.
 
@@ -83,7 +83,7 @@ Para la gestión del estado de la aplicación, nos apoyaremos en los **hooks nat
 *   **`useEffect`**: Para manejar efectos secundarios (ej. llamadas a la API).
 *   **`useContext`**: Para estado compartido entre componentes, a través de los providers definidos en `src/context`.
 
-No se introducirán librerías de manejo de estado global (ej. Redux, Zustand) para mantener la simplicidad del MVP.
+No se introducirán librerías de manejo de estado global (ej. Redux, Zustand) para priorizar la simplicidad arquitectónica, ya que la combinación de React Context y FSD cubre las necesidades de la aplicación.
 
 ### 2.3. Estructura de Carpetas (`src/`)
 

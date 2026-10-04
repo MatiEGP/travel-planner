@@ -10,6 +10,7 @@ vi.mock('../../features/auth/context/useAuth', () => ({
 
 vi.mock('../../context/ThemeContext', () => ({
   useTheme: vi.fn().mockReturnValue({ theme: 'light', toggleTheme: vi.fn() }),
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   ThemeProvider: ({ children }: any) => <>{children}</>,
 }));
 
