@@ -56,9 +56,15 @@ public class AuthController {
         String token = jwtService.generarToken(usuarioGuardado);
         ResponseCookie cookie = crearCookieJwt(token, refreshTokenService.getAccessTokenExpirationSeconds());
 
+        RefreshToken refreshToken = refreshTokenService.createRefreshToken(usuarioGuardado);
+        ResponseCookie refreshCookie = crearCookieRefreshToken(refreshToken.getToken(), refreshTokenService.getRefreshExpirationSeconds());
+
         UsuarioResponseDTO response = mapearAResponse(usuarioGuardado);
+        response.setAccessToken(token);
+
         return ResponseEntity.status(HttpStatus.CREATED)
                 .header(HttpHeaders.SET_COOKIE, cookie.toString())
+                .header(HttpHeaders.SET_COOKIE, refreshCookie.toString())
                 .body(response);
     }
 
@@ -76,6 +82,8 @@ public class AuthController {
         ResponseCookie refreshCookie = crearCookieRefreshToken(refreshToken.getToken(), refreshTokenService.getRefreshExpirationSeconds());
 
         UsuarioResponseDTO response = mapearAResponse(usuario);
+        response.setAccessToken(token);
+
         return ResponseEntity.ok()
                 .header(HttpHeaders.SET_COOKIE, cookie.toString())
                 .header(HttpHeaders.SET_COOKIE, refreshCookie.toString())

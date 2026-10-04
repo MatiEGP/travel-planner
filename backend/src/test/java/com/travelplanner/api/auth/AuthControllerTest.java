@@ -74,6 +74,7 @@ class AuthControllerTest {
         when(rolRepository.findByNombre("CLIENT")).thenReturn(Optional.of(rolClient));
         when(usuarioService.registrarUsuario(any(Usuario.class))).thenReturn(usuarioGuardado);
         when(jwtService.generarToken(usuarioGuardado)).thenReturn("mock.jwt.token");
+        when(refreshTokenService.createRefreshToken(usuarioGuardado)).thenReturn(RefreshToken.builder().token("mock.refresh.token").build());
 
         ResponseEntity<UsuarioResponseDTO> response = authController.registro(request);
 
