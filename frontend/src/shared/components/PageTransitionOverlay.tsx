@@ -23,6 +23,7 @@ export function PageTransitionOverlay({ visible, message = "Cargando..." }: Page
       }
 
       if (!isShowing) {
+        // eslint-disable-next-line react-hooks/set-state-in-effect
         setIsShowing(true);
         showStartTime.current = Date.now();
       }
