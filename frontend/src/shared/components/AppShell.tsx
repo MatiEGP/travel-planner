@@ -1,4 +1,4 @@
-import { useEffect, useLayoutEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useLocation } from 'react-router-dom';
 import { useAuth } from '../../features/auth/context/useAuth';
 import { PageTransitionOverlay } from './PageTransitionOverlay';
@@ -13,17 +13,25 @@ export function AppShell({ children }: AppShellProps) {
   const [isNavigating, setIsNavigating] = useState(false);
   const location = useLocation();
 
-  useLayoutEffect(() => {
-    if (location.pathname === '/') {
+  const [prevPath, setPrevPath] = useState(location.pathname);
+
+  if (location.pathname !== prevPath) {
+    setPrevPath(location.pathname);
+    if (location.pathname !== '/') {
+      setIsNavigating(true);
+    } else {
       setIsNavigating(false);
-      return;
     }
-    setIsNavigating(true);
-    const timeoutId = setTimeout(() => {
-      setIsNavigating(false);
-    }, 400);
-    return () => clearTimeout(timeoutId);
-  }, [location.pathname]);
+  }
+
+  useEffect(() => {
+    if (isNavigating) {
+      const timeoutId = setTimeout(() => {
+        setIsNavigating(false);
+      }, 400);
+      return () => clearTimeout(timeoutId);
+    }
+  }, [isNavigating]);
 
   useEffect(() => {
     const handleTokenRefresh = (event: Event) => {

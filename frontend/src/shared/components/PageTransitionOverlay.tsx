@@ -13,6 +13,8 @@ export function PageTransitionOverlay({ visible, message = "Cargando..." }: Page
   const maxTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   useEffect(() => {
+    let startTimeoutId: ReturnType<typeof setTimeout> | null = null;
+
     if (visible) {
       if (hideTimeoutRef.current) {
         clearTimeout(hideTimeoutRef.current);
@@ -23,8 +25,10 @@ export function PageTransitionOverlay({ visible, message = "Cargando..." }: Page
       }
 
       if (!isShowing) {
-        setIsShowing(true);
-        showStartTime.current = Date.now();
+        startTimeoutId = setTimeout(() => {
+          setIsShowing(true);
+          showStartTime.current = Date.now();
+        }, 0);
       }
 
       // Maximum 8s safety net
@@ -43,6 +47,7 @@ export function PageTransitionOverlay({ visible, message = "Cargando..." }: Page
     }
 
     return () => {
+      if (startTimeoutId) clearTimeout(startTimeoutId);
       if (hideTimeoutRef.current) clearTimeout(hideTimeoutRef.current);
       if (maxTimeoutRef.current) clearTimeout(maxTimeoutRef.current);
     };
